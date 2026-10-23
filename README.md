@@ -27,7 +27,7 @@ Hors ligne en développement, `PWNED_PASSWORDS_CHECK=off` coupe l'appel à Have 
 
 - [x] Phase 0 — Fondations : monorepo, CI, Docker Compose, env.ts
 - [x] Phase 1 — Auth et multi-tenant (RLS, 2FA, audit_log, tests anti-IDOR)
-- [ ] Phase 2 — Référentiels (entreprise, salariés, champs chiffrés)
+- [x] Phase 2 — Référentiels : fiche entreprise, invitations, salariés, champs chiffrés, import Excel
 - [~] Phase 3 — Moteur de paie : résolution des règles datées et CNPS faits ; IRPP, CAC, taxes et golden à venir
 - [ ] Phase 4 — Cycle mensuel et bulletins PDF
 - [ ] Phase 5 — Déclarations

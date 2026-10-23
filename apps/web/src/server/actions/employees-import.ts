@@ -27,6 +27,8 @@ export async function importEmployeesAction(
   form: FormData,
 ): Promise<ImportState> {
   const ctx = await getRequestContext();
+  // Aucune analyse de fichier pour un visiteur non connecté (le reste des droits est revérifié ensuite).
+  if (!ctx.user) return { error: { code: "UNAUTHENTICATED" } };
   const file = form.get("file");
   if (!(file instanceof File) || file.size === 0) return { fileError: "empty" };
   if (file.size > XLSX_LIMITS.maxBytes) return { fileError: "too_large" };
