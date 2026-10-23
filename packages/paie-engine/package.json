@@ -11,7 +11,7 @@
     "lint": "eslint .",
     "typecheck": "tsc",
     "test": "vitest run --coverage",
-    "test:golden": "vitest run test/golden",
+    "test:golden": "vitest run test/golden test/reference",
     "rules:check": "tsx rules/check.ts"
   },
   "devDependencies": {
