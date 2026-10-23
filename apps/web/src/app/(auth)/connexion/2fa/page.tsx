@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Alert, Button, Card, Field } from "@/components/ui";
 import { authClient } from "@/lib/auth-client";
 import { authErrorKey } from "@/lib/auth-errors";
+import { safeNext } from "@/lib/safe-next";
 
 export default function VerifyTwoFactorPage() {
   const t = useTranslations();
@@ -25,7 +26,7 @@ export default function VerifyTwoFactorPage() {
       setPending(false);
       return;
     }
-    window.location.href = "/tableau-de-bord";
+    window.location.href = safeNext(new URLSearchParams(window.location.search).get("next"));
   }
 
   return (

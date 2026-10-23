@@ -32,6 +32,12 @@ describe("parseEnv", () => {
     expect(parseEnv({ ...ok, PWNED_PASSWORDS_CHECK: "off" }).PWNED_PASSWORDS_CHECK).toBe("off");
   });
 
+  it("interdit la boîte d'envoi locale en production", () => {
+    expect(() => parseEnv({ ...ok, NODE_ENV: "production", MAIL_OUTBOX_DIR: "/tmp/x" })).toThrow(
+      /interdit/,
+    );
+  });
+
   it("exige un trousseau de chiffrement valide", () => {
     expect(() => parseEnv({ ...ok, FIELD_ENCRYPTION_KEYS: "" })).toThrow(/FIELD_ENCRYPTION_KEYS/);
     expect(() => parseEnv({ ...ok, FIELD_ENCRYPTION_KEYS: "v1:court" })).toThrow(

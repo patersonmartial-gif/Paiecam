@@ -84,5 +84,53 @@
     "welcome": "Bienvenue, {name}.",
     "role": "Votre rôle : {role}",
     "comingSoon": "Les salariés et la paie arrivent dans les prochaines phases."
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "employees": "Salariés",
+    "company": "Entreprise",
+    "team": "Équipe",
+    "switchCompany": "Changer d'entreprise"
+  },
+  "settings": {
+    "companyTitle": "Informations de l'entreprise",
+    "save": "Enregistrer",
+    "saved": "Modifications enregistrées.",
+    "readOnly": "Seul le propriétaire peut modifier ces informations."
+  },
+  "team": {
+    "title": "Équipe",
+    "members": "Membres",
+    "pending": "Invitations en attente",
+    "inviteTitle": "Inviter un collaborateur",
+    "email": "Adresse e-mail",
+    "role": "Rôle",
+    "invite": "Envoyer l'invitation",
+    "invited": "Invitation envoyée.",
+    "you": "vous",
+    "remove": "Retirer",
+    "revoke": "Annuler",
+    "changeRole": "Changer le rôle",
+    "expires": "expire le {date}",
+    "errors": {
+      "already_member": "Cette personne fait déjà partie de l'équipe.",
+      "self": "Vous ne pouvez pas modifier votre propre accès.",
+      "owner": "Le rôle d'un propriétaire ne peut pas être modifié ici.",
+      "not_found": "Élément introuvable."
+    }
+  },
+  "invitation": {
+    "title": "Invitation",
+    "join": "Rejoindre {company} en tant que {role}",
+    "accept": "Accepter l'invitation",
+    "signInFirst": "Connectez-vous, ou créez un compte avec l'adresse e-mail qui a reçu l'invitation.",
+    "errors": {
+      "not_found": "Cette invitation n'existe pas.",
+      "accepted": "Cette invitation a déjà été utilisée.",
+      "revoked": "Cette invitation a été annulée.",
+      "expired": "Cette invitation a expiré. Demandez-en une nouvelle.",
+      "email_mismatch": "Cette invitation a été envoyée à une autre adresse e-mail que celle de votre compte.",
+      "already_member": "Vous faites déjà partie de cette entreprise."
+    }
   }
 }

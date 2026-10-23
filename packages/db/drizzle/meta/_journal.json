@@ -43,6 +43,20 @@
       "when": 1792754241192,
       "tag": "0005_ops_role",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792755360534,
+      "tag": "0006_invitations",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792755361242,
+      "tag": "0007_invitations_rls",
+      "breakpoints": true
     }
   ]
 }

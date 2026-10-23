@@ -10,6 +10,8 @@ const schema = z.object({
   BETTER_AUTH_SECRET: z.string().min(32),
   /** Vérification Have I Been Pwned. « off » sert seulement hors ligne en développement. */
   PWNED_PASSWORDS_CHECK: z.enum(["on", "off"]).default("on"),
+  /** Dossier où écrire les e-mails en développement (interdit en production). */
+  MAIL_OUTBOX_DIR: z.string().optional(),
   /** Trousseau « v2:<base64>,v1:<base64> » ; la première clé chiffre. */
   FIELD_ENCRYPTION_KEYS: z
     .string()
@@ -34,6 +36,9 @@ export function parseEnv(source: Record<string, string | undefined>): Env {
     // Uniquement les noms de variables, jamais leurs valeurs.
     const names = parsed.error.issues.map((i) => i.path.join(".")).join(", ");
     throw new Error(`Variables d'environnement invalides : ${names}`);
+  }
+  if (parsed.data.NODE_ENV === "production" && parsed.data.MAIL_OUTBOX_DIR) {
+    throw new Error("MAIL_OUTBOX_DIR est interdit en production");
   }
   if (!parsed.data.FIELD_ENCRYPTION_KEYS) {
     throw new Error("FIELD_ENCRYPTION_KEYS est obligatoire (voir .env.example)");

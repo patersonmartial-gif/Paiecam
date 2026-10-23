@@ -25,6 +25,8 @@ export type ActionError =
   | { code: "INVALID_INPUT"; fields: Record<string, string[]> }
   /** Contrainte d'unicité violée ; `constraint` permet un message précis (ex. NIU déjà inscrit). */
   | { code: "CONFLICT"; constraint: string }
+  /** Règle métier refusée (ex. « self », « owner ») : la transaction est annulée. */
+  | { code: "RULE"; reason: string }
   | { code: "INTERNAL" };
 
 export type ActionResult<T> = { ok: true; data: T } | { ok: false; error: ActionError };
@@ -47,6 +49,13 @@ export interface TenantActionContext {
 }
 
 const UUID = z.uuid();
+
+/** À lever dans un handler pour refuser une opération selon une règle métier. */
+export class RuleError extends Error {
+  constructor(readonly reason: string) {
+    super(reason);
+  }
+}
 
 class Denied extends Error {
   constructor(readonly error: ActionError) {
@@ -108,7 +117,13 @@ async function auditDenied(db: Db, ctx: RequestContext, action: string, error: A
  */
 export function createTenantAction<S extends z.ZodType, T>(
   db: Db,
-  options: { permission: Permission; input: S; audit: string },
+  options: {
+    permission: Permission;
+    input: S;
+    audit: string;
+    /** Lecture non sensible (ex. afficher la fiche entreprise) : pas de ligne d'audit en cas de succès. */
+    skipAudit?: boolean;
+  },
   handler: (ctx: TenantActionContext, input: z.infer<S>) => Promise<T>,
 ) {
   return async (ctx: RequestContext, rawInput: unknown): Promise<ActionResult<T>> => {
@@ -155,6 +170,7 @@ export function createTenantAction<S extends z.ZodType, T>(
         );
 
         // 5) Audit, dans la même transaction que l'action
+        if (options.skipAudit) return result;
         await tx.insert(schema.auditLog).values({
           tenantId,
           actorUserId: user.id,
@@ -176,6 +192,7 @@ export function createTenantAction<S extends z.ZodType, T>(
         }
         return { ok: false, error: e.error };
       }
+      if (e instanceof RuleError) return { ok: false, error: { code: "RULE", reason: e.reason } };
       const conflict = uniqueViolation(e);
       if (conflict) return { ok: false, error: conflict };
       log("error", "échec d'une action", {
@@ -225,6 +242,7 @@ export function createUserAction<S extends z.ZodType, T>(
       });
       return { ok: true, data };
     } catch (e) {
+      if (e instanceof RuleError) return { ok: false, error: { code: "RULE", reason: e.reason } };
       const conflict = uniqueViolation(e);
       if (conflict) return { ok: false, error: conflict };
       log("error", "échec d'une action", { action: options.audit, error: e });

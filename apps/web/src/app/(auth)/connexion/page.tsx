@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Alert, Button, Card, Field } from "@/components/ui";
 import { authClient } from "@/lib/auth-client";
 import { authErrorKey } from "@/lib/auth-errors";
+import { safeNext } from "@/lib/safe-next";
 
 export default function SignInPage() {
   const t = useTranslations();
@@ -27,7 +28,7 @@ export default function SignInPage() {
     }
     // Avec la 2FA active, le plugin redirige lui-même vers /connexion/2fa.
     if (data && "twoFactorRedirect" in data && data.twoFactorRedirect) return;
-    window.location.href = "/tableau-de-bord";
+    window.location.href = safeNext(new URLSearchParams(window.location.search).get("next"));
   }
 
   return (

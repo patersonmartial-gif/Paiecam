@@ -12,8 +12,19 @@ const LONG_NUMBER = /\d[\d .-]{4,}\d/g;
 
 export const MASK = "[masqué]";
 
-function maskString(value: string): string {
+const UUID = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
+
+function maskPart(value: string): string {
   return value.replace(EMAIL, MASK).replace(IBAN, MASK).replace(LONG_NUMBER, MASK);
+}
+
+/** Les identifiants techniques (UUID) restent lisibles : ils ne sont pas des données personnelles. */
+function maskString(value: string): string {
+  const ids = value.match(UUID) ?? [];
+  return value
+    .split(UUID)
+    .map((part, i) => maskPart(part) + (ids[i] ?? ""))
+    .join("");
 }
 
 export function maskPII(value: unknown, depth = 0): unknown {

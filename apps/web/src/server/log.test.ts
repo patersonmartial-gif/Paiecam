@@ -29,6 +29,11 @@ describe("maskPII", () => {
     expect(maskPII("virement CM21 1000 1000 0101 2345 6789 012")).toBe(`virement ${MASK}`);
   });
 
+  it("laisse les UUID lisibles", () => {
+    const id = "01a1688e-2acd-7f3b-9d1d-1a9be2a892b4";
+    expect(maskPII(`tenant ${id} tel 690000000`)).toBe(`tenant ${id} tel ${MASK}`);
+  });
+
   it("parcourt les objets imbriqués, tableaux et erreurs", () => {
     expect(maskPII({ a: [{ email: "x@y.zz" }], e: new Error("échec pour x@y.zz") })).toEqual({
       a: [{ email: MASK }],

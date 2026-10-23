@@ -115,3 +115,34 @@ export const auditLog = pgTable(
   },
   (t) => [index("audit_log_tenant_created_idx").on(t.tenantId, t.createdAt)],
 );
+
+export const inviteRoleEnum = pgEnum("invite_role", ["payroll_manager", "accountant"]);
+
+/**
+ * Invitation d'un collaborateur. Seule l'empreinte SHA-256 du jeton est stockée.
+ * RLS : visible par l'entreprise, ou par qui présente le jeton (app.invitation_token_hash).
+ */
+export const invitations = pgTable(
+  "invitations",
+  {
+    id: id(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id),
+    email: text("email").notNull(),
+    role: inviteRoleEnum("role").notNull(),
+    tokenHash: text("token_hash").notNull().unique(),
+    invitedBy: text("invited_by")
+      .notNull()
+      .references(() => users.id),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    acceptedAt: timestamp("accepted_at", { withTimezone: true }),
+    acceptedBy: text("accepted_by").references(() => users.id),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index("invitations_tenant_idx").on(t.tenantId),
+    check("invitations_email_lower_chk", sql`${t.email} = lower(${t.email})`),
+  ],
+);

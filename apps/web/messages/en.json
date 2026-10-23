@@ -84,5 +84,53 @@
     "welcome": "Welcome, {name}.",
     "role": "Your role: {role}",
     "comingSoon": "Employees and payroll arrive in the next phases."
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "employees": "Employees",
+    "company": "Company",
+    "team": "Team",
+    "switchCompany": "Switch company"
+  },
+  "settings": {
+    "companyTitle": "Company information",
+    "save": "Save",
+    "saved": "Changes saved.",
+    "readOnly": "Only the owner can change this information."
+  },
+  "team": {
+    "title": "Team",
+    "members": "Members",
+    "pending": "Pending invitations",
+    "inviteTitle": "Invite a colleague",
+    "email": "Email address",
+    "role": "Role",
+    "invite": "Send invitation",
+    "invited": "Invitation sent.",
+    "you": "you",
+    "remove": "Remove",
+    "revoke": "Cancel",
+    "changeRole": "Change role",
+    "expires": "expires on {date}",
+    "errors": {
+      "already_member": "This person is already on the team.",
+      "self": "You cannot change your own access.",
+      "owner": "An owner's role cannot be changed here.",
+      "not_found": "Item not found."
+    }
+  },
+  "invitation": {
+    "title": "Invitation",
+    "join": "Join {company} as {role}",
+    "accept": "Accept the invitation",
+    "signInFirst": "Sign in, or create an account with the email address that received the invitation.",
+    "errors": {
+      "not_found": "This invitation does not exist.",
+      "accepted": "This invitation has already been used.",
+      "revoked": "This invitation was cancelled.",
+      "expired": "This invitation has expired. Ask for a new one.",
+      "email_mismatch": "This invitation was sent to a different email address than your account's.",
+      "already_member": "You are already a member of this company."
+    }
   }
 }

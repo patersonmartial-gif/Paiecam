@@ -1,5 +1,4 @@
 import { getTranslations } from "next-intl/server";
-import { SignOutButton } from "@/components/sign-out-button";
 import { requireMember } from "@/server/guards";
 
 export default async function DashboardPage() {
@@ -7,10 +6,7 @@ export default async function DashboardPage() {
   const t = await getTranslations();
   return (
     <main className="mx-auto max-w-3xl px-4 py-10">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">{member.legalName}</h1>
-        <SignOutButton />
-      </div>
+      <h1 className="text-2xl font-semibold">{member.legalName}</h1>
       <p className="mt-2 text-stone-600">
         {t("dashboard.role", { role: t(`tenants.roles.${member.role}`) })}
       </p>

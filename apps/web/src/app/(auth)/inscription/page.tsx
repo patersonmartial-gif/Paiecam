@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Alert, Button, Card, Field } from "@/components/ui";
 import { authClient } from "@/lib/auth-client";
 import { authErrorKey } from "@/lib/auth-errors";
+import { safeNext } from "@/lib/safe-next";
 
 export default function SignUpPage() {
   const t = useTranslations();
@@ -26,7 +27,9 @@ export default function SignUpPage() {
       setPending(false);
       return;
     }
-    window.location.href = "/entreprise/nouvelle";
+    // Après une invitation, on y revient ; sinon on crée son entreprise.
+    const next = new URLSearchParams(window.location.search).get("next");
+    window.location.href = safeNext(next, "/entreprise/nouvelle");
   }
 
   return (
@@ -51,7 +54,10 @@ export default function SignUpPage() {
       </form>
       <p className="mt-4 text-center text-sm">
         {t("auth.haveAccount")}{" "}
-        <a className="text-brand underline" href="/connexion">
+        <a
+          className="text-brand underline"
+          href={`/connexion${typeof window === "undefined" ? "" : window.location.search}`}
+        >
           {t("auth.signIn")}
         </a>
       </p>
