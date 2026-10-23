@@ -24,6 +24,8 @@ const id = () =>
     .primaryKey()
     .$defaultFn(() => uuidv7());
 
+export const ruleStatusEnum = pgEnum("rule_status", ["draft", "validated"]);
+
 /**
  * Référentiel global des taux, plafonds et barèmes (pas de tenant_id).
  * `value` a la forme attendue par le moteur pour ce `code` (voir packages/paie-engine/src/types.ts).
@@ -39,10 +41,21 @@ export const payRules = pgTable(
     value: jsonb("value").notNull(),
     /** Référence du texte (loi de finances, décret, circulaire CNPS). */
     legalSource: text("legal_source").notNull(),
+    /** Points à faire trancher par l'expert-comptable. */
+    questions: jsonb("questions").$type<string[]>().notNull().default([]),
+    /** « draft » tant que l'expert-comptable n'a pas validé par écrit ; le moteur refuse les brouillons en production. */
+    status: ruleStatusEnum("status").notNull().default("draft"),
+    validatedBy: text("validated_by"),
+    validatedAt: timestamp("validated_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
     index("pay_rules_code_valid_from_idx").on(t.code, t.validFrom),
+    unique("pay_rules_code_valid_from_key").on(t.code, t.validFrom),
+    check(
+      "pay_rules_validation_chk",
+      sql`(${t.status} = 'validated') = (${t.validatedBy} is not null and ${t.validatedAt} is not null)`,
+    ),
     check("pay_rules_period_chk", sql`${t.validTo} is null or ${t.validTo} >= ${t.validFrom}`),
   ],
 );

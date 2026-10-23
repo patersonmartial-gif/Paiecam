@@ -35,9 +35,9 @@ export function computeCnps(input: CnpsInput, rules: readonly PayRule[]): CnpsRe
   if (brut < 0) throw new RangeError("le brut ne peut pas être négatif");
   assertBasisPoints(workAccidentRate, "taux AT/MP");
 
-  const pension = resolveRule<CnpsPensionRule>(rules, RULE_CODES.cnpsPension, periodDate).value;
-  const family = resolveRule<CnpsFamilyRule>(rules, RULE_CODES.cnpsFamily, periodDate).value;
-  const accident = resolveRule<CnpsWorkAccidentRule>(
+  const pension: CnpsPensionRule = resolveRule(rules, RULE_CODES.cnpsPension, periodDate).value;
+  const family: CnpsFamilyRule = resolveRule(rules, RULE_CODES.cnpsFamily, periodDate).value;
+  const accident: CnpsWorkAccidentRule = resolveRule(
     rules,
     RULE_CODES.cnpsWorkAccident,
     periodDate,

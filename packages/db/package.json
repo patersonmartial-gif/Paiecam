@@ -13,7 +13,8 @@
     "typecheck": "tsc",
     "test": "vitest run",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "rules:load": "tsx scripts/load-rules.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.4",
@@ -21,9 +22,11 @@
     "uuidv7": "^1.0.2"
   },
   "devDependencies": {
+    "@paiecam/paie-engine": "workspace:*",
     "@types/node": "^22.0.0",
     "drizzle-kit": "^0.31.11",
-    "vitest": "^5.0.5",
-    "eslint": "^10.13.0"
+    "eslint": "^10.13.0",
+    "tsx": "^4.23.15",
+    "vitest": "^5.0.5"
   }
 }

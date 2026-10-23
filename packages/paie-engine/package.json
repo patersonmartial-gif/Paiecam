@@ -4,18 +4,25 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./rules": "./rules/load.ts"
   },
   "scripts": {
     "lint": "eslint .",
     "typecheck": "tsc",
     "test": "vitest run --coverage",
-    "test:golden": "vitest run test/golden"
+    "test:golden": "vitest run test/golden",
+    "rules:check": "tsx rules/check.ts"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^5.0.5",
+    "eslint": "^10.13.0",
     "fast-check": "^4.6.7",
     "vitest": "^5.0.5",
-    "eslint": "^10.13.0"
+    "@types/node": "^22.0.0",
+    "tsx": "^4.20.0"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
   }
 }
