@@ -12,7 +12,11 @@
     "lint": {},
     "typecheck": {},
     "test": {
-      "passThroughEnv": ["TEST_DATABASE_URL", "TEST_MIGRATION_DATABASE_URL"],
+      "passThroughEnv": [
+        "TEST_DATABASE_URL",
+        "TEST_MIGRATION_DATABASE_URL",
+        "TEST_OPS_DATABASE_URL"
+      ],
       "cache": false
     }
   }

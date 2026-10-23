@@ -36,6 +36,13 @@
       "when": 1792753131402,
       "tag": "0004_auth_grants",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792754241192,
+      "tag": "0005_ops_role",
+      "breakpoints": true
     }
   ]
 }

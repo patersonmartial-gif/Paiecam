@@ -22,6 +22,7 @@ jobs:
     env:
       TEST_DATABASE_URL: postgres://paiecam_app:app_dev@localhost:5432/paiecam_test
       TEST_MIGRATION_DATABASE_URL: postgres://paiecam_owner:owner_dev@localhost:5432/paiecam_test
+      TEST_OPS_DATABASE_URL: postgres://paiecam_ops:ops_dev@localhost:5432/paiecam_test
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -53,6 +54,7 @@ jobs:
     env:
       TEST_DATABASE_URL: postgres://paiecam_app:app_dev@localhost:5432/paiecam_test
       TEST_MIGRATION_DATABASE_URL: postgres://paiecam_owner:owner_dev@localhost:5432/paiecam_test
+      TEST_OPS_DATABASE_URL: postgres://paiecam_ops:ops_dev@localhost:5432/paiecam_test
       BETTER_AUTH_SECRET: ci-only-secret-ci-only-secret-ci-only
     steps:
       - uses: actions/checkout@v4

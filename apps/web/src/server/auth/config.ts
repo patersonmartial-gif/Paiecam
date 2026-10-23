@@ -4,6 +4,7 @@ import { haveIBeenPwned, twoFactor } from "better-auth/plugins";
 import { uuidv7 } from "uuidv7";
 import { schema, type Db } from "@paiecam/db";
 import type { Mailer } from "../mail";
+import { auditAuthEvent, authAuditHook } from "./audit";
 import { hashPassword, verifyPassword } from "./password";
 
 export interface AuthDeps {
@@ -39,6 +40,22 @@ export function createAuth({ db, secret, baseURL, mailer, checkPwnedPasswords = 
         });
       },
     },
+    // Chaque session créée est une connexion réussie (après la 2FA si elle est active).
+    databaseHooks: {
+      session: {
+        create: {
+          after: async (session) => {
+            await auditAuthEvent(db, {
+              action: "auth.sign_in",
+              userId: session.userId,
+              ip: session.ipAddress ?? null,
+              userAgent: session.userAgent ?? null,
+            });
+          },
+        },
+      },
+    },
+    hooks: { after: authAuditHook(db) },
     session: {
       // Durée absolue de 8 h : pas de prolongation glissante.
       expiresIn: EIGHT_HOURS,

@@ -1,11 +1,13 @@
 import { createHash } from "node:crypto";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { createDb, eq, schema, sql } from "@paiecam/db";
-import { testDatabaseUrl } from "@paiecam/db/testing";
+import { testDatabaseUrl, testOpsDatabaseUrl } from "@paiecam/db/testing";
 import { createAuth } from "@/server/auth/config";
 import type { Mail } from "@/server/mail";
 
 const db = createDb(testDatabaseUrl());
+/** Rôle de supervision : seul à lire les événements hors entreprise. */
+const ops = createDb(testOpsDatabaseUrl());
 const sent: Mail[] = [];
 const baseURL = "http://localhost:3000";
 const makeAuth = (checkPwnedPasswords = false) =>
@@ -51,6 +53,7 @@ const newEmail = () => `salarie.fictif.${++n}@exemple.test`;
 
 afterAll(async () => {
   await db.$client.end();
+  await ops.$client.end();
 });
 
 describe("inscription", () => {
@@ -192,5 +195,41 @@ describe("réinitialisation du mot de passe", () => {
     const res = await post("/request-password-reset", { email: newEmail(), redirectTo: "/r" });
     expect(res.status).toBe(200);
     expect(sent).toHaveLength(0);
+  });
+});
+
+describe("audit des événements d'authentification", () => {
+  async function authEvents() {
+    return ops.execute<{
+      action: string;
+      actor_user_id: string | null;
+      ip: string | null;
+      after: unknown;
+    }>(
+      sql`select action, actor_user_id, host(ip) as ip, after from audit_log where tenant_id is null and action like 'auth.%' and ip = ${ip}::inet order by created_at`,
+    );
+  }
+
+  it("l'application ne relit pas ces événements", async () => {
+    const rows = await db.execute(sql`select 1 from audit_log where tenant_id is null`);
+    expect(rows).toHaveLength(0);
+  });
+
+  it("trace la connexion réussie et l'échec, sans adresse e-mail", async () => {
+    const email = newEmail();
+    await post("/sign-up/email", { email, password, name: "A" });
+    await post("/sign-in/email", { email, password: "mauvais-mot-de-passe" });
+    await post("/sign-in/email", { email, password });
+    const user = await userByEmail(email);
+    const events = await authEvents();
+    // L'inscription ouvre aussi une session : elle compte comme une connexion.
+    expect(events.map((e) => e.action)).toEqual([
+      "auth.sign_in",
+      "auth.sign_in_failed",
+      "auth.sign_in",
+    ]);
+    expect(events[1]).toMatchObject({ actor_user_id: null, after: { reason: "UNAUTHORIZED" } });
+    expect(events[2]).toMatchObject({ actor_user_id: user.id, ip });
+    expect(JSON.stringify(events)).not.toContain(email);
   });
 });
