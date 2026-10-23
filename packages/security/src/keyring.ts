@@ -10,6 +10,7 @@ export interface Keyring {
   /** Sous-clés dérivées par usage : on n'utilise jamais la même clé pour deux usages. */
   encryptionKey(id: string): Buffer;
   blindIndexKey(id: string): Buffer;
+  documentSigningKey(id: string): Buffer;
 }
 
 const KEY_ID = /^v\d+$/;
@@ -53,5 +54,6 @@ export function parseKeyring(value: string): Keyring {
     currentId: first[0],
     encryptionKey: (id) => get("field-encryption", id),
     blindIndexKey: (id) => get("blind-index", id),
+    documentSigningKey: (id) => get("document-signature", id),
   };
 }
