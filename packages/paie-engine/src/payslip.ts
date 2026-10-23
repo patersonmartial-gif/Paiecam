@@ -34,6 +34,8 @@ export interface PayslipInput {
   employee: { baseSalary: Fcfa; hireDate: IsoDate; endDate: IsoDate | null };
   items?: PayItemInput[];
   overtime?: OvertimeInput[];
+  /** Jours d'absence non payés dans le mois (déduits des jours de présence). */
+  unpaidAbsenceDays?: number;
 }
 
 export type PayslipSection =
@@ -78,7 +80,7 @@ export interface PayslipTotals {
 
 export interface Payslip {
   period: { start: IsoDate; end: IsoDate };
-  presence: { days: number; daysInPeriod: number };
+  presence: { days: number; daysInPeriod: number; absence: number };
   lines: PayslipLine[];
   totals: PayslipTotals;
   /** Instantané des règles utilisées : conservé avec la paie validée. */
@@ -95,15 +97,24 @@ function daysBetween(a: IsoDate, b: IsoDate): number {
 }
 
 /** Jours de présence dans la période (entrée ou sortie en cours de mois), en jours calendaires. */
-function presenceDays(input: PayslipInput): { days: number; daysInPeriod: number } {
+function presenceDays(input: PayslipInput): {
+  days: number;
+  daysInPeriod: number;
+  absence: number;
+} {
   const { start, end } = input.period;
   const daysInPeriod = daysBetween(start, end);
   if (daysInPeriod < 28 || daysInPeriod > 31)
     throw new RangeError("la période doit couvrir un mois");
   const from = input.employee.hireDate > start ? input.employee.hireDate : start;
   const to = input.employee.endDate && input.employee.endDate < end ? input.employee.endDate : end;
-  const days = to < from ? 0 : daysBetween(from, to);
-  return { days, daysInPeriod };
+  const contractDays = to < from ? 0 : daysBetween(from, to);
+  const absence = input.unpaidAbsenceDays ?? 0;
+  if (!Number.isSafeInteger(absence) || absence < 0)
+    throw new RangeError("jours d'absence invalides");
+  if (absence > contractDays)
+    throw new RangeError("plus de jours d'absence que de jours sous contrat");
+  return { days: contractDays - absence, daysInPeriod, absence };
 }
 
 /**
@@ -148,7 +159,7 @@ export function computePayslip(
     explanation:
       presence.days === presence.daysInPeriod
         ? `Salaire de base mensuel : ${money(baseSalary)}`
-        : `${money(baseSalary)} × ${presence.days} / ${presence.daysInPeriod} jours de présence`,
+        : `${money(baseSalary)} × ${presence.days} / ${presence.daysInPeriod} jours de présence${presence.absence ? ` (dont ${presence.absence} j d'absence non payée déduits)` : ""}`,
   });
 
   // 2. Heures supplémentaires : salaire horaire × heures × (1 + majoration).

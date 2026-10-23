@@ -38,6 +38,15 @@ describe("parseEnv", () => {
     );
   });
 
+  it("brouillons de paie : autorisés hors production, interdits en production sauf pilote", () => {
+    expect(parseEnv(ok).PAYROLL_ALLOW_DRAFT_RULES).toBe("on");
+    expect(parseEnv({ ...ok, NODE_ENV: "production" }).PAYROLL_ALLOW_DRAFT_RULES).toBe("off");
+    expect(
+      parseEnv({ ...ok, NODE_ENV: "production", PAYROLL_ALLOW_DRAFT_RULES: "on" })
+        .PAYROLL_ALLOW_DRAFT_RULES,
+    ).toBe("on");
+  });
+
   it("exige un trousseau de chiffrement valide", () => {
     expect(() => parseEnv({ ...ok, FIELD_ENCRYPTION_KEYS: "" })).toThrow(/FIELD_ENCRYPTION_KEYS/);
     expect(() => parseEnv({ ...ok, FIELD_ENCRYPTION_KEYS: "v1:court" })).toThrow(

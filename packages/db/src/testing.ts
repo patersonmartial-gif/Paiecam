@@ -42,3 +42,32 @@ export async function resetTestDatabase(): Promise<void> {
     await client.end();
   }
 }
+
+/** Charge des règles dans la base de test (rôle propriétaire : l'application ne peut pas écrire pay_rules). */
+export async function loadTestRules(
+  rules: { code: string; validFrom: string; validTo: string | null; value: unknown }[],
+  status: "draft" | "validated" = "draft",
+): Promise<void> {
+  const client = postgres(required("TEST_MIGRATION_DATABASE_URL"), { max: 1, onnotice: () => {} });
+  try {
+    for (const r of rules) {
+      await client`
+        insert into pay_rules (id, code, valid_from, valid_to, value, legal_source, status, validated_by, validated_at)
+        values (gen_random_uuid(), ${r.code}, ${r.validFrom}, ${r.validTo}, ${client.json(r.value as never)}, 'test',
+                ${status}, ${status === "validated" ? "Expert fictif" : null}, ${status === "validated" ? new Date() : null})
+        on conflict (code, valid_from) do nothing`;
+    }
+  } finally {
+    await client.end();
+  }
+}
+
+/** Passe toutes les règles brouillon en « validées » (base de test uniquement). */
+export async function validateAllTestRules(): Promise<void> {
+  const client = postgres(required("TEST_MIGRATION_DATABASE_URL"), { max: 1, onnotice: () => {} });
+  try {
+    await client`update pay_rules set status = 'validated', validated_by = 'Expert fictif', validated_at = now() where status = 'draft'`;
+  } finally {
+    await client.end();
+  }
+}

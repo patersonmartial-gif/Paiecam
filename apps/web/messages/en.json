@@ -90,7 +90,8 @@
     "employees": "Employees",
     "company": "Company",
     "team": "Team",
-    "switchCompany": "Switch company"
+    "switchCompany": "Switch company",
+    "payroll": "Payroll"
   },
   "settings": {
     "companyTitle": "Company information",
@@ -241,6 +242,92 @@
       "missing_columns": "Missing columns:",
       "no_rows": "The file contains no employees.",
       "too_many_rows": "The file has more than 500 employees: split it."
+    }
+  },
+  "payroll": {
+    "title": "Payroll",
+    "open": "Open the month",
+    "year": "Year",
+    "month": "Month",
+    "empty": "No payroll month yet.",
+    "status": {
+      "open": "Open",
+      "calculated": "Calculated",
+      "validated": "Validated",
+      "locked": "Locked"
+    },
+    "provisionalBanner": "PROVISIONAL — the 2026 payroll rules have not yet been validated by the chartered accountant. These payslips are for checking only and cannot be validated.",
+    "variablesTitle": "Monthly variables",
+    "variablesHelp": "Amounts in FCFA, overtime in hours (e.g. 8.5), absences in unpaid days. Leave blank for zero.",
+    "employee": "Employee",
+    "absence": "Absence (days)",
+    "save": "Save variables",
+    "saved": "Variables saved.",
+    "calculate": "Calculate payslips",
+    "recalculate": "Recalculate",
+    "calculated": "Payslips calculated.",
+    "reopen": "Reopen entry",
+    "reopened": "Entry reopened: the calculated payslips were deleted.",
+    "resultsTitle": "Payslips",
+    "gross": "Gross",
+    "net": "Net pay",
+    "cost": "Employer cost",
+    "alerts": "Alerts",
+    "total": "Total",
+    "view": "View",
+    "validateTitle": "Validate payroll",
+    "validateHelp": "Validation freezes the payslips: any correction will be made through an adjustment the following month.",
+    "password": "Your password",
+    "validate": "Validate permanently",
+    "validatedMsg": "Payroll validated. The PDF payslips are being generated.",
+    "frozen": "Payroll validated on {date}: the payslips are frozen.",
+    "back": "Payroll",
+    "overtime": {
+      "hs_20": "OT +20%",
+      "hs_30": "OT +30%",
+      "hs_40": "OT +40%",
+      "hs_50": "OT +50%"
+    },
+    "warnings": {
+      "partial_month": "Partial month",
+      "irpp_below_threshold": "Below IRPP threshold",
+      "net_negative": "Negative net",
+      "missing_cnps_number": "Missing CNPS number",
+      "net_variation": "Large net change"
+    },
+    "payslip": {
+      "title": "Payslip",
+      "period": "Period",
+      "section": {
+        "earning": "Earnings",
+        "allowance": "Non-gross allowances",
+        "employee_contribution": "Employee deductions",
+        "employer_contribution": "Employer contributions",
+        "deduction": "Deductions from net"
+      },
+      "label": "Item",
+      "base": "Base",
+      "rate": "Rate",
+      "amount": "Amount",
+      "detail": "Calculation detail",
+      "rules": "Rules applied",
+      "draft": "draft",
+      "validatedRule": "validated",
+      "pdf": "Download PDF"
+    },
+    "errors": {
+      "not_found": "Month not found.",
+      "period_not_open": "Entry is closed for this month.",
+      "period_frozen": "This month is validated: it can no longer be recalculated.",
+      "period_not_calculated": "Calculate the payslips first.",
+      "draft_rules": "The payroll rules are not validated: final calculation is impossible.",
+      "bad_password": "Incorrect password.",
+      "provisional_payslips": "Some payslips are provisional: payroll cannot be validated until the rules are.",
+      "no_payslips": "No payslips to validate.",
+      "employee_not_in_period": "This employee is not under contract this month.",
+      "unknown_item": "Unknown pay item.",
+      "unknown_overtime": "Unknown overtime category.",
+      "pay_periods_tenant_month_key": "This month is already open."
     }
   }
 }

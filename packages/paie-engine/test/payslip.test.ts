@@ -124,7 +124,7 @@ describe("cas de contrôle 2 : embauche le 16 mars, heures sup, primes, avantage
   );
 
   it("proratise, majore et ventile chaque rubrique", () => {
-    expect(p.presence).toEqual({ days: 16, daysInPeriod: 31 });
+    expect(p.presence).toEqual({ days: 16, daysInPeriod: 31, absence: 0 });
     expect(amount(p, "base")).toBe(160_000);
     expect(amount(p, "overtime.hs_20")).toBe(17_170);
     expect(p.totals).toMatchObject({
@@ -226,6 +226,16 @@ describe("règles particulières", () => {
     expect(p.totals.netTaxableMonthly).toBe(332_780);
     expect(p.lines.find((l) => l.code === "item.g")?.explanation).toContain("non imposable");
     expect(p.rulesUsed.every((r) => r.id?.startsWith("rule-"))).toBe(true);
+  });
+
+  it("déduit les jours d'absence non payée", () => {
+    const p = computePayslip(input({ unpaidAbsenceDays: 3 }), rules);
+    // 400 000 × 28 / 31 = 361 290,3
+    expect(amount(p, "base")).toBe(361_290);
+    expect(p.presence).toEqual({ days: 28, daysInPeriod: 31, absence: 3 });
+    expect(p.lines[0]?.explanation).toContain("3 j d'absence");
+    expect(() => computePayslip(input({ unpaidAbsenceDays: 32 }), rules)).toThrow(/plus de jours/);
+    expect(() => computePayslip(input({ unpaidAbsenceDays: -1 }), rules)).toThrow(/invalides/);
   });
 
   it("sortie en cours de mois et salarié absent tout le mois", () => {

@@ -90,7 +90,8 @@
     "employees": "Salariés",
     "company": "Entreprise",
     "team": "Équipe",
-    "switchCompany": "Changer d'entreprise"
+    "switchCompany": "Changer d'entreprise",
+    "payroll": "Paie"
   },
   "settings": {
     "companyTitle": "Informations de l'entreprise",
@@ -241,6 +242,92 @@
       "missing_columns": "Colonnes manquantes :",
       "no_rows": "Le fichier ne contient aucun salarié.",
       "too_many_rows": "Le fichier dépasse 500 salariés : découpez-le."
+    }
+  },
+  "payroll": {
+    "title": "Paie",
+    "open": "Ouvrir le mois",
+    "year": "Année",
+    "month": "Mois",
+    "empty": "Aucun mois de paie pour l'instant.",
+    "status": {
+      "open": "Ouvert",
+      "calculated": "Calculé",
+      "validated": "Validé",
+      "locked": "Verrouillé"
+    },
+    "provisionalBanner": "PROVISOIRE — les règles de paie 2026 ne sont pas encore validées par l'expert-comptable. Ces bulletins servent au contrôle et ne peuvent pas être validés.",
+    "variablesTitle": "Variables du mois",
+    "variablesHelp": "Montants en FCFA, heures supplémentaires en heures (ex. 8,5), absences en jours non payés. Laissez vide pour zéro.",
+    "employee": "Salarié",
+    "absence": "Absence (j)",
+    "save": "Enregistrer les variables",
+    "saved": "Variables enregistrées.",
+    "calculate": "Calculer les bulletins",
+    "recalculate": "Recalculer",
+    "calculated": "Bulletins calculés.",
+    "reopen": "Rouvrir la saisie",
+    "reopened": "Saisie rouverte : les bulletins calculés ont été supprimés.",
+    "resultsTitle": "Bulletins",
+    "gross": "Brut",
+    "net": "Net à payer",
+    "cost": "Coût employeur",
+    "alerts": "Alertes",
+    "total": "Total",
+    "view": "Voir",
+    "validateTitle": "Valider la paie",
+    "validateHelp": "La validation fige les bulletins : toute correction se fera par un rappel le mois suivant.",
+    "password": "Votre mot de passe",
+    "validate": "Valider définitivement",
+    "validatedMsg": "Paie validée. Les bulletins PDF sont en cours de génération.",
+    "frozen": "Paie validée le {date} : les bulletins sont figés.",
+    "back": "Paie",
+    "overtime": {
+      "hs_20": "HS +20 %",
+      "hs_30": "HS +30 %",
+      "hs_40": "HS +40 %",
+      "hs_50": "HS +50 %"
+    },
+    "warnings": {
+      "partial_month": "Mois incomplet",
+      "irpp_below_threshold": "Sous le seuil IRPP",
+      "net_negative": "Net négatif",
+      "missing_cnps_number": "N° CNPS manquant",
+      "net_variation": "Net en forte variation"
+    },
+    "payslip": {
+      "title": "Bulletin de paie",
+      "period": "Période",
+      "section": {
+        "earning": "Gains",
+        "allowance": "Indemnités hors brut",
+        "employee_contribution": "Retenues salariales",
+        "employer_contribution": "Charges patronales",
+        "deduction": "Retenues sur net"
+      },
+      "label": "Rubrique",
+      "base": "Assiette",
+      "rate": "Taux",
+      "amount": "Montant",
+      "detail": "Détail du calcul",
+      "rules": "Règles appliquées",
+      "draft": "brouillon",
+      "validatedRule": "validée",
+      "pdf": "Télécharger le PDF"
+    },
+    "errors": {
+      "not_found": "Mois introuvable.",
+      "period_not_open": "La saisie est fermée pour ce mois.",
+      "period_frozen": "Ce mois est validé : il ne peut plus être recalculé.",
+      "period_not_calculated": "Calculez d'abord les bulletins.",
+      "draft_rules": "Les règles de paie ne sont pas validées : le calcul définitif est impossible.",
+      "bad_password": "Mot de passe incorrect.",
+      "provisional_payslips": "Des bulletins sont provisoires : la paie ne peut pas être validée tant que les règles ne le sont pas.",
+      "no_payslips": "Aucun bulletin à valider.",
+      "employee_not_in_period": "Ce salarié n'est pas sous contrat ce mois-ci.",
+      "unknown_item": "Rubrique inconnue.",
+      "unknown_overtime": "Catégorie d'heures supplémentaires inconnue.",
+      "pay_periods_tenant_month_key": "Ce mois est déjà ouvert."
     }
   }
 }
