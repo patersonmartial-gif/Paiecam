@@ -85,6 +85,20 @@
       "when": 1792757461718,
       "tag": "0011_pay_rules_freeze",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1792758208215,
+      "tag": "0012_payroll",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1792758209248,
+      "tag": "0013_payroll_rls",
+      "breakpoints": true
     }
   ]
 }

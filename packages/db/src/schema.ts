@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import {
+  boolean,
   check,
   date,
   index,
@@ -161,6 +162,20 @@ export const invitations = pgTable(
   ],
 );
 
+export const payItemKindEnum = pgEnum("pay_item_kind", [
+  "earning",
+  "in_kind",
+  "non_taxable_allowance",
+  "deduction",
+]);
+export const periodStatusEnum = pgEnum("pay_period_status", [
+  "open",
+  "calculated",
+  "validated",
+  "locked",
+]);
+export const payslipStatusEnum = pgEnum("payslip_status", ["provisional", "final"]);
+export const languageEnum = pgEnum("language", ["fr", "en"]);
 export const contractTypeEnum = pgEnum("contract_type", ["cdi", "cdd"]);
 export const maritalStatusEnum = pgEnum("marital_status", [
   "single",
@@ -205,6 +220,8 @@ export const employees = pgTable(
     maritalStatus: maritalStatusEnum("marital_status").notNull(),
     childrenCount: integer("children_count").notNull().default(0),
     paymentMethod: paymentMethodEnum("payment_method").notNull(),
+    /** Langue du bulletin PDF. */
+    payslipLanguage: languageEnum("payslip_language").notNull().default("fr"),
     archivedAt: timestamp("archived_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
@@ -256,4 +273,179 @@ export const employeeBankDetails = pgTable(
       sql`(${t.mobileNumberEnc} is null) = (${t.mobileOperator} is null)`,
     ),
   ],
+);
+
+/** Rubriques de paie de l'entreprise (primes, indemnités, avantages, retenues). */
+export const payItems = pgTable(
+  "pay_items",
+  {
+    id: id(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id),
+    code: text("code").notNull(),
+    labelFr: text("label_fr").notNull(),
+    labelEn: text("label_en").notNull(),
+    kind: payItemKindEnum("kind").notNull(),
+    subjectToCnps: boolean("subject_to_cnps").notNull(),
+    taxable: boolean("taxable").notNull(),
+    active: boolean("active").notNull().default(true),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    unique("pay_items_tenant_code_key").on(t.tenantId, t.code),
+    unique("pay_items_tenant_id_id_key").on(t.tenantId, t.id),
+    check("pay_items_code_chk", sql`${t.code} ~ '^[a-z0-9_]{1,40}$'`),
+    // Une indemnité hors brut ou une retenue n'est ni cotisable ni imposable.
+    check(
+      "pay_items_flags_chk",
+      sql`${t.kind} in ('earning', 'in_kind') or (not ${t.subjectToCnps} and not ${t.taxable})`,
+    ),
+  ],
+);
+
+/** Mois de paie : ouvert → calculé → validé (figé) → verrouillé (déclarations faites). */
+export const payPeriods = pgTable(
+  "pay_periods",
+  {
+    id: id(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id),
+    year: integer("year").notNull(),
+    month: integer("month").notNull(),
+    status: periodStatusEnum("status").notNull().default("open"),
+    calculatedAt: timestamp("calculated_at", { withTimezone: true }),
+    validatedAt: timestamp("validated_at", { withTimezone: true }),
+    validatedBy: text("validated_by"),
+    lockedAt: timestamp("locked_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    unique("pay_periods_tenant_month_key").on(t.tenantId, t.year, t.month),
+    unique("pay_periods_tenant_id_id_key").on(t.tenantId, t.id),
+    check(
+      "pay_periods_month_chk",
+      sql`${t.month} between 1 and 12 and ${t.year} between 2020 and 2100`,
+    ),
+  ],
+);
+
+/**
+ * Variables du mois pour un salarié. `key` désigne la variable :
+ * « item:<code> » (montant FCFA d'une rubrique), « hs:<catégorie> » (heures en centièmes),
+ * « absence » (jours d'absence non payés).
+ */
+export const payVariables = pgTable(
+  "pay_variables",
+  {
+    id: id(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id),
+    periodId: uuid("period_id")
+      .notNull()
+      .references(() => payPeriods.id),
+    employeeId: uuid("employee_id")
+      .notNull()
+      .references(() => employees.id),
+    key: text("key").notNull(),
+    value: integer("value").notNull(),
+    updatedBy: text("updated_by").notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    unique("pay_variables_period_employee_key_key").on(t.periodId, t.employeeId, t.key),
+    check(
+      "pay_variables_key_chk",
+      sql`${t.key} ~ '^(item:[a-z0-9_]{1,40}|hs:[a-z0-9_]{1,20}|absence)$'`,
+    ),
+    check("pay_variables_value_chk", sql`${t.value} >= 0`),
+  ],
+);
+
+/** Bulletin calculé : entrées, règles utilisées et totaux conservés tels quels. */
+export const payslips = pgTable(
+  "payslips",
+  {
+    id: id(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id),
+    periodId: uuid("period_id")
+      .notNull()
+      .references(() => payPeriods.id),
+    employeeId: uuid("employee_id")
+      .notNull()
+      .references(() => employees.id),
+    status: payslipStatusEnum("status").notNull(),
+    /** Entrée exacte du moteur (rejouable). */
+    input: jsonb("input").notNull(),
+    /** Instantané de la fiche salarié au moment du calcul (sans donnée chiffrée). */
+    employeeSnapshot: jsonb("employee_snapshot").notNull(),
+    rulesUsed: jsonb("rules_used").notNull(),
+    totals: jsonb("totals").notNull(),
+    warnings: jsonb("warnings").notNull(),
+    gross: integer("gross").notNull(),
+    netPay: integer("net_pay").notNull(),
+    employerCost: integer("employer_cost").notNull(),
+    calculatedAt: timestamp("calculated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    unique("payslips_period_employee_key").on(t.periodId, t.employeeId),
+    unique("payslips_tenant_id_id_key").on(t.tenantId, t.id),
+    index("payslips_tenant_employee_idx").on(t.tenantId, t.employeeId),
+  ],
+);
+
+export const payslipLines = pgTable(
+  "payslip_lines",
+  {
+    id: id(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id),
+    payslipId: uuid("payslip_id")
+      .notNull()
+      .references(() => payslips.id, { onDelete: "cascade" }),
+    position: integer("position").notNull(),
+    code: text("code").notNull(),
+    label: text("label").notNull(),
+    section: text("section").notNull(),
+    base: integer("base"),
+    rate: integer("rate"),
+    amount: integer("amount").notNull(),
+    ruleCode: text("rule_code"),
+    explanation: text("explanation").notNull(),
+  },
+  (t) => [unique("payslip_lines_position_key").on(t.payslipId, t.position)],
+);
+
+/**
+ * Métadonnées des PDF (le fichier est chiffré dans le stockage objet).
+ * `verificationCode` alimente le QR code de vérification publique ; il ne révèle rien du contenu.
+ */
+export const documents = pgTable(
+  "documents",
+  {
+    id: id(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id),
+    payslipId: uuid("payslip_id").references(() => payslips.id),
+    kind: text("kind").notNull(),
+    language: languageEnum("language").notNull(),
+    /** Données publiques affichées par la page de vérification (rien sur le salarié). */
+    issuerName: text("issuer_name").notNull(),
+    periodYear: integer("period_year").notNull(),
+    periodMonth: integer("period_month").notNull(),
+    storageKey: text("storage_key").notNull().unique(),
+    sizeBytes: integer("size_bytes").notNull(),
+    sha256: text("sha256").notNull(),
+    /** HMAC du serveur sur « sha256|date d'émission|code ». */
+    signature: text("signature").notNull(),
+    verificationCode: text("verification_code").notNull().unique(),
+    issuedAt: timestamp("issued_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("documents_tenant_payslip_idx").on(t.tenantId, t.payslipId)],
 );
