@@ -28,10 +28,18 @@ Hors ligne en développement, `PWNED_PASSWORDS_CHECK=off` coupe l'appel à Have 
 - [x] Phase 0 — Fondations : monorepo, CI, Docker Compose, env.ts
 - [x] Phase 1 — Auth et multi-tenant (RLS, 2FA, audit_log, tests anti-IDOR)
 - [x] Phase 2 — Référentiels : fiche entreprise, invitations, salariés, champs chiffrés, import Excel
-- [~] Phase 3 — Moteur de paie : résolution des règles datées et CNPS faits ; IRPP, CAC, taxes et golden à venir
+- [~] Phase 3 — Moteur de paie : calcul complet fait sur un référentiel 2026 en BROUILLON ; validation de l'expert-comptable et bulletins golden en attente
 - [ ] Phase 4 — Cycle mensuel et bulletins PDF
 - [ ] Phase 5 — Déclarations
 - [ ] Phase 6 — Durcissement
 
 Les taux du moteur ne sont pas dans le code : ils viennent de `pay_rules`. Les fixtures de test
 sont fictives et doivent être remplacées par le référentiel validé par l'expert-comptable.
+
+## Moteur de paie
+
+- Référentiel 2026 en brouillon : `packages/paie-engine/rules/cm-2026.draft.json` (sources et questions par règle).
+- `pnpm --filter @paiecam/paie-engine rules:check` : cohérence du référentiel.
+- `pnpm --filter @paiecam/db rules:load ../paie-engine/rules/cm-2026.draft.json` : chargement en base (brouillon).
+- `pnpm --filter @paiecam/paie-engine dossier:expert ../../dossier/dossier.xlsx` : dossier de validation pour l'expert-comptable.
+- En production, le moteur refuse de calculer avec une règle non validée.

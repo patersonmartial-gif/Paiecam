@@ -12,3 +12,4 @@ test-results
 playwright-report
 captures
 .e2e-outbox
+dossier
