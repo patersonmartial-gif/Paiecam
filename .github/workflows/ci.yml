@@ -40,6 +40,8 @@ jobs:
       - run: pnpm test
       - run: pnpm test:golden
       - run: pnpm audit --prod --audit-level high
+      - name: Build de production (sans secret)
+        run: APP_URL=https://app.exemple.test sh scripts/build-web.sh
 
   e2e:
     runs-on: ubuntu-latest

@@ -15,6 +15,20 @@ const ok = {
   FIELD_ENCRYPTION_KEYS: keys,
 };
 
+const prodOk = {
+  ...ok,
+  NODE_ENV: "production",
+  TRUSTED_PROXY_HEADER: "x-forwarded-for",
+  SMTP_URL: "smtps://u:p@smtp.exemple.test:465",
+  MAIL_FROM: "PaieCam <noreply@exemple.test>",
+  STORAGE_DRIVER: "s3",
+  S3_ENDPOINT: "https://s3.exemple.test",
+  S3_REGION: "r",
+  S3_BUCKET: "b",
+  S3_ACCESS_KEY_ID: "k",
+  S3_SECRET_ACCESS_KEY: "s",
+};
+
 describe("parseEnv", () => {
   it("accepte une configuration valide", () => {
     expect(parseEnv(ok).NODE_ENV).toBe("development");
@@ -26,14 +40,14 @@ describe("parseEnv", () => {
   });
 
   it("exige l'en-tête IP de confiance en production", () => {
-    expect(() =>
-      parseEnv({ ...ok, NODE_ENV: "production", TRUSTED_PROXY_HEADER: undefined }),
-    ).toThrow(/TRUSTED_PROXY_HEADER/);
+    expect(() => parseEnv({ ...prodOk, TRUSTED_PROXY_HEADER: undefined })).toThrow(
+      /TRUSTED_PROXY_HEADER/,
+    );
     expect(parseEnv(ok).TRUSTED_PROXY_HOPS).toBe(1);
   });
 
   it("interdit de couper Have I Been Pwned en production", () => {
-    const prod = { ...ok, NODE_ENV: "production", TRUSTED_PROXY_HEADER: "x-forwarded-for" };
+    const prod = prodOk;
     expect(parseEnv(prod).PWNED_PASSWORDS_CHECK).toBe("on");
     expect(() => parseEnv({ ...prod, PWNED_PASSWORDS_CHECK: "off" })).toThrow(/interdit/);
     expect(parseEnv({ ...ok, PWNED_PASSWORDS_CHECK: "off" }).PWNED_PASSWORDS_CHECK).toBe("off");
@@ -42,9 +56,7 @@ describe("parseEnv", () => {
   it("interdit la boîte d'envoi locale en production", () => {
     expect(() =>
       parseEnv({
-        ...ok,
-        NODE_ENV: "production",
-        TRUSTED_PROXY_HEADER: "x-forwarded-for",
+        ...prodOk,
         MAIL_OUTBOX_DIR: "/tmp/x",
       }),
     ).toThrow(/interdit/);
@@ -52,15 +64,10 @@ describe("parseEnv", () => {
 
   it("brouillons de paie : autorisés hors production, interdits en production sauf pilote", () => {
     expect(parseEnv(ok).PAYROLL_ALLOW_DRAFT_RULES).toBe("on");
-    expect(
-      parseEnv({ ...ok, NODE_ENV: "production", TRUSTED_PROXY_HEADER: "x-forwarded-for" })
-        .PAYROLL_ALLOW_DRAFT_RULES,
-    ).toBe("off");
+    expect(parseEnv(prodOk).PAYROLL_ALLOW_DRAFT_RULES).toBe("off");
     expect(
       parseEnv({
-        ...ok,
-        NODE_ENV: "production",
-        TRUSTED_PROXY_HEADER: "x-forwarded-for",
+        ...prodOk,
         PAYROLL_ALLOW_DRAFT_RULES: "on",
       }).PAYROLL_ALLOW_DRAFT_RULES,
     ).toBe("on");
@@ -71,5 +78,14 @@ describe("parseEnv", () => {
     expect(() => parseEnv({ ...ok, FIELD_ENCRYPTION_KEYS: "v1:court" })).toThrow(
       /FIELD_ENCRYPTION_KEYS/,
     );
+  });
+
+  it("production : e-mail SMTP et stockage S3 obligatoires", () => {
+    expect(parseEnv(prodOk).STORAGE_DRIVER).toBe("s3");
+    expect(() => parseEnv({ ...prodOk, SMTP_URL: undefined })).toThrow(/SMTP_URL/);
+    expect(() => parseEnv({ ...prodOk, STORAGE_DRIVER: "fs" })).toThrow(/STORAGE_DRIVER/);
+    expect(() => parseEnv({ ...prodOk, S3_BUCKET: undefined })).toThrow(/S3_BUCKET/);
+    expect(() => parseEnv({ ...ok, SMTP_URL: "http://pas-smtp" })).toThrow(/SMTP_URL/);
+    expect(parseEnv(ok).STORAGE_DRIVER).toBe("fs");
   });
 });

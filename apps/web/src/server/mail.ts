@@ -19,11 +19,36 @@ export interface Mailer {
   send(mail: Mail): Promise<void>;
 }
 
+/** Transport SMTP minimal (nodemailer en production, faux transport dans les tests). */
+export interface SmtpTransport {
+  sendMail(message: { from: string; to: string; subject: string; text: string }): Promise<unknown>;
+}
+
+export interface MailerOptions {
+  outboxDir?: string | undefined;
+  smtp?: { transport: SmtpTransport; from: string } | undefined;
+}
+
 /**
- * En développement, les e-mails sont affichés dans la console (comptes fictifs uniquement).
- * En production, l'envoi échoue tant qu'aucun fournisseur n'est branché : jamais d'envoi silencieux perdu.
+ * - SMTP configuré (production) : envoi réel, en-têtes nettoyés ;
+ * - sinon en production : échec explicite, jamais d'envoi silencieusement perdu ;
+ * - en développement : affichage console et boîte d'envoi locale (comptes fictifs uniquement).
  */
-export function createMailer(nodeEnv: string, outboxDir?: string): Mailer {
+export function createMailer(
+  nodeEnv: string,
+  options: MailerOptions | string | undefined = {},
+): Mailer {
+  const opts: MailerOptions =
+    typeof options === "string" ? { outboxDir: options } : (options ?? {});
+  if (opts.smtp) {
+    const { transport, from } = opts.smtp;
+    return {
+      async send(raw) {
+        const mail = sanitizeMail(raw);
+        await transport.sendMail({ from, to: mail.to, subject: mail.subject, text: mail.text });
+      },
+    };
+  }
   if (nodeEnv === "production") {
     return {
       async send() {
@@ -36,14 +61,20 @@ export function createMailer(nodeEnv: string, outboxDir?: string): Mailer {
       const mail = sanitizeMail(raw);
       console.warn(`[mail:dev] à ${mail.to} — ${mail.subject}\n${mail.text}`);
       // Boîte d'envoi locale (dev et tests de bout en bout) : un fichier JSON par e-mail.
-      if (outboxDir) {
+      if (opts.outboxDir) {
         const { mkdir, writeFile } = await import("node:fs/promises");
-        await mkdir(outboxDir, { recursive: true });
+        await mkdir(opts.outboxDir, { recursive: true });
         await writeFile(
-          `${outboxDir}/${Date.now()}-${crypto.randomUUID()}.json`,
+          `${opts.outboxDir}/${Date.now()}-${crypto.randomUUID()}.json`,
           JSON.stringify(mail),
         );
       }
     },
   };
+}
+
+/** Transport nodemailer depuis une URL SMTP (ex. smtps://utilisateur:motdepasse@smtp-relay.brevo.com:465). */
+export async function smtpTransportFromUrl(url: string): Promise<SmtpTransport> {
+  const nodemailer = await import("nodemailer");
+  return nodemailer.createTransport(url);
 }

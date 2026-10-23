@@ -21,6 +21,9 @@ const securityHeaders = [
 
 const config: NextConfig = {
   poweredByHeader: false,
+  // Image Docker minimale : serveur autonome avec les seules dépendances tracées du monorepo.
+  output: "standalone",
+  outputFileTracingRoot: new URL("../../", import.meta.url).pathname,
   // Import Excel : fichier de 2 Mo maximum (contrôlé aussi côté serveur), plus l'enveloppe multipart.
   experimental: {
     serverActions: {

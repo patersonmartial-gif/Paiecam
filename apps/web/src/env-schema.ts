@@ -25,6 +25,19 @@ const schema = z.object({
   TRUSTED_PROXY_HOPS: z.coerce.number().int().min(1).max(5).default(1),
   /** Dossier du stockage chiffré des documents (développement : disque ; production : S3, phase 6). */
   DOCUMENTS_DIR: z.string().min(1).default("../../.data/documents"),
+  /** Envoi des e-mails (production) : URL SMTP du fournisseur et adresse d'expédition. */
+  SMTP_URL: z
+    .string()
+    .regex(/^smtps?:\/\//)
+    .optional(),
+  MAIL_FROM: z.string().min(3).optional(),
+  /** Stockage des documents : disque (développement) ou S3 (production). */
+  STORAGE_DRIVER: z.enum(["fs", "s3"]).default("fs"),
+  S3_ENDPOINT: z.url().optional(),
+  S3_REGION: z.string().optional(),
+  S3_BUCKET: z.string().optional(),
+  S3_ACCESS_KEY_ID: z.string().optional(),
+  S3_SECRET_ACCESS_KEY: z.string().optional(),
   /** Dossier où écrire les e-mails en développement (interdit en production). */
   MAIL_OUTBOX_DIR: z.string().optional(),
   /** Trousseau « v2:<base64>,v1:<base64> » ; la première clé chiffre. */
@@ -57,6 +70,26 @@ export function parseEnv(source: Record<string, string | undefined>): Env {
   }
   if (parsed.data.NODE_ENV === "production" && !parsed.data.TRUSTED_PROXY_HEADER) {
     throw new Error("TRUSTED_PROXY_HEADER est obligatoire en production");
+  }
+  if (parsed.data.NODE_ENV === "production" && (!parsed.data.SMTP_URL || !parsed.data.MAIL_FROM)) {
+    throw new Error("SMTP_URL et MAIL_FROM sont obligatoires en production");
+  }
+  if (parsed.data.NODE_ENV === "production" && parsed.data.STORAGE_DRIVER !== "s3") {
+    throw new Error("STORAGE_DRIVER=s3 est obligatoire en production");
+  }
+  if (
+    parsed.data.STORAGE_DRIVER === "s3" &&
+    !(
+      parsed.data.S3_ENDPOINT &&
+      parsed.data.S3_REGION &&
+      parsed.data.S3_BUCKET &&
+      parsed.data.S3_ACCESS_KEY_ID &&
+      parsed.data.S3_SECRET_ACCESS_KEY
+    )
+  ) {
+    throw new Error(
+      "Stockage S3 : S3_ENDPOINT, S3_REGION, S3_BUCKET, S3_ACCESS_KEY_ID et S3_SECRET_ACCESS_KEY sont requis",
+    );
   }
   if (parsed.data.NODE_ENV === "production" && parsed.data.MAIL_OUTBOX_DIR) {
     throw new Error("MAIL_OUTBOX_DIR est interdit en production");

@@ -3,13 +3,13 @@
  * Il partage le code métier de l'application mais pas son serveur web.
  */
 import { createDb } from "@paiecam/db";
-import { createFsStorage } from "@paiecam/documents";
+import { createFsStorage, createS3Storage } from "@paiecam/documents";
 import { parseKeyring } from "@paiecam/security";
 import { parseEnv } from "./env-schema";
 import { generatePeriodDocuments } from "./server/features/documents";
 import { runDeadlineReminders, todayInDouala } from "./server/features/reminders";
 import { PDF_QUEUE, REMINDER_QUEUE, startBoss, type PdfJob } from "./server/jobs/boss";
-import { createMailer } from "./server/mail";
+import { createMailer, smtpTransportFromUrl } from "./server/mail";
 import { log } from "./server/log";
 
 try {
@@ -20,7 +20,19 @@ try {
 const env = parseEnv(process.env);
 const db = createDb(env.DATABASE_URL);
 const keyring = parseKeyring(env.FIELD_ENCRYPTION_KEYS);
-const storage = createFsStorage(env.DOCUMENTS_DIR, keyring);
+const storage =
+  env.STORAGE_DRIVER === "s3"
+    ? createS3Storage(
+        {
+          endpoint: env.S3_ENDPOINT ?? "",
+          region: env.S3_REGION ?? "",
+          bucket: env.S3_BUCKET ?? "",
+          accessKeyId: env.S3_ACCESS_KEY_ID ?? "",
+          secretAccessKey: env.S3_SECRET_ACCESS_KEY ?? "",
+        },
+        keyring,
+      )
+    : createFsStorage(env.DOCUMENTS_DIR, keyring);
 const boss = await startBoss(env.DATABASE_URL);
 
 await boss.work<PdfJob>(PDF_QUEUE, async (jobs) => {
@@ -33,7 +45,13 @@ await boss.work<PdfJob>(PDF_QUEUE, async (jobs) => {
     log("info", "PDF générés", { periodId: job.data.periodId, ...result });
   }
 });
-const mailer = createMailer(env.NODE_ENV, env.MAIL_OUTBOX_DIR);
+const mailer = createMailer(env.NODE_ENV, {
+  outboxDir: env.MAIL_OUTBOX_DIR,
+  smtp:
+    env.SMTP_URL && env.MAIL_FROM
+      ? { transport: await smtpTransportFromUrl(env.SMTP_URL), from: env.MAIL_FROM }
+      : undefined,
+});
 await boss.schedule(REMINDER_QUEUE, "0 7 * * *", {}, { tz: "Africa/Douala" });
 await boss.work(REMINDER_QUEUE, async () => {
   const result = await runDeadlineReminders(db, {
