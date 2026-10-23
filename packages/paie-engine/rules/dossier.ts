@@ -210,6 +210,8 @@ const questionRows = [
     "Valorisation des avantages en nature (logement, véhicule, nourriture…) : barèmes forfaitaires ?",
     "Primes exceptionnelles (13e mois, gratifications) : la loi de finances 2026 porte l'abattement des revenus exceptionnels à 35 % ; comment l'appliquer en retenue mensuelle ?",
     "Format exact attendu pour la DIPE et l'état des cotisations CNPS ?",
+    "Mentions obligatoires du bulletin de paie. Le PDF affiche aujourd'hui : raison sociale, NIU, n° employeur CNPS et commune de l'employeur ; nom, matricule, emploi, catégorie / échelon, date d'embauche, type de contrat et n° CNPS du salarié ; période ; gains avec base et taux ; indemnités hors brut ; retenues salariales ; retenues sur net ; charges patronales ; brut, total des retenues, net à payer, coût employeur ; cumuls annuels (brut, IRPP, net) ; code de vérification. Que faut-il ajouter (adresse, n° contribuable, congés, mode de paiement…) ?",
+    "Langue du bulletin : un bulletin en français OU en anglais selon le salarié est-il conforme, ou faut-il un bulletin bilingue ?",
   ].map((q, i) => [n(rules.flatMap((r) => r.questions).length + i + 1), t("général"), t(q), t("")]),
 ];
 
