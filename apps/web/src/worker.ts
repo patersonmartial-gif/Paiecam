@@ -7,7 +7,9 @@ import { createFsStorage } from "@paiecam/documents";
 import { parseKeyring } from "@paiecam/security";
 import { parseEnv } from "./env-schema";
 import { generatePeriodDocuments } from "./server/features/documents";
-import { PDF_QUEUE, startBoss, type PdfJob } from "./server/jobs/boss";
+import { runDeadlineReminders, todayInDouala } from "./server/features/reminders";
+import { PDF_QUEUE, REMINDER_QUEUE, startBoss, type PdfJob } from "./server/jobs/boss";
+import { createMailer } from "./server/mail";
 import { log } from "./server/log";
 
 try {
@@ -31,6 +33,17 @@ await boss.work<PdfJob>(PDF_QUEUE, async (jobs) => {
     log("info", "PDF générés", { periodId: job.data.periodId, ...result });
   }
 });
+const mailer = createMailer(env.NODE_ENV, env.MAIL_OUTBOX_DIR);
+await boss.schedule(REMINDER_QUEUE, "0 7 * * *", {}, { tz: "Africa/Douala" });
+await boss.work(REMINDER_QUEUE, async () => {
+  const result = await runDeadlineReminders(db, {
+    mailer,
+    baseURL: env.APP_URL,
+    today: todayInDouala(),
+  });
+  log("info", "rappels d'échéance", result);
+});
+
 log("info", "worker démarré", { queue: PDF_QUEUE });
 
 const stop = async () => {

@@ -11,6 +11,12 @@ afterAll(async () => {
  * avoir le RLS activé ET forcé, avec au moins une politique. Une nouvelle table qui l'oublie
  * fait échouer ce test.
  */
+/**
+ * Exceptions justifiées (voir la migration correspondante) : tables sans aucune donnée de paie
+ * ni de personne, relues ensuite sous RLS.
+ */
+const RLS_EXCEPTIONS = ["declaration_deadlines"];
+
 describe("couverture du RLS", () => {
   it("chaque table d'entreprise a le RLS activé, forcé et des politiques", async () => {
     const rows = await db.execute<{
@@ -29,7 +35,7 @@ describe("couverture du RLS", () => {
           where col.table_schema = 'public' and col.table_name = c.relname and col.column_name = 'tenant_id'))
       order by c.relname`);
     expect(rows.length).toBeGreaterThanOrEqual(3);
-    for (const r of rows) {
+    for (const r of rows.filter((x) => !RLS_EXCEPTIONS.includes(x.table))) {
       expect({ table: r.table, rls: r.rls, forced: r.forced }).toEqual({
         table: r.table,
         rls: true,
@@ -37,6 +43,18 @@ describe("couverture du RLS", () => {
       });
       expect(r.policies, `${r.table} sans politique`).toBeGreaterThan(0);
     }
+  });
+
+  it("les exceptions ne contiennent que des identifiants, dates et états", async () => {
+    const cols = await db.execute<{ column_name: string }>(sql`
+      select column_name from information_schema.columns
+      where table_schema = 'public' and table_name = 'declaration_deadlines' order by ordinal_position`);
+    expect(cols.map((c) => c.column_name)).toEqual([
+      "declaration_id",
+      "tenant_id",
+      "due_date",
+      "status",
+    ]);
   });
 
   it("le rôle applicatif n'a ni UPDATE ni DELETE sur audit_log, ni INSERT direct sur tenants", async () => {
