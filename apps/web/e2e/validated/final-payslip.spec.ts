@@ -62,6 +62,8 @@ test("paie validée : PDF définitif généré par le worker, téléchargé, pui
   await page.getByRole("link", { name: /Code de vérification/ }).click();
   await expect(page.getByText("Bulletin authentique : émis et signé par PaieCam.")).toBeVisible();
   await expect(page.getByText("Menuiserie Fictive")).toBeVisible();
+  // Le champ n'est actif qu'après l'hydratation (sinon le fichier déposé serait ignoré).
+  await expect(page.getByLabel(/Comparer avec votre fichier PDF/)).toBeEnabled();
   await page
     .getByLabel(/Comparer avec votre fichier PDF/)
     .setInputFiles({ name: "b.pdf", mimeType: "application/pdf", buffer: Buffer.concat(chunks) });

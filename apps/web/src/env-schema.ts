@@ -14,6 +14,15 @@ const schema = z.object({
    * Par défaut : autorisé hors production, interdit en production sauf pilote déclaré.
    */
   PAYROLL_ALLOW_DRAFT_RULES: z.enum(["on", "off"]).optional(),
+  /**
+   * En-tête posé par le proxy de l'hébergeur avec l'IP du client (ex. x-forwarded-for).
+   * Obligatoire en production : sans lui, tous les clients partagent la même limite de tentatives.
+   */
+  TRUSTED_PROXY_HEADER: z
+    .string()
+    .regex(/^[a-z0-9-]+$/i)
+    .optional(),
+  TRUSTED_PROXY_HOPS: z.coerce.number().int().min(1).max(5).default(1),
   /** Dossier du stockage chiffré des documents (développement : disque ; production : S3, phase 6). */
   DOCUMENTS_DIR: z.string().min(1).default("../../.data/documents"),
   /** Dossier où écrire les e-mails en développement (interdit en production). */
@@ -45,6 +54,9 @@ export function parseEnv(source: Record<string, string | undefined>): Env {
     // Uniquement les noms de variables, jamais leurs valeurs.
     const names = parsed.error.issues.map((i) => i.path.join(".")).join(", ");
     throw new Error(`Variables d'environnement invalides : ${names}`);
+  }
+  if (parsed.data.NODE_ENV === "production" && !parsed.data.TRUSTED_PROXY_HEADER) {
+    throw new Error("TRUSTED_PROXY_HEADER est obligatoire en production");
   }
   if (parsed.data.NODE_ENV === "production" && parsed.data.MAIL_OUTBOX_DIR) {
     throw new Error("MAIL_OUTBOX_DIR est interdit en production");

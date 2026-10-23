@@ -8,19 +8,27 @@ try {
   // pas de fichier .env
 }
 
-// En-têtes de base. La CSP stricte avec nonce arrive en phase 6 (via proxy.ts).
+// En-têtes fixes. La CSP, qui porte un nonce par requête, est posée par src/proxy.ts.
 const securityHeaders = [
   { key: "X-Frame-Options", value: "DENY" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" },
+  { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+  { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
 ];
 
 const config: NextConfig = {
   poweredByHeader: false,
   // Import Excel : fichier de 2 Mo maximum (contrôlé aussi côté serveur), plus l'enveloppe multipart.
-  experimental: { serverActions: { bodySizeLimit: "3mb" } },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "3mb",
+      // Derrière un proxy, l'origine publique doit être déclarée pour le contrôle CSRF de Next.js.
+      allowedOrigins: process.env.APP_URL ? [new URL(process.env.APP_URL).host] : [],
+    },
+  },
   serverExternalPackages: ["@node-rs/argon2"],
   transpilePackages: ["@paiecam/paie-engine", "@paiecam/db", "@paiecam/security"],
   async headers() {

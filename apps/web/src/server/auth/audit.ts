@@ -1,6 +1,7 @@
 import { isIP } from "node:net";
 import { APIError, createAuthMiddleware } from "better-auth/api";
 import { schema, type Db } from "@paiecam/db";
+import { CLIENT_IP_HEADER } from "@/lib/client-ip";
 import { log } from "../log";
 
 /** Les champs ip sont de type inet : une valeur invalide est remplacée par null. */
@@ -48,25 +49,26 @@ const SUCCESSES: Record<string, string> = {
   "/two-factor/disable": "auth.two_factor_disabled",
 };
 
-export function authAuditHook(db: Db) {
-  return createAuthMiddleware(async (ctx) => {
-    const returned = ctx.context.returned;
-    const ip = ctx.headers?.get("x-forwarded-for") ?? null;
-    const userAgent = ctx.headers?.get("user-agent") ?? null;
-    if (returned instanceof APIError) {
-      const action = FAILURES[ctx.path];
-      if (action)
-        await auditAuthEvent(db, { action, ip, userAgent, reason: String(returned.status) });
-      return;
-    }
-    const action = SUCCESSES[ctx.path];
-    if (action) {
-      await auditAuthEvent(db, {
-        action,
-        userId: ctx.context.session?.user.id ?? null,
-        ip,
-        userAgent,
-      });
-    }
-  });
+export type AuthHookContext = Parameters<Parameters<typeof createAuthMiddleware>[0]>[0];
+
+/** À appeler après chaque requête d'authentification : trace les succès et échecs sensibles. */
+export async function auditAuthAfter(db: Db, ctx: AuthHookContext): Promise<void> {
+  const returned = ctx.context.returned;
+  const ip = ctx.headers?.get(CLIENT_IP_HEADER) ?? null;
+  const userAgent = ctx.headers?.get("user-agent") ?? null;
+  if (returned instanceof APIError) {
+    const action = FAILURES[ctx.path];
+    if (action)
+      await auditAuthEvent(db, { action, ip, userAgent, reason: String(returned.status) });
+    return;
+  }
+  const action = SUCCESSES[ctx.path];
+  if (action) {
+    await auditAuthEvent(db, {
+      action,
+      userId: ctx.context.session?.user.id ?? null,
+      ip,
+      userAgent,
+    });
+  }
 }

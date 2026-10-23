@@ -32,7 +32,7 @@ function post(path: string, body: unknown, a = auth) {
   return a.handler(
     new Request(`${baseURL}/api/auth${path}`, {
       method: "POST",
-      headers: { "content-type": "application/json", origin: baseURL, "x-forwarded-for": ip },
+      headers: { "content-type": "application/json", origin: baseURL, "x-paiecam-client-ip": ip },
       body: JSON.stringify(body),
     }),
   );
@@ -162,7 +162,7 @@ describe("connexion et session", () => {
           "content-type": "application/json",
           origin: "https://site-malveillant.example",
           cookie: "better-auth.session_token=x",
-          "x-forwarded-for": ip,
+          "x-paiecam-client-ip": ip,
         },
         body: JSON.stringify({ email: newEmail(), password }),
       }),
@@ -231,5 +231,53 @@ describe("audit des événements d'authentification", () => {
     expect(events[1]).toMatchObject({ actor_user_id: null, after: { reason: "UNAUTHORIZED" } });
     expect(events[2]).toMatchObject({ actor_user_id: user.id, ip });
     expect(JSON.stringify(events)).not.toContain(email);
+  });
+});
+
+describe("verrouillage progressif", () => {
+  const signIn = (email: string, pw: string, fromIp: string) =>
+    auth.handler(
+      new Request(`${baseURL}/api/auth/sign-in/email`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          origin: baseURL,
+          "x-paiecam-client-ip": fromIp,
+        },
+        body: JSON.stringify({ email, password: pw }),
+      }),
+    );
+
+  it("bloque l'adresse après 5 échecs, même répartis sur plusieurs IP et avec le bon mot de passe", async () => {
+    const email = newEmail();
+    await post("/sign-up/email", { email, password, name: "A" });
+    for (let i = 0; i < 5; i++)
+      expect((await signIn(email, "mauvais-mot-de-passe", `198.51.100.${i + 1}`)).status).toBe(401);
+    const locked = await signIn(email, password, "198.51.100.99");
+    expect(locked.status).toBe(429);
+    expect(await locked.json()).toMatchObject({ code: "ACCOUNT_TEMPORARILY_LOCKED" });
+  });
+
+  it("une adresse inconnue se comporte exactement comme une adresse existante", async () => {
+    const email = newEmail();
+    for (let i = 0; i < 5; i++)
+      expect((await signIn(email, "x-mot-de-passe-1", `198.51.101.${i + 1}`)).status).toBe(401);
+    expect((await signIn(email, "x-mot-de-passe-1", "198.51.101.99")).status).toBe(429);
+  });
+
+  it("à l'expiration du blocage, une connexion réussie remet le compteur à zéro", async () => {
+    const email = newEmail();
+    await post("/sign-up/email", { email, password, name: "A" });
+    for (let i = 0; i < 5; i++) await signIn(email, "mauvais-mot-de-passe", `198.51.102.${i + 1}`);
+    await db.update(schema.loginLockouts).set({ lockedUntil: new Date(Date.now() - 1000) });
+    expect((await signIn(email, password, "198.51.102.50")).status).toBe(200);
+    expect((await signIn(email, "mauvais-mot-de-passe", "198.51.102.51")).status).toBe(401);
+    expect((await signIn(email, password, "198.51.102.52")).status).toBe(200);
+  });
+
+  it("n'enregistre jamais l'adresse e-mail en clair", async () => {
+    const rows = await db.select().from(schema.loginLockouts);
+    expect(rows.length).toBeGreaterThan(0);
+    expect(JSON.stringify(rows)).not.toMatch(/@exemple\.test/);
   });
 });

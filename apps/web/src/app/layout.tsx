@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { NextIntlClientProvider } from "next-intl";
+import { headers } from "next/headers";
 import { getLocale } from "next-intl/server";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import "./globals.css";
@@ -12,6 +13,9 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const locale = await getLocale();
+  // Lire les en-têtes rend chaque page dynamique : Next.js peut alors poser sur ses scripts
+  // le nonce de la CSP de la requête (une page pré-générée garderait des scripts sans nonce).
+  await headers();
   return (
     <html lang={locale}>
       <body>

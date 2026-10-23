@@ -127,6 +127,20 @@
       "when": 1792762975209,
       "tag": "0017_deadline_index",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1792763659519,
+      "tag": "0018_login_lockouts",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1792763660531,
+      "tag": "0019_login_lockouts_grants",
+      "breakpoints": true
     }
   ]
 }

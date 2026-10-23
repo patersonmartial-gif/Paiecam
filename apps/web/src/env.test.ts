@@ -25,25 +25,44 @@ describe("parseEnv", () => {
     expect(() => parseEnv({ ...ok, DATABASE_URL: "secret-value" })).not.toThrow(/secret-value/);
   });
 
+  it("exige l'en-tête IP de confiance en production", () => {
+    expect(() =>
+      parseEnv({ ...ok, NODE_ENV: "production", TRUSTED_PROXY_HEADER: undefined }),
+    ).toThrow(/TRUSTED_PROXY_HEADER/);
+    expect(parseEnv(ok).TRUSTED_PROXY_HOPS).toBe(1);
+  });
+
   it("interdit de couper Have I Been Pwned en production", () => {
-    const prod = { ...ok, NODE_ENV: "production" };
+    const prod = { ...ok, NODE_ENV: "production", TRUSTED_PROXY_HEADER: "x-forwarded-for" };
     expect(parseEnv(prod).PWNED_PASSWORDS_CHECK).toBe("on");
     expect(() => parseEnv({ ...prod, PWNED_PASSWORDS_CHECK: "off" })).toThrow(/interdit/);
     expect(parseEnv({ ...ok, PWNED_PASSWORDS_CHECK: "off" }).PWNED_PASSWORDS_CHECK).toBe("off");
   });
 
   it("interdit la boîte d'envoi locale en production", () => {
-    expect(() => parseEnv({ ...ok, NODE_ENV: "production", MAIL_OUTBOX_DIR: "/tmp/x" })).toThrow(
-      /interdit/,
-    );
+    expect(() =>
+      parseEnv({
+        ...ok,
+        NODE_ENV: "production",
+        TRUSTED_PROXY_HEADER: "x-forwarded-for",
+        MAIL_OUTBOX_DIR: "/tmp/x",
+      }),
+    ).toThrow(/interdit/);
   });
 
   it("brouillons de paie : autorisés hors production, interdits en production sauf pilote", () => {
     expect(parseEnv(ok).PAYROLL_ALLOW_DRAFT_RULES).toBe("on");
-    expect(parseEnv({ ...ok, NODE_ENV: "production" }).PAYROLL_ALLOW_DRAFT_RULES).toBe("off");
     expect(
-      parseEnv({ ...ok, NODE_ENV: "production", PAYROLL_ALLOW_DRAFT_RULES: "on" })
+      parseEnv({ ...ok, NODE_ENV: "production", TRUSTED_PROXY_HEADER: "x-forwarded-for" })
         .PAYROLL_ALLOW_DRAFT_RULES,
+    ).toBe("off");
+    expect(
+      parseEnv({
+        ...ok,
+        NODE_ENV: "production",
+        TRUSTED_PROXY_HEADER: "x-forwarded-for",
+        PAYROLL_ALLOW_DRAFT_RULES: "on",
+      }).PAYROLL_ALLOW_DRAFT_RULES,
     ).toBe("on");
   });
 

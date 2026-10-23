@@ -1,6 +1,7 @@
 import "server-only";
 import { cookies, headers } from "next/headers";
 import type { z } from "zod";
+import { CLIENT_IP_HEADER } from "@/lib/client-ip";
 import { auth } from "../auth";
 import { db } from "../db";
 import {
@@ -24,8 +25,8 @@ export async function getRequestContext(): Promise<RequestContext> {
       ? { id: session.user.id, twoFactorEnabled: session.user.twoFactorEnabled === true }
       : null,
     tenantId: jar.get(TENANT_COOKIE)?.value ?? null,
-    // Voir la note sur ipAddressHeaders dans auth/config.ts.
-    ip: h.get("x-forwarded-for")?.split(",")[0]?.trim() || null,
+    // IP calculée par proxy.ts selon les proxys de confiance ; « 0.0.0.0 » = inconnue.
+    ip: ((ip) => (ip && ip !== "0.0.0.0" ? ip : null))(h.get(CLIENT_IP_HEADER)),
     userAgent: h.get("user-agent"),
   };
 }

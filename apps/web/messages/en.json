@@ -31,7 +31,8 @@
     "invalidCredentials": "Incorrect email or password.",
     "passwordTooShort": "The password must be at least 12 characters long.",
     "passwordCompromised": "This password appears in a known data breach. Please choose another one.",
-    "emailTaken": "This account cannot be created with this email address."
+    "emailTaken": "This account cannot be created with this email address.",
+    "locked": "Too many failed sign-ins for this account: try again in a few minutes."
   },
   "twoFactor": {
     "verifyTitle": "Two-step verification",
@@ -209,7 +210,8 @@
       "bad_password": "Incorrect password.",
       "end_before_hire": "The departure date is before the hire date.",
       "employees_tenant_matricule_key": "This employee ID is already in use.",
-      "employees_tenant_cnps_key": "This CNPS number is already assigned to another employee."
+      "employees_tenant_cnps_key": "This CNPS number is already assigned to another employee.",
+      "too_many_attempts": "Too many password attempts: try again in a few minutes."
     }
   },
   "import": {
@@ -331,7 +333,8 @@
       "employee_not_in_period": "This employee is not under contract this month.",
       "unknown_item": "Unknown pay item.",
       "unknown_overtime": "Unknown overtime category.",
-      "pay_periods_tenant_month_key": "This month is already open."
+      "pay_periods_tenant_month_key": "This month is already open.",
+      "too_many_attempts": "Too many password attempts: try again in a few minutes."
     }
   },
   "verify": {

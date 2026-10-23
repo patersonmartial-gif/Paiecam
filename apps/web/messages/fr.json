@@ -31,7 +31,8 @@
     "invalidCredentials": "Adresse e-mail ou mot de passe incorrect.",
     "passwordTooShort": "Le mot de passe doit contenir au moins 12 caractères.",
     "passwordCompromised": "Ce mot de passe figure dans une fuite de données connue. Choisissez-en un autre.",
-    "emailTaken": "Impossible de créer ce compte avec cette adresse."
+    "emailTaken": "Impossible de créer ce compte avec cette adresse.",
+    "locked": "Trop d'échecs de connexion pour ce compte : réessayez dans quelques minutes."
   },
   "twoFactor": {
     "verifyTitle": "Vérification en deux étapes",
@@ -209,7 +210,8 @@
       "bad_password": "Mot de passe incorrect.",
       "end_before_hire": "La date de sortie précède la date d'embauche.",
       "employees_tenant_matricule_key": "Ce matricule est déjà utilisé.",
-      "employees_tenant_cnps_key": "Ce n° CNPS est déjà attribué à un autre salarié."
+      "employees_tenant_cnps_key": "Ce n° CNPS est déjà attribué à un autre salarié.",
+      "too_many_attempts": "Trop d'essais de mot de passe : réessayez dans quelques minutes."
     }
   },
   "import": {
@@ -331,7 +333,8 @@
       "employee_not_in_period": "Ce salarié n'est pas sous contrat ce mois-ci.",
       "unknown_item": "Rubrique inconnue.",
       "unknown_overtime": "Catégorie d'heures supplémentaires inconnue.",
-      "pay_periods_tenant_month_key": "Ce mois est déjà ouvert."
+      "pay_periods_tenant_month_key": "Ce mois est déjà ouvert.",
+      "too_many_attempts": "Trop d'essais de mot de passe : réessayez dans quelques minutes."
     }
   },
   "verify": {

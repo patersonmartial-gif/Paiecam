@@ -4,7 +4,10 @@ import { haveIBeenPwned, twoFactor } from "better-auth/plugins";
 import { uuidv7 } from "uuidv7";
 import { schema, type Db } from "@paiecam/db";
 import type { Mailer } from "../mail";
-import { auditAuthEvent, authAuditHook } from "./audit";
+import { CLIENT_IP_HEADER } from "@/lib/client-ip";
+import { createAuthMiddleware } from "better-auth/api";
+import { auditAuthAfter, auditAuthEvent } from "./audit";
+import { signInLockoutAfter, signInLockoutBefore } from "./lockout-hooks";
 import { hashPassword, verifyPassword } from "./password";
 
 export interface AuthDeps {
@@ -55,7 +58,13 @@ export function createAuth({ db, secret, baseURL, mailer, checkPwnedPasswords = 
         },
       },
     },
-    hooks: { after: authAuditHook(db) },
+    hooks: {
+      before: createAuthMiddleware(async (ctx) => signInLockoutBefore(db, ctx)),
+      after: createAuthMiddleware(async (ctx) => {
+        await auditAuthAfter(db, ctx);
+        await signInLockoutAfter(db, ctx);
+      }),
+    },
     session: {
       // Durée absolue de 8 h : pas de prolongation glissante.
       expiresIn: EIGHT_HOURS,
@@ -63,9 +72,8 @@ export function createAuth({ db, secret, baseURL, mailer, checkPwnedPasswords = 
       // Les opérations sensibles (valider une paie, changer un IBAN) exigent une session de moins de 15 min.
       freshAge: 15 * 60,
     },
-    // À régler au déploiement (phase 6) : advanced.ipAddress.ipAddressHeaders doit viser l'en-tête
-    // posé par le proxy de l'hébergeur, sinon un client peut falsifier x-forwarded-for et
-    // contourner les limites ci-dessous.
+    // Limites par IP : l'IP vient de l'en-tête interne posé par proxy.ts (voir lib/client-ip.ts),
+    // jamais directement de x-forwarded-for, que le client peut falsifier.
     rateLimit: {
       enabled: true,
       storage: "database",
@@ -81,6 +89,7 @@ export function createAuth({ db, secret, baseURL, mailer, checkPwnedPasswords = 
       },
     },
     advanced: {
+      ipAddress: { ipAddressHeaders: [CLIENT_IP_HEADER] },
       // Explicite : better-auth désactive ces contrôles quand NODE_ENV=test.
       disableOriginCheck: false,
       disableCSRFCheck: false,

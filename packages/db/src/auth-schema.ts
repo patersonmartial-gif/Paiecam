@@ -95,6 +95,17 @@ export const rateLimits = pgTable("rate_limits", {
   lastRequest: bigint("last_request", { mode: "number" }).notNull(),
 });
 
+/**
+ * Verrouillage progressif après échecs répétés (connexion, ressaisie du mot de passe).
+ * `key` est une empreinte (jamais l'adresse e-mail en clair). Table globale, comme les comptes.
+ */
+export const loginLockouts = pgTable("login_lockouts", {
+  key: text("key").primaryKey(),
+  failures: integer("failures").notNull().default(0),
+  lockedUntil: ts("locked_until"),
+  updatedAt: ts("updated_at").notNull().defaultNow(),
+});
+
 /** Correspondance attendue par drizzleAdapter (nom de modèle Better Auth → table). */
 export const authSchema = {
   user: users,

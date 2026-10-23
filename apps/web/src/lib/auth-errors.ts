@@ -1,6 +1,7 @@
 /** Traduit une erreur du client Better Auth en clé de message, sans exposer le détail technique. */
 export function authErrorKey(error: { status?: number; code?: string | undefined } | null): string {
   if (!error) return "common.errors.generic";
+  if (error.code === "ACCOUNT_TEMPORARILY_LOCKED") return "auth.locked";
   if (error.status === 429) return "common.errors.tooManyRequests";
   switch (error.code) {
     case "INVALID_EMAIL_OR_PASSWORD":
