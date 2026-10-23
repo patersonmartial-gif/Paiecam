@@ -26,6 +26,27 @@ export const testDatabaseUrl = () => required("TEST_DATABASE_URL");
 /** URL du rôle de supervision (événements hors entreprise uniquement) sur la base de test. */
 export const testOpsDatabaseUrl = () => required("TEST_OPS_DATABASE_URL");
 
+/** Rôle de sauvegarde (lecture seule, exempté du RLS) sur la base de test. */
+export const testBackupDatabaseUrl = () => required("TEST_BACKUP_DATABASE_URL");
+
+/** Administrateur PostgreSQL sur la base cible du test de restauration (paiecam_restore_test). */
+export const testRestoreAdminDatabaseUrl = () => required("TEST_RESTORE_ADMIN_DATABASE_URL");
+
+/** Recrée, vide, la base cible du test de restauration (connexion d'administration du même serveur). */
+export async function recreateRestoreTestDatabase(): Promise<void> {
+  const url = new URL(testRestoreAdminDatabaseUrl());
+  const name = url.pathname.slice(1);
+  if (!/^[a-z_]+_test$/.test(name)) throw new Error("nom de base de restauration inattendu");
+  url.pathname = "/postgres";
+  const admin = postgres(url.toString(), { max: 1, onnotice: () => {} });
+  try {
+    await admin.unsafe(`drop database if exists ${name} with (force)`);
+    await admin.unsafe(`create database ${name} owner paiecam_owner`);
+  } finally {
+    await admin.end();
+  }
+}
+
 /** Repart d'une base de test vide et applique toutes les migrations avec le rôle propriétaire. */
 export async function resetTestDatabase(): Promise<void> {
   const client = postgres(required("TEST_MIGRATION_DATABASE_URL"), { max: 1, onnotice: () => {} });

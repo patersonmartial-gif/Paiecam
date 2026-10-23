@@ -11,5 +11,12 @@ CREATE ROLE paiecam_app LOGIN PASSWORD 'app_dev' NOSUPERUSER NOBYPASSRLS NOCREAT
 -- Supervision de la plateforme : lit uniquement les événements hors entreprise (connexions…).
 CREATE ROLE paiecam_ops LOGIN PASSWORD 'ops_dev' NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE;
 
+-- Sauvegardes : lecture seule de toutes les données, exemptée du RLS (pg_dump doit tout voir).
+-- Ses identifiants ne servent qu'au script de sauvegarde, jamais à l'application.
+CREATE ROLE paiecam_backup LOGIN PASSWORD 'backup_dev' NOSUPERUSER BYPASSRLS NOCREATEDB NOCREATEROLE;
+GRANT pg_read_all_data TO paiecam_backup;
+
 CREATE DATABASE paiecam OWNER paiecam_owner;
 CREATE DATABASE paiecam_test OWNER paiecam_owner;
+-- Cible du test de restauration (recréée à chaque test par l'administrateur).
+CREATE DATABASE paiecam_restore_test OWNER paiecam_owner;
