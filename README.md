@@ -12,6 +12,9 @@ pnpm db:migrate
 pnpm dev            # http://localhost:3000
 ```
 
+Tests : `pnpm test` (unitaires + intégration sur `paiecam_test`), `pnpm --filter @paiecam/web test:e2e` (Playwright).
+Hors ligne en développement, `PWNED_PASSWORDS_CHECK=off` coupe l'appel à Have I Been Pwned (interdit en production).
+
 ## Structure
 
 | Dossier                | Rôle                                              |
@@ -23,7 +26,7 @@ pnpm dev            # http://localhost:3000
 ## Avancement
 
 - [x] Phase 0 — Fondations : monorepo, CI, Docker Compose, env.ts
-- [ ] Phase 1 — Auth et multi-tenant (RLS, 2FA, audit_log, tests anti-IDOR)
+- [x] Phase 1 — Auth et multi-tenant (RLS, 2FA, audit_log, tests anti-IDOR)
 - [ ] Phase 2 — Référentiels (entreprise, salariés, champs chiffrés)
 - [~] Phase 3 — Moteur de paie : résolution des règles datées et CNPS faits ; IRPP, CAC, taxes et golden à venir
 - [ ] Phase 4 — Cycle mensuel et bulletins PDF

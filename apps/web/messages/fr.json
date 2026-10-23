@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "PaieCam",
+    "tagline": "La paie camerounaise conforme en 10 minutes par mois",
+    "language": "English",
+    "submit": "Valider",
+    "loading": "Patientez…",
+    "signOut": "Se déconnecter",
+    "errors": {
+      "generic": "Une erreur est survenue. Réessayez dans un instant.",
+      "tooManyRequests": "Trop de tentatives. Patientez une minute avant de réessayer.",
+      "invalidInput": "Vérifiez les champs signalés.",
+      "forbidden": "Vous n'avez pas accès à cette action."
+    }
+  },
+  "home": {
+    "signUp": "Créer un compte",
+    "signIn": "Se connecter"
+  },
+  "auth": {
+    "signUpTitle": "Créer votre compte",
+    "signInTitle": "Connexion",
+    "name": "Nom complet",
+    "email": "Adresse e-mail",
+    "password": "Mot de passe",
+    "passwordHint": "Au moins 12 caractères. Une phrase de plusieurs mots est idéale.",
+    "createAccount": "Créer mon compte",
+    "signIn": "Se connecter",
+    "noAccount": "Pas encore de compte ?",
+    "haveAccount": "Déjà un compte ?",
+    "invalidCredentials": "Adresse e-mail ou mot de passe incorrect.",
+    "passwordTooShort": "Le mot de passe doit contenir au moins 12 caractères.",
+    "passwordCompromised": "Ce mot de passe figure dans une fuite de données connue. Choisissez-en un autre.",
+    "emailTaken": "Impossible de créer ce compte avec cette adresse."
+  },
+  "twoFactor": {
+    "verifyTitle": "Vérification en deux étapes",
+    "verifyHelp": "Saisissez le code à 6 chiffres affiché par votre application d'authentification.",
+    "code": "Code",
+    "useBackupCode": "Utiliser un code de secours",
+    "useTotp": "Utiliser l'application d'authentification",
+    "backupCode": "Code de secours",
+    "invalidCode": "Code incorrect.",
+    "setupTitle": "Activez la vérification en deux étapes",
+    "setupWhy": "Elle est obligatoire pour les propriétaires et les gestionnaires de paie : un mot de passe seul ne suffit pas à protéger des données de paie.",
+    "confirmPassword": "Confirmez votre mot de passe pour commencer",
+    "start": "Commencer",
+    "scan": "Scannez ce QR code avec Google Authenticator, Microsoft Authenticator ou une application équivalente, puis saisissez le code affiché.",
+    "manualKey": "Ou saisissez cette clé manuellement :",
+    "backupCodesTitle": "Vos codes de secours",
+    "backupCodesHelp": "Conservez-les hors ligne. Chacun permet une seule connexion si vous perdez votre téléphone.",
+    "activate": "Activer",
+    "enabled": "La vérification en deux étapes est activée."
+  },
+  "company": {
+    "title": "Votre entreprise",
+    "help": "Ces informations figurent sur vos bulletins et vos déclarations.",
+    "legalName": "Raison sociale",
+    "niu": "NIU (numéro d'identifiant unique)",
+    "cnpsEmployerNumber": "N° employeur CNPS",
+    "regime": "Régime",
+    "regimes": {
+      "general": "Général",
+      "agricole": "Agricole",
+      "enseignement_prive": "Enseignement privé"
+    },
+    "workAccidentRate": "Taux accidents du travail (notifié par la CNPS)",
+    "commune": "Commune (pour la TDL)",
+    "create": "Créer l'entreprise",
+    "niuTaken": "Ce NIU est déjà inscrit sur PaieCam. Demandez une invitation au propriétaire du compte."
+  },
+  "tenants": {
+    "chooseTitle": "Choisissez une entreprise",
+    "roles": {
+      "owner": "Propriétaire",
+      "payroll_manager": "Gestionnaire paie",
+      "accountant": "Comptable",
+      "employee": "Salarié"
+    },
+    "addCompany": "Ajouter une entreprise"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "welcome": "Bienvenue, {name}.",
+    "role": "Votre rôle : {role}",
+    "comingSoon": "Les salariés et la paie arrivent dans les prochaines phases."
+  }
+}

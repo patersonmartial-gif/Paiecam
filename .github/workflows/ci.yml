@@ -40,6 +40,41 @@ jobs:
       - run: pnpm test:golden
       - run: pnpm audit --prod --audit-level high
 
+  e2e:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: postgres_ci
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgres://paiecam_app:app_dev@localhost:5432/paiecam_test
+      TEST_MIGRATION_DATABASE_URL: postgres://paiecam_owner:owner_dev@localhost:5432/paiecam_test
+      BETTER_AUTH_SECRET: ci-only-secret-ci-only-secret-ci-only
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Créer les rôles et bases de test
+        run: psql -h localhost -U postgres -f docker/postgres/init.sql
+        env:
+          PGPASSWORD: postgres_ci
+      - run: pnpm --filter @paiecam/web exec playwright install --with-deps chromium
+      - run: pnpm --filter @paiecam/web test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-traces
+          path: apps/web/test-results
+          retention-days: 7
+
   gitleaks:
     runs-on: ubuntu-latest
     steps:

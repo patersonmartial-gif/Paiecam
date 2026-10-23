@@ -1,0 +1,88 @@
+{
+  "common": {
+    "appName": "PaieCam",
+    "tagline": "Compliant Cameroonian payroll in 10 minutes a month",
+    "language": "Français",
+    "submit": "Submit",
+    "loading": "Please wait…",
+    "signOut": "Sign out",
+    "errors": {
+      "generic": "Something went wrong. Please try again shortly.",
+      "tooManyRequests": "Too many attempts. Wait a minute before trying again.",
+      "invalidInput": "Please check the highlighted fields.",
+      "forbidden": "You do not have access to this action."
+    }
+  },
+  "home": {
+    "signUp": "Create an account",
+    "signIn": "Sign in"
+  },
+  "auth": {
+    "signUpTitle": "Create your account",
+    "signInTitle": "Sign in",
+    "name": "Full name",
+    "email": "Email address",
+    "password": "Password",
+    "passwordHint": "At least 12 characters. A phrase of several words works best.",
+    "createAccount": "Create my account",
+    "signIn": "Sign in",
+    "noAccount": "No account yet?",
+    "haveAccount": "Already have an account?",
+    "invalidCredentials": "Incorrect email or password.",
+    "passwordTooShort": "The password must be at least 12 characters long.",
+    "passwordCompromised": "This password appears in a known data breach. Please choose another one.",
+    "emailTaken": "This account cannot be created with this email address."
+  },
+  "twoFactor": {
+    "verifyTitle": "Two-step verification",
+    "verifyHelp": "Enter the 6-digit code shown in your authenticator app.",
+    "code": "Code",
+    "useBackupCode": "Use a backup code",
+    "useTotp": "Use the authenticator app",
+    "backupCode": "Backup code",
+    "invalidCode": "Incorrect code.",
+    "setupTitle": "Turn on two-step verification",
+    "setupWhy": "It is mandatory for owners and payroll managers: a password alone is not enough to protect payroll data.",
+    "confirmPassword": "Confirm your password to begin",
+    "start": "Begin",
+    "scan": "Scan this QR code with Google Authenticator, Microsoft Authenticator or a similar app, then enter the code it shows.",
+    "manualKey": "Or enter this key manually:",
+    "backupCodesTitle": "Your backup codes",
+    "backupCodesHelp": "Keep them offline. Each one allows a single sign-in if you lose your phone.",
+    "activate": "Turn on",
+    "enabled": "Two-step verification is on."
+  },
+  "company": {
+    "title": "Your company",
+    "help": "This information appears on your payslips and filings.",
+    "legalName": "Registered name",
+    "niu": "NIU (taxpayer identification number)",
+    "cnpsEmployerNumber": "CNPS employer number",
+    "regime": "Scheme",
+    "regimes": {
+      "general": "General",
+      "agricole": "Agricultural",
+      "enseignement_prive": "Private education"
+    },
+    "workAccidentRate": "Work accident rate (notified by the CNPS)",
+    "commune": "Municipality (for the TDL)",
+    "create": "Create the company",
+    "niuTaken": "This NIU is already registered on PaieCam. Ask the account owner for an invitation."
+  },
+  "tenants": {
+    "chooseTitle": "Choose a company",
+    "roles": {
+      "owner": "Owner",
+      "payroll_manager": "Payroll manager",
+      "accountant": "Accountant",
+      "employee": "Employee"
+    },
+    "addCompany": "Add a company"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome, {name}.",
+    "role": "Your role: {role}",
+    "comingSoon": "Employees and payroll arrive in the next phases."
+  }
+}
