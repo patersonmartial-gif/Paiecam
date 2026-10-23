@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 import { ownerWithCompany, signUp, uniqueEmail } from "./helpers";
 import { lastMailTo } from "./outbox";
 

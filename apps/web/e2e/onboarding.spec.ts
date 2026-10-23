@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 import { totp } from "./totp";
 
 const email = `proprietaire.fictif.${Date.now()}@exemple.test`;

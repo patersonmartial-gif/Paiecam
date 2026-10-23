@@ -54,10 +54,7 @@ export default function SignUpPage() {
       </form>
       <p className="mt-4 text-center text-sm">
         {t("auth.haveAccount")}{" "}
-        <a
-          className="text-brand underline"
-          href={`/connexion${typeof window === "undefined" ? "" : window.location.search}`}
-        >
+        <a className="text-brand underline" href="/connexion">
           {t("auth.signIn")}
         </a>
       </p>
