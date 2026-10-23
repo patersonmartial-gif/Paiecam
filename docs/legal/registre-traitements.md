@@ -1,0 +1,15 @@
+# Registre des traitements (projet)
+
+> **Projet à faire relire par un avocat camerounais.** Tenu par l'éditeur, mis à jour à chaque
+> évolution du logiciel touchant aux données.
+
+| # | Traitement | Rôle de PaieCam | Personnes | Données | Finalité / base | Destinataires | Conservation | Sécurité |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | Gestion des salariés et calcul de la paie | sous-traitant | salariés des clients | identité, n° CNPS et fiscal, contrat, salaire, variables, IBAN (chiffré) | paie : obligations de l'employeur | utilisateurs autorisés du client | durées légales de la paie [à confirmer] | RLS, chiffrement, audit |
+| 2 | Bulletins et documents PDF | sous-traitant | salariés | contenu du bulletin | remise du bulletin, preuve | employeur, salarié | idem 1 | PDF chiffrés, signature, code de vérification |
+| 3 | Déclarations CNPS / DGI / DIPE | sous-traitant | salariés | montants et identifiants déclaratifs | obligations déclaratives | employeur (dépôt par lui) | idem 1 | verrouillage après dépôt |
+| 4 | Comptes utilisateurs et authentification | responsable | utilisateurs | nom, e-mail, empreinte du mot de passe, secret 2FA (chiffré) | exécution du contrat | — | durée du compte + [durée] | Argon2id, 2FA, sessions 8 h |
+| 5 | Sécurité et journal d'audit | responsable (événements hors entreprise) / sous-traitant (journal de l'entreprise) | utilisateurs | action, date, IP, identifiant | intérêt légitime de sécurité | équipe d'exploitation (événements hors entreprise uniquement) | [durée] | lecture restreinte (rôle paiecam_ops) |
+| 6 | E-mails de service (invitations, rappels) | responsable / sous-traitant | utilisateurs | e-mail, contenu du message | exécution du contrat | prestataire e-mail [nom] | journaux du prestataire [durée] | en-têtes nettoyés, aucune pièce jointe de paie |
+| 7 | Sauvegardes | sous-traitant | tous | copie de la base et des documents | continuité | stockage hors site [nom] | rotation [durée] | chiffrement age, clé privée hors serveur |
+| 8 | Vérification des mots de passe compromis | responsable | utilisateurs | 5 premiers caractères de l'empreinte SHA-1 | sécurité des comptes | Have I Been Pwned (k-anonymat) | non conservé | aucune donnée identifiante transmise |

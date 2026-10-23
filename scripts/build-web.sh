@@ -12,7 +12,7 @@ BETTER_AUTH_SECRET=build-placeholder-not-a-secret-000000000000 \
 FIELD_ENCRYPTION_KEYS=v1:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA= \
 TRUSTED_PROXY_HEADER=x-forwarded-for \
 SMTP_URL=smtp://build.invalid:25 \
-MAIL_FROM=build@build.invalid \
+MAIL_FROM=build@build.invalid SECURITY_CONTACT=mailto:build@build.invalid \
 STORAGE_DRIVER=s3 S3_ENDPOINT=https://build.invalid S3_REGION=build S3_BUCKET=build \
 S3_ACCESS_KEY_ID=build S3_SECRET_ACCESS_KEY=build \
   pnpm --filter @paiecam/web build

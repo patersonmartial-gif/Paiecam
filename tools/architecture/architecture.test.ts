@@ -92,6 +92,7 @@ describe("autorisation", () => {
       "apps/web/src/app/documents/fichier/route.ts":
         "lien signé de 5 minutes, délivré après contrôle des droits",
       "apps/web/src/app/api/health/route.ts": "point de santé sans donnée",
+      "apps/web/src/app/.well-known/security.txt/route.ts": "contact de sécurité public (RFC 9116)",
     };
     const routes = all.filter((f) => f.endsWith("/route.ts") && f.startsWith("apps/web/src/app/"));
     expect(routes.length).toBeGreaterThan(3);

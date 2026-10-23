@@ -407,5 +407,12 @@
       "declarations_not_filed": "All filings must be submitted before locking.",
       "not_found": "Filing not found."
     }
+  },
+  "legal": {
+    "draftNotice": "Draft text under legal review, not yet contractually binding. The English version will be published after review; the French text is the reference.",
+    "version": "Version: {version}",
+    "mentions": "Legal notice",
+    "privacy": "Privacy",
+    "terms": "Terms of use"
   }
 }

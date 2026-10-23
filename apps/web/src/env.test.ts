@@ -27,6 +27,7 @@ const prodOk = {
   S3_BUCKET: "b",
   S3_ACCESS_KEY_ID: "k",
   S3_SECRET_ACCESS_KEY: "s",
+  SECURITY_CONTACT: "mailto:securite@exemple.test",
 };
 
 describe("parseEnv", () => {
@@ -87,5 +88,9 @@ describe("parseEnv", () => {
     expect(() => parseEnv({ ...prodOk, S3_BUCKET: undefined })).toThrow(/S3_BUCKET/);
     expect(() => parseEnv({ ...ok, SMTP_URL: "http://pas-smtp" })).toThrow(/SMTP_URL/);
     expect(parseEnv(ok).STORAGE_DRIVER).toBe("fs");
+    expect(() => parseEnv({ ...prodOk, SECURITY_CONTACT: undefined })).toThrow(/SECURITY_CONTACT/);
+    expect(() => parseEnv({ ...ok, SECURITY_CONTACT: "javascript:alert(1)" })).toThrow(
+      /SECURITY_CONTACT/,
+    );
   });
 });

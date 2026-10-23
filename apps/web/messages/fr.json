@@ -407,5 +407,12 @@
       "declarations_not_filed": "Toutes les déclarations doivent être déposées avant le verrouillage.",
       "not_found": "Déclaration introuvable."
     }
+  },
+  "legal": {
+    "draftNotice": "Projet de texte, en cours de relecture juridique : il ne constitue pas encore un engagement contractuel.",
+    "version": "Version : {version}",
+    "mentions": "Mentions légales",
+    "privacy": "Confidentialité",
+    "terms": "Conditions d'utilisation"
   }
 }

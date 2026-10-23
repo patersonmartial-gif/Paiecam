@@ -38,6 +38,11 @@ const schema = z.object({
   S3_BUCKET: z.string().optional(),
   S3_ACCESS_KEY_ID: z.string().optional(),
   S3_SECRET_ACCESS_KEY: z.string().optional(),
+  /** Contact de signalement des vulnérabilités publié dans /.well-known/security.txt (RFC 9116). */
+  SECURITY_CONTACT: z
+    .string()
+    .regex(/^(mailto:|https:\/\/)\S+$/)
+    .optional(),
   /** Dossier où écrire les e-mails en développement (interdit en production). */
   MAIL_OUTBOX_DIR: z.string().optional(),
   /** Trousseau « v2:<base64>,v1:<base64> » ; la première clé chiffre. */
@@ -73,6 +78,9 @@ export function parseEnv(source: Record<string, string | undefined>): Env {
   }
   if (parsed.data.NODE_ENV === "production" && (!parsed.data.SMTP_URL || !parsed.data.MAIL_FROM)) {
     throw new Error("SMTP_URL et MAIL_FROM sont obligatoires en production");
+  }
+  if (parsed.data.NODE_ENV === "production" && !parsed.data.SECURITY_CONTACT) {
+    throw new Error("SECURITY_CONTACT est obligatoire en production (mailto:… ou https://…)");
   }
   if (parsed.data.NODE_ENV === "production" && parsed.data.STORAGE_DRIVER !== "s3") {
     throw new Error("STORAGE_DRIVER=s3 est obligatoire en production");
