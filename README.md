@@ -32,7 +32,7 @@ Hors ligne en développement, `PWNED_PASSWORDS_CHECK=off` coupe l'appel à Have 
 - [~] Phase 3 — Moteur de paie : calcul complet fait sur un référentiel 2026 en BROUILLON ; validation de l'expert-comptable et bulletins golden en attente
 - [x] Phase 4 — Cycle mensuel (saisie, calcul, contrôle, validation) et bulletins PDF signés
 - [x] Phase 5 — Déclarations (états CNPS, DGI, DIPE provisoire, journal), dépôts, verrouillage, rappels e-mail
-- [ ] Phase 6 — Durcissement
+- [~] Phase 6 — Durcissement : revue ASVS L2, SMTP/S3/Docker, sauvegardes testées, textes juridiques en projet, plan d'incident ; en attente : relecture par l'avocat, durées de conservation (purge), préproduction (ZAP, test d'intrusion)
 
 Les taux du moteur ne sont pas dans le code : ils viennent de `pay_rules`. Les fixtures de test
 sont fictives et doivent être remplacées par le référentiel validé par l'expert-comptable.

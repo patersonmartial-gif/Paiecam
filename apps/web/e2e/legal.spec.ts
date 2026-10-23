@@ -27,3 +27,15 @@ test("security.txt conforme à la RFC 9116", async ({ request }) => {
   expect(new Date(expires).getTime()).toBeGreaterThan(Date.now());
   expect(body).toMatch(/Canonical: http:\/\/localhost:\d+\/\.well-known\/security\.txt/);
 });
+
+test("le cookie de langue n'est pas lisible par le JavaScript de la page", async ({
+  page,
+  context,
+}) => {
+  await page.goto("/mentions-legales");
+  await page.getByRole("button", { name: "English" }).click();
+  await expect(page.getByRole("link", { name: "Legal notice" })).toBeVisible();
+  const cookie = (await context.cookies()).find((c) => c.name === "NEXT_LOCALE");
+  expect(cookie).toMatchObject({ value: "en", httpOnly: true, sameSite: "Lax" });
+  expect(await page.evaluate(() => document.cookie)).not.toContain("NEXT_LOCALE");
+});

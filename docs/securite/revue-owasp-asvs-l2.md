@@ -31,6 +31,8 @@ Ce document ne remplace pas le **test d'intrusion externe** exigé avant le lanc
 | R5  | Moyenne  | Invitations illimitées : envoi massif d'e-mails depuis un compte compromis            | 20 invitations par entreprise et par heure                                          | Corrigé (6.2) |
 | R6  | Faible   | Dépendance esbuild vulnérable (GHSA-67mh-4wv8-2f99) via drizzle-kit                   | Version forcée ≥ 0.25 (`pnpm-workspace.yaml`)                                       | Corrigé (6.2) |
 | R7  | Faible   | Mise en file des PDF hors transaction et worker silencieux en cas d'échec             | Mise en file après validation ; échecs journalisés                                  | Corrigé (4.5) |
+| R8  | Faible   | Sauvegarde impossible avec FORCE RLS sans rôle dédié (pg_dump du propriétaire filtré) | Rôle `paiecam_backup` lecture seule, BYPASSRLS ; restauration testée                | Corrigé (6.4) |
+| R9  | Info     | Cookie de langue sans HttpOnly ni Secure (contenu non sensible)                       | HttpOnly, Secure en production ; test e2e                                           | Corrigé (6.6) |
 
 ## Risques résiduels (à couvrir par le test d'intrusion ou l'exploitation)
 

@@ -4,12 +4,12 @@
 > technique pour décrire fidèlement le fonctionnement réel du logiciel ; ils ne constituent pas un
 > avis juridique. Les éléments entre crochets sont à compléter, les références de textes à vérifier.
 
-| Document | Public | Fichier |
-| --- | --- | --- |
-| Mentions légales, politique de confidentialité, CGU | oui (pages du site) | `apps/web/src/content/legal.ts` |
-| Accord de traitement des données (annexe aux CGU) | clients | `accord-traitement-donnees.md` |
-| Registre des traitements | interne | `registre-traitements.md` |
-| Procédure en cas de violation de données | interne | `procedure-violation-donnees.md` |
+| Document                                            | Public              | Fichier                          |
+| --------------------------------------------------- | ------------------- | -------------------------------- |
+| Mentions légales, politique de confidentialité, CGU | oui (pages du site) | `apps/web/src/content/legal.ts`  |
+| Accord de traitement des données (annexe aux CGU)   | clients             | `accord-traitement-donnees.md`   |
+| Registre des traitements                            | interne             | `registre-traitements.md`        |
+| Procédure en cas de violation de données            | interne             | `procedure-violation-donnees.md` |
 
 Questions à poser à l'avocat :
 

@@ -30,5 +30,5 @@ fuite d'une sauvegarde, compte compromis, e-mail envoyé au mauvais destinataire
 ## Registre des violations
 
 | Date | Description | Personnes / données | Risque | Notifications (qui, quand) | Mesures |
-| --- | --- | --- | --- | --- | --- |
-| — | aucune | — | — | — | — |
+| ---- | ----------- | ------------------- | ------ | -------------------------- | ------- |
+| —    | aucune      | —                   | —      | —                          | —       |
