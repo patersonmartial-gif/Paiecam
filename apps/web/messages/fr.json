@@ -91,7 +91,8 @@
     "company": "Entreprise",
     "team": "Équipe",
     "switchCompany": "Changer d'entreprise",
-    "payroll": "Paie"
+    "payroll": "Paie",
+    "declarations": "Échéances"
   },
   "settings": {
     "companyTitle": "Informations de l'entreprise",
@@ -346,5 +347,55 @@
     "same": "Le fichier est identique à l'original.",
     "different": "Le fichier a été modifié : il ne correspond pas à l'original.",
     "privacy": "Cette page n'affiche aucune information sur le salarié ni sur les montants."
+  },
+  "declarations": {
+    "title": "Déclarations",
+    "journal": "Journal de paie (Excel)",
+    "generate": "Générer les déclarations",
+    "regenerate": "Régénérer",
+    "none": "Aucune déclaration générée pour ce mois.",
+    "kind": "Déclaration",
+    "amount": "Montant dû (FCFA)",
+    "due": "Échéance",
+    "statusLabel": "État",
+    "file": "Fichier",
+    "download": "Télécharger",
+    "late": "En retard",
+    "kinds": {
+      "cnps": "Cotisations CNPS",
+      "dgi": "Retenues et taxes DGI",
+      "dipe": "DIPE"
+    },
+    "status": {
+      "generated": "À déposer",
+      "filed": "Déposée",
+      "paid": "Payée"
+    },
+    "filedOn": "le {date}, réf. {ref}",
+    "paidOn": "payée le {date}",
+    "markFiled": "Marquer déposée",
+    "markPaid": "Marquer payée",
+    "filedAt": "Date de dépôt",
+    "reference": "Référence de dépôt",
+    "paidAt": "Date de paiement",
+    "paymentReference": "Référence (facultatif)",
+    "dipeWarning": "DIPE : format provisoire, à valider par l'expert-comptable avant tout dépôt.",
+    "lockHelp": "Toutes les déclarations sont déposées : vous pouvez verrouiller le mois. Il ne pourra plus être modifié.",
+    "lock": "Verrouiller le mois",
+    "calendarTitle": "Échéances",
+    "upcoming": "À déposer",
+    "history": "Historique",
+    "nothingDue": "Aucune déclaration en attente.",
+    "open": "Ouvrir le mois",
+    "errors": {
+      "period_not_validated": "Validez d'abord la paie du mois.",
+      "period_locked": "Ce mois est verrouillé.",
+      "already_filed": "Une déclaration est déjà déposée : régénération impossible.",
+      "already_paid": "Déjà payée.",
+      "not_filed": "Marquez d'abord la déclaration comme déposée.",
+      "date_in_future": "La date ne peut pas être dans le futur.",
+      "declarations_not_filed": "Toutes les déclarations doivent être déposées avant le verrouillage.",
+      "not_found": "Déclaration introuvable."
+    }
   }
 }

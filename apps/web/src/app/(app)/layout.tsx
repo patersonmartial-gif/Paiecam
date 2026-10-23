@@ -11,6 +11,11 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     { href: "/tableau-de-bord", label: t("dashboard"), show: true },
     { href: "/salaries", label: t("employees"), show: can(member.role, "employees:read") },
     { href: "/paie", label: t("payroll"), show: can(member.role, "payroll:read") },
+    {
+      href: "/declarations",
+      label: t("declarations"),
+      show: can(member.role, "declarations:read"),
+    },
     { href: "/parametres/entreprise", label: t("company"), show: can(member.role, "tenant:read") },
     { href: "/parametres/equipe", label: t("team"), show: can(member.role, "members:read") },
   ];

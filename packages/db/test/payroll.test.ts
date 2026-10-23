@@ -3,6 +3,7 @@ import { eq, sql } from "drizzle-orm";
 import { uuidv7 } from "uuidv7";
 import { createTenantWithOwner, withTenant, withUser, type NewTenant, type Tx } from "../src";
 import {
+  declarations,
   documents,
   employees,
   payPeriods,
@@ -87,6 +88,45 @@ const payslip = (periodId: string, status: "provisional" | "final" = "final") =>
       .returning(),
   );
 
+let docCounter = 0;
+/** Crée une déclaration « générée » (avec son document) pour la période. */
+async function declaration(periodId: string, kind: "cnps" | "dgi" | "dipe") {
+  const code = `DECL-${++docCounter}-${kind}`;
+  const [doc] = await asA((tx) =>
+    tx
+      .insert(documents)
+      .values({
+        tenantId: A,
+        kind: `declaration_${kind}`,
+        language: "fr",
+        issuerName: "x",
+        periodYear: 2026,
+        periodMonth: 1,
+        storageKey: `k-${code}`,
+        sizeBytes: 1,
+        sha256: "s",
+        signature: "g",
+        verificationCode: code,
+      })
+      .returning(),
+  );
+  const [d] = await asA((tx) =>
+    tx
+      .insert(declarations)
+      .values({
+        tenantId: A,
+        periodId,
+        kind,
+        amountDue: 1000,
+        dueDate: "2026-04-15",
+        documentId: doc?.id ?? "",
+        updatedBy: "x",
+      })
+      .returning(),
+  );
+  return d?.id ?? "";
+}
+
 beforeAll(async () => {
   await db.insert(users).values([
     { id: "pay-owner-a", name: "a", email: "pay-owner-a@exemple.test" },
@@ -141,6 +181,19 @@ describe("états d'une période", () => {
     ).toBe("aucune erreur");
     expect(await pgError(setStatus(id, { status: "open" }))).toMatch(/validated → open/);
     expect(await pgError(setStatus(id, { validatedBy: "autre" }))).toMatch(/figée/);
+    // Verrouillage refusé tant que les trois déclarations ne sont pas déposées.
+    expect(await pgError(setStatus(id, { status: "locked", lockedAt: new Date() }))).toMatch(
+      /déclarations non déposées/,
+    );
+    for (const kind of ["cnps", "dgi", "dipe"] as const) {
+      const d = await declaration(id, kind);
+      await asA((tx) =>
+        tx
+          .update(declarations)
+          .set({ status: "filed", filedAt: "2026-03-10", filingReference: `REF-${kind}` })
+          .where(eq(declarations.id, d)),
+      );
+    }
     expect(await pgError(setStatus(id, { status: "locked", lockedAt: new Date() }))).toBe(
       "aucune erreur",
     );
@@ -285,5 +338,49 @@ describe("documents", () => {
     expect(await lookup(code)).toEqual([{ issuer: "Paie fictive A", month: 7 }]);
     expect(await lookup("MAUVAIS-CODE")).toEqual([]);
     expect(await db.select().from(documents)).toHaveLength(0);
+  });
+});
+
+describe("déclarations", () => {
+  async function validatedPeriod(month: number) {
+    const id = await newPeriod(month);
+    await setStatus(id, { status: "calculated" });
+    await setStatus(id, { status: "validated", validatedBy: "x", validatedAt: new Date() });
+    return id;
+  }
+  const update = (id: string, values: Partial<typeof declarations.$inferInsert>) =>
+    pgError(asA((tx) => tx.update(declarations).set(values).where(eq(declarations.id, id))));
+
+  it("ne se créent que sur un mois validé, une par type", async () => {
+    const open = await newPeriod(8);
+    expect(await pgError(declaration(open, "cnps"))).toMatch(/le mois doit être validé/);
+    const id = await validatedPeriod(9);
+    await declaration(id, "cnps");
+    expect(await pgError(declaration(id, "cnps"))).toMatch(/declarations_period_kind_key/);
+  });
+
+  it("générée → déposée → payée, jamais en arrière ; figée une fois déposée", async () => {
+    const id = await validatedPeriod(10);
+    const d = await declaration(id, "dgi");
+    expect(await update(d, { status: "paid", paidAt: "2026-04-01" })).toMatch(/generated → paid/);
+    expect(await update(d, { status: "filed" })).toMatch(/declarations_filed_chk/);
+    expect(await update(d, { amountDue: 2000 })).toBe("aucune erreur");
+    expect(
+      await update(d, { status: "filed", filedAt: "2026-04-10", filingReference: "DGI-123" }),
+    ).toBe("aucune erreur");
+    expect(await update(d, { amountDue: 1 })).toMatch(/transition interdite|figés/);
+    expect(await update(d, { status: "generated" })).toMatch(/filed → generated/);
+    expect(
+      await update(d, { status: "paid", paidAt: "2026-04-12", filingReference: "AUTRE" }),
+    ).toMatch(/figées/);
+    expect(
+      await update(d, { status: "paid", paidAt: "2026-04-12", paymentReference: "VIR-9" }),
+    ).toBe("aucune erreur");
+    expect(await update(d, { paymentReference: "change" })).toMatch(/transition interdite/);
+  });
+
+  it("le rôle applicatif ne supprime pas une déclaration ; B ne voit rien", async () => {
+    expect(await pgError(asA((tx) => tx.delete(declarations)))).toMatch(/permission denied/);
+    expect(await asB((tx) => tx.select().from(declarations))).toHaveLength(0);
   });
 });

@@ -91,7 +91,8 @@
     "company": "Company",
     "team": "Team",
     "switchCompany": "Switch company",
-    "payroll": "Payroll"
+    "payroll": "Payroll",
+    "declarations": "Deadlines"
   },
   "settings": {
     "companyTitle": "Company information",
@@ -346,5 +347,55 @@
     "same": "The file is identical to the original.",
     "different": "The file has been modified: it does not match the original.",
     "privacy": "This page shows no information about the employee or the amounts."
+  },
+  "declarations": {
+    "title": "Filings",
+    "journal": "Payroll journal (Excel)",
+    "generate": "Generate filings",
+    "regenerate": "Regenerate",
+    "none": "No filings generated for this month.",
+    "kind": "Filing",
+    "amount": "Amount due (FCFA)",
+    "due": "Due date",
+    "statusLabel": "Status",
+    "file": "File",
+    "download": "Download",
+    "late": "Overdue",
+    "kinds": {
+      "cnps": "CNPS contributions",
+      "dgi": "DGI withholdings and taxes",
+      "dipe": "DIPE"
+    },
+    "status": {
+      "generated": "To file",
+      "filed": "Filed",
+      "paid": "Paid"
+    },
+    "filedOn": "on {date}, ref. {ref}",
+    "paidOn": "paid on {date}",
+    "markFiled": "Mark as filed",
+    "markPaid": "Mark as paid",
+    "filedAt": "Filing date",
+    "reference": "Filing reference",
+    "paidAt": "Payment date",
+    "paymentReference": "Reference (optional)",
+    "dipeWarning": "DIPE: provisional format, to be validated by the chartered accountant before any filing.",
+    "lockHelp": "All filings are submitted: you can lock the month. It can no longer be changed.",
+    "lock": "Lock the month",
+    "calendarTitle": "Deadlines",
+    "upcoming": "To file",
+    "history": "History",
+    "nothingDue": "No pending filings.",
+    "open": "Open the month",
+    "errors": {
+      "period_not_validated": "Validate the month's payroll first.",
+      "period_locked": "This month is locked.",
+      "already_filed": "A filing has already been submitted: regeneration is impossible.",
+      "already_paid": "Already paid.",
+      "not_filed": "Mark the filing as submitted first.",
+      "date_in_future": "The date cannot be in the future.",
+      "declarations_not_filed": "All filings must be submitted before locking.",
+      "not_found": "Filing not found."
+    }
   }
 }

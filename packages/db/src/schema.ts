@@ -176,6 +176,8 @@ export const periodStatusEnum = pgEnum("pay_period_status", [
 ]);
 export const payslipStatusEnum = pgEnum("payslip_status", ["provisional", "final"]);
 export const languageEnum = pgEnum("language", ["fr", "en"]);
+export const declarationKindEnum = pgEnum("declaration_kind", ["cnps", "dgi", "dipe"]);
+export const declarationStatusEnum = pgEnum("declaration_status", ["generated", "filed", "paid"]);
 export const contractTypeEnum = pgEnum("contract_type", ["cdi", "cdd"]);
 export const maritalStatusEnum = pgEnum("marital_status", [
   "single",
@@ -447,5 +449,72 @@ export const documents = pgTable(
     verificationCode: text("verification_code").notNull().unique(),
     issuedAt: timestamp("issued_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [index("documents_tenant_payslip_idx").on(t.tenantId, t.payslipId)],
+  (t) => [
+    index("documents_tenant_payslip_idx").on(t.tenantId, t.payslipId),
+    unique("documents_tenant_id_id_key").on(t.tenantId, t.id),
+  ],
+);
+
+/**
+ * Déclaration d'un mois validé : générée → déposée → payée. Une fois déposée, son montant et
+ * son fichier sont figés. Le mois ne se verrouille que lorsque toutes ses déclarations sont déposées.
+ */
+export const declarations = pgTable(
+  "declarations",
+  {
+    id: id(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id),
+    periodId: uuid("period_id")
+      .notNull()
+      .references(() => payPeriods.id),
+    kind: declarationKindEnum("kind").notNull(),
+    amountDue: integer("amount_due").notNull(),
+    dueDate: date("due_date").notNull(),
+    status: declarationStatusEnum("status").notNull().default("generated"),
+    documentId: uuid("document_id")
+      .notNull()
+      .references(() => documents.id),
+    filedAt: date("filed_at"),
+    filingReference: text("filing_reference"),
+    paidAt: date("paid_at"),
+    paymentReference: text("payment_reference"),
+    updatedBy: text("updated_by").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    unique("declarations_period_kind_key").on(t.periodId, t.kind),
+    unique("declarations_tenant_id_id_key").on(t.tenantId, t.id),
+    index("declarations_tenant_due_idx").on(t.tenantId, t.dueDate),
+    check("declarations_amount_chk", sql`${t.amountDue} >= 0`),
+    check(
+      "declarations_filed_chk",
+      sql`${t.status} = 'generated' or (${t.filedAt} is not null and ${t.filingReference} is not null)`,
+    ),
+    check("declarations_paid_chk", sql`${t.status} <> 'paid' or ${t.paidAt} is not null`),
+  ],
+);
+
+/** Rappels d'échéance envoyés : un seul envoi par déclaration et par étape. */
+export const reminderDeliveries = pgTable(
+  "reminder_deliveries",
+  {
+    id: id(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id),
+    declarationId: uuid("declaration_id")
+      .notNull()
+      .references(() => declarations.id),
+    stage: text("stage").notNull(),
+    channel: text("channel").notNull(),
+    recipients: integer("recipients").notNull(),
+    sentAt: timestamp("sent_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    unique("reminder_deliveries_once_key").on(t.declarationId, t.stage, t.channel),
+    check("reminder_deliveries_stage_chk", sql`${t.stage} in ('j-7', 'j-2', 'j0', 'late')`),
+  ],
 );

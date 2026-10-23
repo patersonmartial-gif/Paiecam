@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
+import { DeclarationsSection } from "@/components/declarations/section";
 import { PayrollForm } from "@/components/payroll/forms";
 import { Field } from "@/components/ui";
 import {
@@ -11,10 +12,12 @@ import {
 import { getRequestContext } from "@/server/authz";
 import { can } from "@/server/authz/permissions";
 import { db } from "@/server/db";
+import { makeListDeclarations } from "@/server/features/declarations";
 import { makeGetPeriod } from "@/server/features/payroll";
 import { requireMember } from "@/server/guards";
 
 const getPeriod = makeGetPeriod(db);
+const listDeclarations = makeListDeclarations(db);
 const fcfa = (n: number) => n.toLocaleString("fr-FR");
 
 export default async function PeriodPage({ params }: { params: Promise<{ periodId: string }> }) {
@@ -200,6 +203,19 @@ export default async function PeriodPage({ params }: { params: Promise<{ periodI
           </div>
         </section>
       )}
+
+      {(period.status === "validated" || period.status === "locked") &&
+        can(member.role, "declarations:read") && (
+          <DeclarationsSection
+            periodId={period.id}
+            periodStatus={period.status}
+            rows={await listDeclarations(await getRequestContext(), { periodId: period.id }).then(
+              (r) => (r.ok ? r.data : []),
+            )}
+            canDeclare={can(member.role, "declarations:generate")}
+            canLock={can(member.role, "payroll:validate")}
+          />
+        )}
 
       {period.status === "calculated" && can(member.role, "payroll:validate") && (
         <section className="max-w-md rounded-lg border border-stone-200 bg-white p-4">
