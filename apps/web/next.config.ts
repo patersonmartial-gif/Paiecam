@@ -19,6 +19,8 @@ const securityHeaders = [
 
 const config: NextConfig = {
   poweredByHeader: false,
+  // Import Excel : fichier de 2 Mo maximum (contrôlé aussi côté serveur), plus l'enveloppe multipart.
+  experimental: { serverActions: { bodySizeLimit: "3mb" } },
   serverExternalPackages: ["@node-rs/argon2"],
   transpilePackages: ["@paiecam/paie-engine", "@paiecam/db", "@paiecam/security"],
   async headers() {

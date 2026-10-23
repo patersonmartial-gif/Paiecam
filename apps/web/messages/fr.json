@@ -209,5 +209,38 @@
       "employees_tenant_matricule_key": "Ce matricule est déjà utilisé.",
       "employees_tenant_cnps_key": "Ce n° CNPS est déjà attribué à un autre salarié."
     }
+  },
+  "import": {
+    "title": "Importer des salariés",
+    "back": "Salariés",
+    "step1": "Téléchargez le modèle Excel",
+    "step2": "Remplissez une ligne par salarié (500 au maximum). Les coordonnées bancaires se saisissent ensuite sur chaque fiche.",
+    "step3": "Envoyez le fichier : il est vérifié en entier avant tout import.",
+    "file": "Fichier .xlsx (2 Mo maximum)",
+    "check": "Vérifier le fichier",
+    "summary": "{total} ligne(s) lue(s) : {valid} prête(s), {errors} en erreur.",
+    "line": "Ligne",
+    "problem": "Problème",
+    "invalidFields": "Champs à corriger :",
+    "confirm": "Importer {count} salarié(s)",
+    "fixAndRetry": "Corrigez le fichier puis vérifiez-le à nouveau. Rien n'est importé tant qu'une ligne est en erreur.",
+    "done": "{count} salarié(s) importé(s).",
+    "seeList": "Voir la liste",
+    "reasons": {
+      "duplicate_matricule": "Matricule présent deux fois dans le fichier.",
+      "duplicate_cnps": "N° CNPS présent deux fois dans le fichier.",
+      "existing_matricule": "Ce matricule existe déjà.",
+      "existing_cnps": "Ce n° CNPS est déjà attribué."
+    },
+    "fileErrors": {
+      "empty": "Choisissez un fichier.",
+      "too_large": "Le fichier dépasse 2 Mo.",
+      "not_xlsx": "Ce fichier n'est pas un classeur Excel .xlsx valide.",
+      "too_many_entries": "Ce fichier est trop complexe pour être importé.",
+      "uncompressed_too_large": "Ce fichier est trop volumineux une fois ouvert.",
+      "missing_columns": "Colonnes manquantes :",
+      "no_rows": "Le fichier ne contient aucun salarié.",
+      "too_many_rows": "Le fichier dépasse 500 salariés : découpez-le."
+    }
   }
 }

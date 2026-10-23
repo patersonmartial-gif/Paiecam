@@ -209,5 +209,38 @@
       "employees_tenant_matricule_key": "This employee ID is already in use.",
       "employees_tenant_cnps_key": "This CNPS number is already assigned to another employee."
     }
+  },
+  "import": {
+    "title": "Import employees",
+    "back": "Employees",
+    "step1": "Download the Excel template",
+    "step2": "Fill in one row per employee (500 at most). Bank details are entered afterwards on each record.",
+    "step3": "Upload the file: it is fully checked before anything is imported.",
+    "file": ".xlsx file (2 MB maximum)",
+    "check": "Check the file",
+    "summary": "{total} row(s) read: {valid} ready, {errors} with errors.",
+    "line": "Row",
+    "problem": "Problem",
+    "invalidFields": "Fields to fix:",
+    "confirm": "Import {count} employee(s)",
+    "fixAndRetry": "Fix the file and check it again. Nothing is imported while any row has an error.",
+    "done": "{count} employee(s) imported.",
+    "seeList": "See the list",
+    "reasons": {
+      "duplicate_matricule": "Employee ID appears twice in the file.",
+      "duplicate_cnps": "CNPS number appears twice in the file.",
+      "existing_matricule": "This employee ID already exists.",
+      "existing_cnps": "This CNPS number is already assigned."
+    },
+    "fileErrors": {
+      "empty": "Choose a file.",
+      "too_large": "The file is larger than 2 MB.",
+      "not_xlsx": "This file is not a valid Excel .xlsx workbook.",
+      "too_many_entries": "This file is too complex to import.",
+      "uncompressed_too_large": "This file is too large once opened.",
+      "missing_columns": "Missing columns:",
+      "no_rows": "The file contains no employees.",
+      "too_many_rows": "The file has more than 500 employees: split it."
+    }
   }
 }

@@ -23,7 +23,7 @@ const bankCtx = (tenantId: string, employeeId: string, column: "iban" | "mobile_
 });
 
 /** Colonnes chiffrées du n° CNPS pour un salarié. */
-function cnpsColumns(
+export function cnpsColumns(
   keyring: Keyring,
   tenantId: string,
   employeeId: string,
