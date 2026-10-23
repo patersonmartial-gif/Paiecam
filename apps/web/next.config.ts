@@ -20,7 +20,7 @@ const securityHeaders = [
 const config: NextConfig = {
   poweredByHeader: false,
   serverExternalPackages: ["@node-rs/argon2"],
-  transpilePackages: ["@paiecam/paie-engine", "@paiecam/db"],
+  transpilePackages: ["@paiecam/paie-engine", "@paiecam/db", "@paiecam/security"],
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

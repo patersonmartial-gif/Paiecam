@@ -1,5 +1,6 @@
 import "server-only";
 import { z } from "zod";
+import { parseKeyring } from "@paiecam/security";
 
 /** Seul point d'entrée des variables d'environnement côté serveur. */
 const schema = z.object({
@@ -9,13 +10,21 @@ const schema = z.object({
   BETTER_AUTH_SECRET: z.string().min(32),
   /** Vérification Have I Been Pwned. « off » sert seulement hors ligne en développement. */
   PWNED_PASSWORDS_CHECK: z.enum(["on", "off"]).default("on"),
-  FIELD_ENCRYPTION_KEY: z
+  /** Trousseau « v2:<base64>,v1:<base64> » ; la première clé chiffre. */
+  FIELD_ENCRYPTION_KEYS: z
     .string()
-    .refine((v) => Buffer.from(v, "base64").length === 32, "doit faire 32 octets en base64")
+    .refine((v) => {
+      try {
+        parseKeyring(v);
+        return true;
+      } catch {
+        return false;
+      }
+    }, "trousseau invalide")
     .optional(),
 });
 
-export type Env = z.infer<typeof schema>;
+export type Env = z.infer<typeof schema> & { FIELD_ENCRYPTION_KEYS: string };
 
 export function parseEnv(source: Record<string, string | undefined>): Env {
   // Une variable vide (« FOO= » dans .env) est considérée comme absente.
@@ -26,13 +35,13 @@ export function parseEnv(source: Record<string, string | undefined>): Env {
     const names = parsed.error.issues.map((i) => i.path.join(".")).join(", ");
     throw new Error(`Variables d'environnement invalides : ${names}`);
   }
-  if (parsed.data.NODE_ENV === "production" && !parsed.data.FIELD_ENCRYPTION_KEY) {
-    throw new Error("FIELD_ENCRYPTION_KEY est obligatoire en production");
+  if (!parsed.data.FIELD_ENCRYPTION_KEYS) {
+    throw new Error("FIELD_ENCRYPTION_KEYS est obligatoire (voir .env.example)");
   }
   if (parsed.data.NODE_ENV === "production" && parsed.data.PWNED_PASSWORDS_CHECK === "off") {
     throw new Error("PWNED_PASSWORDS_CHECK=off est interdit en production");
   }
-  return parsed.data;
+  return parsed.data as Env;
 }
 
 export const env = parseEnv(process.env);

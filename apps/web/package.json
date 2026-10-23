@@ -16,6 +16,7 @@
     "@node-rs/argon2": "2.2.2",
     "@paiecam/db": "workspace:*",
     "@paiecam/paie-engine": "workspace:*",
+    "@paiecam/security": "workspace:*",
     "better-auth": "1.7.12",
     "next": "^16.4.2",
     "next-intl": "^4.14.9",

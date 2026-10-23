@@ -35,6 +35,8 @@ export default defineConfig({
       APP_URL: baseURL,
       BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET ?? "e2e-secret-e2e-secret-e2e-secret-32",
       PWNED_PASSWORDS_CHECK: "off",
+      FIELD_ENCRYPTION_KEYS:
+        process.env.FIELD_ENCRYPTION_KEYS ?? `v1:${Buffer.alloc(32, 7).toString("base64")}`,
     },
   },
 });
