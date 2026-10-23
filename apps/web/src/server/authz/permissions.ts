@@ -8,6 +8,8 @@ export const PERMISSIONS = [
   "members:manage",
   "employees:read",
   "employees:write",
+  /** Voir en clair le n° CNPS, l'IBAN et le numéro mobile money (lecture auditée). */
+  "employees:sensitive",
   "payroll:read",
   "payroll:run",
   "payroll:validate",
@@ -27,6 +29,8 @@ export const ROLE_PERMISSIONS: Record<Role, readonly Permission[]> = {
     "members:read",
     "employees:read",
     "employees:write",
+    /** Voir en clair le n° CNPS, l'IBAN et le numéro mobile money (lecture auditée). */
+    "employees:sensitive",
     "payroll:read",
     "payroll:run",
     "payroll:validate",

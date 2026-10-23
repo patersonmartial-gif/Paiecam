@@ -57,6 +57,20 @@
       "when": 1792755361242,
       "tag": "0007_invitations_rls",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792755849592,
+      "tag": "0008_employees",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792755850518,
+      "tag": "0009_employees_rls",
+      "breakpoints": true
     }
   ]
 }

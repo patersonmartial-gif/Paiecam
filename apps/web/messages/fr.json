@@ -132,5 +132,82 @@
       "email_mismatch": "Cette invitation a été envoyée à une autre adresse e-mail que celle de votre compte.",
       "already_member": "Vous faites déjà partie de cette entreprise."
     }
+  },
+  "employees": {
+    "title": "Salariés",
+    "add": "Ajouter un salarié",
+    "import": "Importer depuis Excel",
+    "search": "Rechercher (nom, prénom, matricule)",
+    "showArchived": "Afficher les salariés sortis",
+    "empty": "Aucun salarié pour l'instant.",
+    "archivedBadge": "Sorti",
+    "newTitle": "Nouveau salarié",
+    "editTitle": "Fiche salarié",
+    "save": "Enregistrer",
+    "create": "Créer la fiche",
+    "saved": "Fiche enregistrée.",
+    "sections": {
+      "identity": "Identité",
+      "contract": "Contrat",
+      "pay": "Paie",
+      "bank": "Coordonnées de paiement",
+      "archive": "Sortie du salarié"
+    },
+    "fields": {
+      "matricule": "Matricule",
+      "lastName": "Nom",
+      "firstNames": "Prénoms",
+      "birthDate": "Date de naissance",
+      "cnpsNumber": "N° CNPS",
+      "cnpsKeep": "Laisser vide pour conserver le numéro actuel",
+      "hireDate": "Date d'embauche",
+      "contractType": "Type de contrat",
+      "endDate": "Date de fin",
+      "jobTitle": "Poste",
+      "category": "Catégorie",
+      "echelon": "Échelon",
+      "baseSalary": "Salaire de base (FCFA/mois)",
+      "maritalStatus": "Situation familiale",
+      "childrenCount": "Enfants à charge",
+      "paymentMethod": "Mode de paiement",
+      "iban": "IBAN",
+      "mobileOperator": "Opérateur mobile money",
+      "mobileNumber": "Numéro mobile money",
+      "password": "Votre mot de passe (obligatoire pour modifier ces coordonnées)"
+    },
+    "contractTypes": {
+      "cdi": "CDI",
+      "cdd": "CDD"
+    },
+    "maritalStatuses": {
+      "single": "Célibataire",
+      "married": "Marié(e)",
+      "divorced": "Divorcé(e)",
+      "widowed": "Veuf / veuve"
+    },
+    "paymentMethods": {
+      "bank_transfer": "Virement bancaire",
+      "mobile_money": "Mobile money",
+      "cash": "Espèces"
+    },
+    "operators": {
+      "none": "Aucun",
+      "orange": "Orange Money",
+      "mtn": "MTN MoMo"
+    },
+    "reveal": "Afficher en clair",
+    "revealHelp": "Chaque affichage est enregistré dans le journal d'audit.",
+    "notSet": "Non renseigné",
+    "saveBank": "Enregistrer les coordonnées",
+    "archiveHelp": "Le salarié sort de la liste ; sa fiche et son historique sont conservés.",
+    "archiveButton": "Enregistrer la sortie",
+    "errors": {
+      "not_found": "Salarié introuvable.",
+      "archived": "Ce salarié est sorti : sa fiche n'est plus modifiable.",
+      "bad_password": "Mot de passe incorrect.",
+      "end_before_hire": "La date de sortie précède la date d'embauche.",
+      "employees_tenant_matricule_key": "Ce matricule est déjà utilisé.",
+      "employees_tenant_cnps_key": "Ce n° CNPS est déjà attribué à un autre salarié."
+    }
   }
 }

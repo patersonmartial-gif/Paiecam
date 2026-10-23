@@ -23,7 +23,7 @@ export function Field({
   ...props
 }: InputHTMLAttributes<HTMLInputElement> & {
   label: string;
-  hint?: string;
+  hint?: string | undefined;
   error?: string[] | undefined;
 }) {
   return (

@@ -132,5 +132,82 @@
       "email_mismatch": "This invitation was sent to a different email address than your account's.",
       "already_member": "You are already a member of this company."
     }
+  },
+  "employees": {
+    "title": "Employees",
+    "add": "Add an employee",
+    "import": "Import from Excel",
+    "search": "Search (name, first names, ID)",
+    "showArchived": "Show employees who have left",
+    "empty": "No employees yet.",
+    "archivedBadge": "Left",
+    "newTitle": "New employee",
+    "editTitle": "Employee record",
+    "save": "Save",
+    "create": "Create the record",
+    "saved": "Record saved.",
+    "sections": {
+      "identity": "Identity",
+      "contract": "Contract",
+      "pay": "Pay",
+      "bank": "Payment details",
+      "archive": "Employee departure"
+    },
+    "fields": {
+      "matricule": "Employee ID",
+      "lastName": "Last name",
+      "firstNames": "First names",
+      "birthDate": "Date of birth",
+      "cnpsNumber": "CNPS number",
+      "cnpsKeep": "Leave blank to keep the current number",
+      "hireDate": "Hire date",
+      "contractType": "Contract type",
+      "endDate": "End date",
+      "jobTitle": "Job title",
+      "category": "Category",
+      "echelon": "Step",
+      "baseSalary": "Base salary (FCFA/month)",
+      "maritalStatus": "Marital status",
+      "childrenCount": "Dependent children",
+      "paymentMethod": "Payment method",
+      "iban": "IBAN",
+      "mobileOperator": "Mobile money operator",
+      "mobileNumber": "Mobile money number",
+      "password": "Your password (required to change these details)"
+    },
+    "contractTypes": {
+      "cdi": "Permanent (CDI)",
+      "cdd": "Fixed-term (CDD)"
+    },
+    "maritalStatuses": {
+      "single": "Single",
+      "married": "Married",
+      "divorced": "Divorced",
+      "widowed": "Widowed"
+    },
+    "paymentMethods": {
+      "bank_transfer": "Bank transfer",
+      "mobile_money": "Mobile money",
+      "cash": "Cash"
+    },
+    "operators": {
+      "none": "None",
+      "orange": "Orange Money",
+      "mtn": "MTN MoMo"
+    },
+    "reveal": "Show in full",
+    "revealHelp": "Every display is recorded in the audit log.",
+    "notSet": "Not provided",
+    "saveBank": "Save payment details",
+    "archiveHelp": "The employee leaves the list; their record and history are kept.",
+    "archiveButton": "Record departure",
+    "errors": {
+      "not_found": "Employee not found.",
+      "archived": "This employee has left: the record can no longer be changed.",
+      "bad_password": "Incorrect password.",
+      "end_before_hire": "The departure date is before the hire date.",
+      "employees_tenant_matricule_key": "This employee ID is already in use.",
+      "employees_tenant_cnps_key": "This CNPS number is already assigned to another employee."
+    }
   }
 }

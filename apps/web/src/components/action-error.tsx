@@ -18,7 +18,8 @@ export function ActionErrorAlert({
   if (error.code === "INVALID_INPUT") key = "common.errors.invalidInput";
   else if (error.code === "FORBIDDEN" || error.code === "TWO_FACTOR_REQUIRED")
     key = "common.errors.forbidden";
-  else if (error.code === "CONFLICT") key = "company.niuTaken";
+  else if (error.code === "CONFLICT")
+    key = ruleNamespace ? `${ruleNamespace}.${error.constraint}` : "company.niuTaken";
   else if (error.code === "RULE" && ruleNamespace) key = `${ruleNamespace}.${error.reason}`;
   return <Alert>{t(key)}</Alert>;
 }

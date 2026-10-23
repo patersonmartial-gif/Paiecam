@@ -11,6 +11,7 @@ import {
   text,
   timestamp,
   unique,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
 import { uuidv7 } from "uuidv7";
@@ -144,5 +145,102 @@ export const invitations = pgTable(
   (t) => [
     index("invitations_tenant_idx").on(t.tenantId),
     check("invitations_email_lower_chk", sql`${t.email} = lower(${t.email})`),
+  ],
+);
+
+export const contractTypeEnum = pgEnum("contract_type", ["cdi", "cdd"]);
+export const maritalStatusEnum = pgEnum("marital_status", [
+  "single",
+  "married",
+  "divorced",
+  "widowed",
+]);
+export const paymentMethodEnum = pgEnum("payment_method", [
+  "bank_transfer",
+  "mobile_money",
+  "cash",
+]);
+export const mobileOperatorEnum = pgEnum("mobile_operator", ["orange", "mtn"]);
+
+/**
+ * Fiche salarié : uniquement ce que la paie exige (minimisation, loi 2024/017).
+ * Pas de photo, religion, ethnie ni donnée de santé. Le n° CNPS est chiffré ; son empreinte
+ * (blind index) garantit l'unicité dans l'entreprise sans le déchiffrer.
+ */
+export const employees = pgTable(
+  "employees",
+  {
+    id: id(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id),
+    matricule: text("matricule").notNull(),
+    lastName: text("last_name").notNull(),
+    firstNames: text("first_names").notNull(),
+    birthDate: date("birth_date").notNull(),
+    cnpsNumberEnc: text("cnps_number_enc"),
+    cnpsNumberIndex: text("cnps_number_index"),
+    cnpsNumberLast4: text("cnps_number_last4"),
+    hireDate: date("hire_date").notNull(),
+    endDate: date("end_date"),
+    contractType: contractTypeEnum("contract_type").notNull(),
+    jobTitle: text("job_title").notNull(),
+    category: text("category").notNull(),
+    echelon: text("echelon").notNull(),
+    /** Salaire de base mensuel, en FCFA entiers. */
+    baseSalary: integer("base_salary").notNull(),
+    maritalStatus: maritalStatusEnum("marital_status").notNull(),
+    childrenCount: integer("children_count").notNull().default(0),
+    paymentMethod: paymentMethodEnum("payment_method").notNull(),
+    archivedAt: timestamp("archived_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    unique("employees_tenant_matricule_key").on(t.tenantId, t.matricule),
+    uniqueIndex("employees_tenant_cnps_key")
+      .on(t.tenantId, t.cnpsNumberIndex)
+      .where(sql`${t.cnpsNumberIndex} is not null`),
+    index("employees_tenant_name_idx").on(t.tenantId, t.lastName),
+    check("employees_base_salary_chk", sql`${t.baseSalary} >= 0`),
+    check("employees_children_chk", sql`${t.childrenCount} between 0 and 30`),
+    check("employees_dates_chk", sql`${t.hireDate} > ${t.birthDate}`),
+    check("employees_end_date_chk", sql`${t.endDate} is null or ${t.endDate} >= ${t.hireDate}`),
+    check(
+      "employees_cnps_consistency_chk",
+      sql`(${t.cnpsNumberEnc} is null) = (${t.cnpsNumberIndex} is null)`,
+    ),
+  ],
+);
+
+/**
+ * Coordonnées de paiement, chiffrées champ par champ. Les 4 derniers caractères sont gardés
+ * en clair pour l'affichage masqué, sans déchiffrer.
+ */
+export const employeeBankDetails = pgTable(
+  "employee_bank_details",
+  {
+    id: id(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id),
+    employeeId: uuid("employee_id")
+      .notNull()
+      .unique()
+      .references(() => employees.id),
+    ibanEnc: text("iban_enc"),
+    ibanLast4: text("iban_last4"),
+    mobileOperator: mobileOperatorEnum("mobile_operator"),
+    mobileNumberEnc: text("mobile_number_enc"),
+    mobileNumberLast4: text("mobile_number_last4"),
+    updatedBy: text("updated_by").notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index("employee_bank_details_tenant_idx").on(t.tenantId),
+    check(
+      "employee_bank_details_mobile_chk",
+      sql`(${t.mobileNumberEnc} is null) = (${t.mobileOperator} is null)`,
+    ),
   ],
 );

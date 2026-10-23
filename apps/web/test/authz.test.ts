@@ -132,6 +132,7 @@ describe("matrice des rôles", () => {
       "members:read",
       "employees:read",
       "employees:write",
+      "employees:sensitive",
       "payroll:read",
       "payroll:run",
       "payroll:validate",
