@@ -2,10 +2,12 @@ import { notFound } from "next/navigation";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { getRequestContext } from "@/server/authz";
 import { db } from "@/server/db";
+import { makeGetPayslipDocument } from "@/server/features/documents";
 import { makeGetPayslip } from "@/server/features/payroll";
 import { requireMember } from "@/server/guards";
 
 const getPayslip = makeGetPayslip(db);
+const getDocument = makeGetPayslipDocument(db);
 const fcfa = (n: number) => n.toLocaleString("fr-FR");
 const SECTIONS = [
   "earning",
@@ -24,7 +26,8 @@ export default async function PayslipPage({
   const t = await getTranslations("payroll");
   const format = await getFormatter();
   const { payslipId, periodId } = await params;
-  const res = await getPayslip(await getRequestContext(), { payslipId });
+  const ctx = await getRequestContext();
+  const res = await getPayslip(ctx, { payslipId });
   if (!res.ok || res.data.period.id !== periodId) notFound();
   const { slip, lines, period } = res.data;
   const e = slip.employeeSnapshot as {
@@ -36,6 +39,9 @@ export default async function PayslipPage({
     echelon: string;
   };
   const rules = slip.rulesUsed as { code: string; validFrom: string; status: string }[];
+  const docRes = await getDocument(ctx, { payslipId });
+  const doc = docRes.ok ? docRes.data : null;
+  const validated = period.status === "validated" || period.status === "locked";
 
   return (
     <main className="mx-auto max-w-4xl space-y-6 px-4 py-10">
@@ -61,6 +67,31 @@ export default async function PayslipPage({
         <p className="text-stone-600">
           {e.matricule} · {e.jobTitle} · cat. {e.category} / {e.echelon}
         </p>
+        <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
+          {doc ? (
+            <>
+              <a
+                href={`/documents/${doc.id}/telecharger`}
+                className="rounded-md bg-brand px-3 py-1.5 font-medium text-white"
+              >
+                {t("payslip.pdf")}
+              </a>
+              <a href={`/verifier/${doc.code}`} className="text-stone-600 underline">
+                {t("payslip.verifyLink")} : {doc.code}
+              </a>
+            </>
+          ) : (
+            validated && <span className="text-stone-600">{t("payslip.pending")}</span>
+          )}
+          {!validated && (
+            <a
+              href={`/paie/${periodId}/bulletins/${payslipId}/apercu`}
+              className="rounded-md border border-stone-300 px-3 py-1.5 font-medium"
+            >
+              {t("payslip.preview")}
+            </a>
+          )}
+        </div>
       </header>
       {SECTIONS.map((section) => {
         const rows = lines.filter((l) => l.section === section);

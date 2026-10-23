@@ -24,7 +24,6 @@ const calculate = makeCalculatePeriod(db, {
 const reopen = makeReopenPeriod(db);
 const validate = makeValidatePeriod(db, {
   verifyPassword: (userId, password) => verifyUserPassword(db, userId, password),
-  onValidated: (periodId, tenantId) => enqueuePayslipPdfs(periodId, tenantId),
 });
 
 export type PayrollState = { error?: ActionError; ok?: string } | undefined;
@@ -81,10 +80,10 @@ export async function validatePeriodAction(
   form: FormData,
 ): Promise<PayrollState> {
   const periodId = String(form.get("periodId"));
-  const res = await validate(await getRequestContext(), {
-    periodId,
-    password: String(form.get("password") ?? ""),
-  });
+  const ctx = await getRequestContext();
+  const res = await validate(ctx, { periodId, password: String(form.get("password") ?? "") });
+  // Après la validation (transaction terminée) : le worker ne voit jamais un mois encore « calculé ».
+  if (res.ok && ctx.tenantId) await enqueuePayslipPdfs(periodId, ctx.tenantId);
   if (!res.ok) return { error: res.error };
   revalidatePath(`/paie/${periodId}`);
   return { ok: "validated" };

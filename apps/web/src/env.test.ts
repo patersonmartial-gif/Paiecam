@@ -6,7 +6,7 @@ process.env.DATABASE_URL ??= "postgres://u:p@localhost:5432/db";
 process.env.APP_URL ??= "http://localhost:3000";
 process.env.BETTER_AUTH_SECRET ??= "x".repeat(32);
 process.env.FIELD_ENCRYPTION_KEYS ??= keys;
-const { parseEnv } = await import("./env");
+const { parseEnv } = await import("./env-schema");
 
 const ok = {
   DATABASE_URL: "postgres://u:p@localhost:5432/db",

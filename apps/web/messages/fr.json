@@ -313,7 +313,10 @@
       "rules": "Règles appliquées",
       "draft": "brouillon",
       "validatedRule": "validée",
-      "pdf": "Télécharger le PDF"
+      "pdf": "Télécharger le PDF",
+      "preview": "Aperçu PDF",
+      "pending": "PDF définitif en cours de génération…",
+      "verifyLink": "Code de vérification"
     },
     "errors": {
       "not_found": "Mois introuvable.",
@@ -329,5 +332,19 @@
       "unknown_overtime": "Catégorie d'heures supplémentaires inconnue.",
       "pay_periods_tenant_month_key": "Ce mois est déjà ouvert."
     }
+  },
+  "verify": {
+    "title": "Vérification d'un bulletin",
+    "unknown": "Aucun bulletin ne correspond à ce code.",
+    "authentic": "Bulletin authentique : émis et signé par PaieCam.",
+    "invalidSignature": "Signature invalide : ce document n'est pas fiable.",
+    "issuer": "Émetteur",
+    "period": "Période",
+    "issuedAt": "Émis le",
+    "fingerprint": "Empreinte SHA-256",
+    "compare": "Comparer avec votre fichier PDF (il reste sur votre appareil)",
+    "same": "Le fichier est identique à l'original.",
+    "different": "Le fichier a été modifié : il ne correspond pas à l'original.",
+    "privacy": "Cette page n'affiche aucune information sur le salarié ni sur les montants."
   }
 }

@@ -10,17 +10,20 @@
     "lint": "eslint .",
     "typecheck": "tsc",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "worker": "tsx src/worker.ts"
   },
   "dependencies": {
     "@node-rs/argon2": "2.2.2",
     "@paiecam/db": "workspace:*",
+    "@paiecam/documents": "workspace:*",
     "@paiecam/paie-engine": "workspace:*",
     "@paiecam/security": "workspace:*",
     "better-auth": "1.7.12",
     "fflate": "^0.8.3",
     "next": "^16.4.2",
     "next-intl": "^4.14.9",
+    "pg-boss": "12.38.0",
     "qrcode": "^1.5.4",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -38,7 +41,9 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "eslint": "^10.13.0",
+    "pdf-parse": "^2.4.5",
     "tailwindcss": "^4.3.3",
+    "tsx": "^4.20.0",
     "vitest": "^5.0.5"
   }
 }

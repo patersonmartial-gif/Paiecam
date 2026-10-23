@@ -41,6 +41,18 @@ export async function resetTestDatabase(): Promise<void> {
   } finally {
     await client.end();
   }
+  // Le schéma pgboss est conservé (un worker peut déjà tourner, comme dans les parcours Playwright) ;
+  // seules ses tâches sont vidées, par le rôle applicatif qui possède ces tables.
+  const app = postgres(required("TEST_DATABASE_URL"), { max: 1, onnotice: () => {} });
+  try {
+    await app.unsafe(`
+      do $$ begin
+        if to_regclass('pgboss.job') is not null then truncate pgboss.job cascade; end if;
+      end $$;
+    `);
+  } finally {
+    await app.end();
+  }
 }
 
 /** Charge des règles dans la base de test (rôle propriétaire : l'application ne peut pas écrire pay_rules). */

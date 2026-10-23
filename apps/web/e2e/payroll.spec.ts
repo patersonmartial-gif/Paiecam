@@ -43,6 +43,18 @@ test("mois de paie : saisie, calcul provisoire, bulletin détaillé, réouvertur
   await page.getByRole("link", { name: "Voir" }).click();
   await expect(page.getByRole("heading", { name: "Bulletin de paie — Fictif Paul" })).toBeVisible();
   await expect(page.getByText("10 % × IRPP 24 896 FCFA")).toBeVisible();
+
+  // Aperçu PDF (provisoire, filigrané) servi par le serveur
+  const previewHref = await page.getByRole("link", { name: "Aperçu PDF" }).getAttribute("href");
+  const preview = await page.request.get(previewHref ?? "");
+  expect(preview.status()).toBe(200);
+  expect(preview.headers()["content-type"]).toBe("application/pdf");
+  expect(preview.headers()["cache-control"]).toBe("no-store");
+  expect((await preview.body()).subarray(0, 5).toString()).toBe("%PDF-");
+  // Sans session, l'aperçu est refusé
+  const anonymous = await page.context().browser()?.newContext();
+  const denied = await anonymous?.request.get(new URL(previewHref ?? "", page.url()).toString());
+  expect(denied?.status()).toBe(401);
   await page.goBack();
 
   // Réouverture, prime de 50 000, recalcul
@@ -57,4 +69,11 @@ test("mois de paie : saisie, calcul provisoire, bulletin détaillé, réouvertur
   await expect(page.getByText("Bulletins calculés.")).toBeVisible();
   await expect(page.getByRole("cell", { name: "345 015" })).toHaveCount(0);
   await expect(page.getByLabel("Fictif Paul — HS +20 %")).toHaveValue("2.5");
+});
+
+test("la page de vérification ne révèle rien pour un code inconnu", async ({ page }) => {
+  await page.goto("/verifier/AAAA-BBBB-CCCC-DDDD");
+  await expect(page.getByText("Aucun bulletin ne correspond à ce code.")).toBeVisible();
+  await page.goto("/verifier/%27%3B%20drop%20table");
+  await expect(page.getByText("Aucun bulletin ne correspond à ce code.")).toBeVisible();
 });

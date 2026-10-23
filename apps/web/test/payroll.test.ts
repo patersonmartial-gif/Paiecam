@@ -25,7 +25,6 @@ import {
 const db = createDb(testDatabaseUrl());
 const keyring = parseKeyring(`v1:${Buffer.alloc(32, 9).toString("base64")}`);
 const PASSWORD = "mot-de-passe-fictif";
-const validated: string[] = [];
 
 const createEmployee = makeCreateEmployee(db, keyring);
 const openPeriod = makeOpenPeriod(db);
@@ -36,7 +35,6 @@ const calcStrict = makeCalculatePeriod(db, { allowDraftRules: false });
 const reopen = makeReopenPeriod(db);
 const validate = makeValidatePeriod(db, {
   verifyPassword: async (_u, pw) => pw === PASSWORD,
-  onValidated: async (periodId) => void validated.push(periodId),
 });
 const getPayslip = makeGetPayslip(db);
 
@@ -257,7 +255,6 @@ describe("validation avec des règles validées", () => {
     expect(ok(await validate(ctx(U.owner), { periodId: march, password: PASSWORD }))).toEqual({
       periodId: march,
     });
-    expect(validated).toEqual([march]);
 
     const grid = ok(await getPeriod(ctx(U.owner), { periodId: march }));
     expect(grid.period).toMatchObject({ status: "validated", validatedBy: U.owner });

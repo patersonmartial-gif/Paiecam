@@ -10,6 +10,7 @@ pnpm install
 pnpm db:up          # PostgreSQL 16 dans Docker
 pnpm db:migrate
 pnpm dev            # http://localhost:3000
+pnpm --filter @paiecam/web worker   # tâches de fond (PDF des bulletins), dans un second terminal
 ```
 
 Tests : `pnpm test` (unitaires + intégration sur `paiecam_test`), `pnpm --filter @paiecam/web test:e2e` (Playwright).
@@ -29,7 +30,7 @@ Hors ligne en développement, `PWNED_PASSWORDS_CHECK=off` coupe l'appel à Have 
 - [x] Phase 1 — Auth et multi-tenant (RLS, 2FA, audit_log, tests anti-IDOR)
 - [x] Phase 2 — Référentiels : fiche entreprise, invitations, salariés, champs chiffrés, import Excel
 - [~] Phase 3 — Moteur de paie : calcul complet fait sur un référentiel 2026 en BROUILLON ; validation de l'expert-comptable et bulletins golden en attente
-- [ ] Phase 4 — Cycle mensuel et bulletins PDF
+- [x] Phase 4 — Cycle mensuel (saisie, calcul, contrôle, validation) et bulletins PDF signés
 - [ ] Phase 5 — Déclarations
 - [ ] Phase 6 — Durcissement
 

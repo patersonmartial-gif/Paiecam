@@ -313,7 +313,10 @@
       "rules": "Rules applied",
       "draft": "draft",
       "validatedRule": "validated",
-      "pdf": "Download PDF"
+      "pdf": "Download PDF",
+      "preview": "PDF preview",
+      "pending": "Final PDF being generated…",
+      "verifyLink": "Verification code"
     },
     "errors": {
       "not_found": "Month not found.",
@@ -329,5 +332,19 @@
       "unknown_overtime": "Unknown overtime category.",
       "pay_periods_tenant_month_key": "This month is already open."
     }
+  },
+  "verify": {
+    "title": "Payslip verification",
+    "unknown": "No payslip matches this code.",
+    "authentic": "Authentic payslip: issued and signed by PaieCam.",
+    "invalidSignature": "Invalid signature: this document cannot be trusted.",
+    "issuer": "Issuer",
+    "period": "Period",
+    "issuedAt": "Issued on",
+    "fingerprint": "SHA-256 fingerprint",
+    "compare": "Compare with your PDF file (it stays on your device)",
+    "same": "The file is identical to the original.",
+    "different": "The file has been modified: it does not match the original.",
+    "privacy": "This page shows no information about the employee or the amounts."
   }
 }

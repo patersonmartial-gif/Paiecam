@@ -507,7 +507,7 @@ export function makeValidatePeriod(
       input: z.object({ periodId: z.uuid(), password: z.string().min(1).max(128) }),
       audit: "payroll.validate",
     },
-    async ({ tx, tenantId, userId, audit }, input) => {
+    async ({ tx, userId, audit }, input) => {
       if (!(await deps.verifyPassword(userId, input.password))) throw new RuleError("bad_password");
       const period = await findPeriod(tx, input.periodId);
       if (period.status !== "calculated") throw new RuleError("period_not_calculated");
@@ -521,7 +521,6 @@ export function makeValidatePeriod(
         .update(schema.payPeriods)
         .set({ status: "validated", validatedAt: new Date(), validatedBy: userId })
         .where(eq(schema.payPeriods.id, period.id));
-      await deps.onValidated?.(period.id, tenantId);
       audit({ entityType: "pay_period", entityId: period.id, after: { payslips: slips.length } });
       return { periodId: period.id };
     },

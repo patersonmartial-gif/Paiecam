@@ -13,3 +13,5 @@ playwright-report
 captures
 .e2e-outbox
 dossier
+.data
+.e2e-documents

@@ -1,3 +1,6 @@
+/** @jsxRuntime automatic */
+/** @jsxImportSource react */
+// Transformation JSX imposée dans le fichier : le worker (tsx) n'utilise pas la configuration du package.
 import { Document, Image, Page, StyleSheet, Text, View, renderToBuffer } from "@react-pdf/renderer";
 import QRCode from "qrcode";
 import { amount, isoToDisplay, labels, lineLabel, monthLabel, percent, type Lang } from "./labels";
