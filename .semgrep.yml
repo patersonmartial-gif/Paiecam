@@ -1,0 +1,27 @@
+# Règles propres à PaieCam, en plus des jeux p/typescript, p/owasp-top-ten et p/secrets.
+# Les mêmes règles tournent localement dans tools/architecture (pnpm test).
+rules:
+  - id: paiecam-drizzle-hors-package-db
+    message: drizzle-orm ne s'importe que dans packages/db (opérateurs réexportés par @paiecam/db).
+    languages: [typescript]
+    severity: ERROR
+    paths: { exclude: ["packages/db/**"] }
+    pattern-regex: from "drizzle-orm
+  - id: paiecam-sql-brut
+    message: SQL brut interdit (sql.raw / unsafe) ; utiliser les requêtes paramétrées de Drizzle.
+    languages: [typescript]
+    severity: ERROR
+    paths: { exclude: ["packages/db/src/testing.ts"] }
+    pattern-either:
+      - pattern: sql.raw(...)
+      - pattern: $X.unsafe(...)
+  - id: paiecam-inner-html
+    message: dangerouslySetInnerHTML interdit (XSS).
+    languages: [typescript]
+    severity: ERROR
+    pattern-regex: dangerouslySetInnerHTML
+  - id: paiecam-console-log
+    message: console.log interdit ; utiliser log() de server/log.ts (masquage des données personnelles).
+    languages: [typescript]
+    severity: ERROR
+    pattern: console.log(...)

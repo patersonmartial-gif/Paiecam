@@ -4,6 +4,17 @@ export interface Mail {
   text: string;
 }
 
+/**
+ * Neutralise les retours à la ligne dans les champs d'en-tête (injection d'en-têtes SMTP) :
+ * le sujet contient des données saisies par les utilisateurs (raison sociale…).
+ */
+export function sanitizeMail(mail: Mail): Mail {
+  const header = (v: string) => v.replace(/[\r\n\t]+/g, " ").trim();
+  const to = header(mail.to);
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) throw new Error("destinataire invalide");
+  return { to, subject: header(mail.subject).slice(0, 200), text: mail.text };
+}
+
 export interface Mailer {
   send(mail: Mail): Promise<void>;
 }
@@ -21,7 +32,8 @@ export function createMailer(nodeEnv: string, outboxDir?: string): Mailer {
     };
   }
   return {
-    async send(mail) {
+    async send(raw) {
+      const mail = sanitizeMail(raw);
       console.warn(`[mail:dev] à ${mail.to} — ${mail.subject}\n${mail.text}`);
       // Boîte d'envoi locale (dev et tests de bout en bout) : un fichier JSON par e-mail.
       if (outboxDir) {

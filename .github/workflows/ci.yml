@@ -93,4 +93,4 @@ jobs:
       image: semgrep/semgrep
     steps:
       - uses: actions/checkout@v4
-      - run: semgrep scan --config p/typescript --config p/owasp-top-ten --config p/secrets --error
+      - run: semgrep scan --config p/typescript --config p/owasp-top-ten --config p/secrets --config .semgrep.yml --error

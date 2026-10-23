@@ -1,0 +1,16 @@
+{
+  "name": "@paiecam/architecture",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "eslint": "^10.13.0",
+    "vitest": "^5.0.5"
+  }
+}

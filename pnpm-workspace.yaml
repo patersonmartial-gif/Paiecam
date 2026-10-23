@@ -1,5 +1,9 @@
 packages:
   - "apps/*"
   - "packages/*"
+  - "tools/*"
 onlyBuiltDependencies:
   - esbuild
+overrides:
+  # GHSA-67mh-4wv8-2f99 (serveur de développement d'esbuild), via drizzle-kit → @esbuild-kit.
+  "@esbuild-kit/core-utils>esbuild": "^0.25.0"

@@ -119,7 +119,8 @@
       "already_member": "This person is already on the team.",
       "self": "You cannot change your own access.",
       "owner": "An owner's role cannot be changed here.",
-      "not_found": "Item not found."
+      "not_found": "Item not found.",
+      "rate_limited": "Too many invitations sent: try again in an hour."
     }
   },
   "invitation": {

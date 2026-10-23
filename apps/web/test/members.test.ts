@@ -287,3 +287,33 @@ describe("fiche entreprise", () => {
     });
   });
 });
+
+describe("limite d'invitations", () => {
+  it(`au-delà de ${20} invitations par heure, refus`, async () => {
+    const { INVITATIONS_PER_HOUR } = await import("@/server/features/members");
+    const existing = await withTenant(
+      db,
+      { tenantId: tenantA, userId: U.ownerA },
+      async (tx) => (await tx.select().from(schema.invitations)).length,
+    );
+    for (let i = existing; i < INVITATIONS_PER_HOUR; i++) {
+      expect(
+        (
+          await invite(ctx(U.ownerA, tenantA), {
+            email: `limite.${i}@exemple.test`,
+            role: "accountant",
+          })
+        ).ok,
+      ).toBe(true);
+    }
+    expect(
+      await invite(ctx(U.ownerA, tenantA), {
+        email: "une.de.trop@exemple.test",
+        role: "accountant",
+      }),
+    ).toEqual({
+      ok: false,
+      error: { code: "RULE", reason: "rate_limited" },
+    });
+  });
+});

@@ -13,6 +13,8 @@ import { createTenantAction, createUserAction, RuleError } from "../authz/action
 import type { Mailer } from "../mail";
 
 const INVITATION_DAYS = 7;
+/** Plafond d'invitations par entreprise et par heure (anti-abus : envoi d'e-mails depuis notre domaine). */
+export const INVITATIONS_PER_HOUR = 20;
 const assignableRole = z.enum(["payroll_manager", "accountant"]);
 
 export function makeListMembers(db: Db) {
@@ -64,6 +66,11 @@ export function makeInvite(db: Db, deps: { mailer: Mailer; baseURL: string }) {
       audit: "members.invite",
     },
     async ({ tx, userId, tenantId, audit }, input) => {
+      const recent = await tx
+        .select({ id: schema.invitations.id })
+        .from(schema.invitations)
+        .where(gt(schema.invitations.createdAt, new Date(Date.now() - 3600_000)));
+      if (recent.length >= INVITATIONS_PER_HOUR) throw new RuleError("rate_limited");
       const already = await tx
         .select({ id: schema.memberships.id })
         .from(schema.memberships)

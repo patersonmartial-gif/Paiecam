@@ -119,7 +119,8 @@
       "already_member": "Cette personne fait déjà partie de l'équipe.",
       "self": "Vous ne pouvez pas modifier votre propre accès.",
       "owner": "Le rôle d'un propriétaire ne peut pas être modifié ici.",
-      "not_found": "Élément introuvable."
+      "not_found": "Élément introuvable.",
+      "rate_limited": "Trop d'invitations envoyées : réessayez dans une heure."
     }
   },
   "invitation": {
