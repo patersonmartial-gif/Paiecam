@@ -88,6 +88,13 @@ export const ruleSchemas = {
     rates: z.record(z.string().regex(/^[a-z0-9_]+$/), bp),
     rounding,
   }),
+  echeances: z.object({
+    /** Jour du mois suivant la paie où chaque déclaration (et son paiement) est due. */
+    dayOfFollowingMonth: z.object({
+      cnps: z.number().int().min(1).max(28),
+      dgi: z.number().int().min(1).max(28),
+    }),
+  }),
 } as const;
 
 export type RuleCode = keyof typeof ruleSchemas;
@@ -114,4 +121,5 @@ export const RULE_CODES = {
   rav: "rav",
   tdl: "tdl",
   overtime: "heures_sup.majorations",
+  deadlines: "echeances",
 } as const satisfies Record<string, RuleCode>;

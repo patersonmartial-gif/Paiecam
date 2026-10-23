@@ -12,10 +12,12 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@paiecam/paie-engine": "workspace:*",
     "@paiecam/security": "workspace:*",
     "@react-pdf/renderer": "4.9.0",
     "qrcode": "^1.5.4",
-    "react": "^19.3.1"
+    "react": "^19.3.1",
+    "write-excel-file": "^4.1.1"
   },
   "devDependencies": {
     "@types/node": "^22.20.5",
@@ -23,6 +25,7 @@
     "@types/react": "^19.3.0",
     "eslint": "^10.13.0",
     "pdf-parse": "^2.4.5",
+    "read-excel-file": "^9.3.12",
     "tsx": "^4.23.15",
     "vitest": "^5.0.5"
   }

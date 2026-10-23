@@ -21,7 +21,11 @@
       "validFrom": "2026-01-01",
       "validTo": null,
       "value": {
-        "employerRateByRegime": { "general": 700, "agricole": 565, "enseignement_prive": 370 },
+        "employerRateByRegime": {
+          "general": 700,
+          "agricole": 565,
+          "enseignement_prive": 370
+        },
         "monthlyCeiling": 750000,
         "rounding": "nearest"
       },
@@ -32,7 +36,10 @@
       "code": "cnps.accidents_travail",
       "validFrom": "2026-01-01",
       "validTo": null,
-      "value": { "allowedEmployerRates": [175, 250, 500], "rounding": "nearest" },
+      "value": {
+        "allowedEmployerRates": [175, 250, 500],
+        "rounding": "nearest"
+      },
       "legalSource": "CNPS — accidents du travail et maladies professionnelles : 1,75 %, 2,5 % ou 5 % selon le risque, sur la totalité du salaire (CLEISS)",
       "questions": []
     },
@@ -42,10 +49,26 @@
       "validTo": null,
       "value": {
         "brackets": [
-          { "from": 0, "to": 2000000, "rate": 1000 },
-          { "from": 2000001, "to": 3000000, "rate": 1500 },
-          { "from": 3000001, "to": 5000000, "rate": 2500 },
-          { "from": 5000001, "to": null, "rate": 3500 }
+          {
+            "from": 0,
+            "to": 2000000,
+            "rate": 1000
+          },
+          {
+            "from": 2000001,
+            "to": 3000000,
+            "rate": 1500
+          },
+          {
+            "from": 3000001,
+            "to": 5000000,
+            "rate": 2500
+          },
+          {
+            "from": 5000001,
+            "to": null,
+            "rate": 3500
+          }
         ],
         "professionalExpensesRate": 3000,
         "professionalExpensesMonthlyCap": null,
@@ -67,7 +90,10 @@
       "code": "cac",
       "validFrom": "2026-01-01",
       "validTo": null,
-      "value": { "rateOfIrpp": 1000, "rounding": "down" },
+      "value": {
+        "rateOfIrpp": 1000,
+        "rounding": "down"
+      },
       "legalSource": "Centimes additionnels communaux : 10 % du montant de l'IRPP (AfroTools, DGI)",
       "questions": []
     },
@@ -75,7 +101,11 @@
       "code": "cfc",
       "validFrom": "2026-01-01",
       "validTo": null,
-      "value": { "employeeRate": 100, "employerRate": 150, "rounding": "nearest" },
+      "value": {
+        "employeeRate": 100,
+        "employerRate": 150,
+        "rounding": "nearest"
+      },
       "legalSource": "Crédit Foncier du Cameroun : 1 % salarié, 1,5 % employeur, sur le salaire brut (TopSource)",
       "questions": [
         "Assiette exacte : brut imposable ou brut total (y compris éléments non imposables) ?"
@@ -85,7 +115,10 @@
       "code": "fne",
       "validFrom": "2026-01-01",
       "validTo": null,
-      "value": { "employerRate": 100, "rounding": "nearest" },
+      "value": {
+        "employerRate": 100,
+        "rounding": "nearest"
+      },
       "legalSource": "Fonds national de l'emploi : 1 % employeur, sur le salaire brut (TopSource)",
       "questions": ["Assiette exacte : brut imposable ou brut total ?"]
     },
@@ -95,18 +128,66 @@
       "validTo": null,
       "value": {
         "brackets": [
-          { "from": 0, "to": 50000, "amount": 0 },
-          { "from": 50001, "to": 100000, "amount": 750 },
-          { "from": 100001, "to": 200000, "amount": 1950 },
-          { "from": 200001, "to": 300000, "amount": 3250 },
-          { "from": 300001, "to": 400000, "amount": 4550 },
-          { "from": 400001, "to": 500000, "amount": 5850 },
-          { "from": 500001, "to": 600000, "amount": 7150 },
-          { "from": 600001, "to": 700000, "amount": 8450 },
-          { "from": 700001, "to": 800000, "amount": 9750 },
-          { "from": 800001, "to": 900000, "amount": 11050 },
-          { "from": 900001, "to": 1000000, "amount": 12350 },
-          { "from": 1000001, "to": null, "amount": 13000 }
+          {
+            "from": 0,
+            "to": 50000,
+            "amount": 0
+          },
+          {
+            "from": 50001,
+            "to": 100000,
+            "amount": 750
+          },
+          {
+            "from": 100001,
+            "to": 200000,
+            "amount": 1950
+          },
+          {
+            "from": 200001,
+            "to": 300000,
+            "amount": 3250
+          },
+          {
+            "from": 300001,
+            "to": 400000,
+            "amount": 4550
+          },
+          {
+            "from": 400001,
+            "to": 500000,
+            "amount": 5850
+          },
+          {
+            "from": 500001,
+            "to": 600000,
+            "amount": 7150
+          },
+          {
+            "from": 600001,
+            "to": 700000,
+            "amount": 8450
+          },
+          {
+            "from": 700001,
+            "to": 800000,
+            "amount": 9750
+          },
+          {
+            "from": 800001,
+            "to": 900000,
+            "amount": 11050
+          },
+          {
+            "from": 900001,
+            "to": 1000000,
+            "amount": 12350
+          },
+          {
+            "from": 1000001,
+            "to": null,
+            "amount": 13000
+          }
         ]
       },
       "legalSource": "Redevance audiovisuelle (CRTV), ordonnance de 1989, annexe 5 ; barème relevé chez Fiscafinance et dans un mémoire de 2007",
@@ -121,16 +202,56 @@
       "validTo": null,
       "value": {
         "brackets": [
-          { "from": 0, "to": 61999, "amount": 0 },
-          { "from": 62000, "to": 75000, "amount": 250 },
-          { "from": 75001, "to": 100000, "amount": 500 },
-          { "from": 100001, "to": 125000, "amount": 750 },
-          { "from": 125001, "to": 150000, "amount": 1000 },
-          { "from": 150001, "to": 200000, "amount": 1250 },
-          { "from": 200001, "to": 250000, "amount": 1500 },
-          { "from": 250001, "to": 300000, "amount": 2000 },
-          { "from": 300001, "to": 500000, "amount": 2250 },
-          { "from": 500001, "to": null, "amount": 2500 }
+          {
+            "from": 0,
+            "to": 61999,
+            "amount": 0
+          },
+          {
+            "from": 62000,
+            "to": 75000,
+            "amount": 250
+          },
+          {
+            "from": 75001,
+            "to": 100000,
+            "amount": 500
+          },
+          {
+            "from": 100001,
+            "to": 125000,
+            "amount": 750
+          },
+          {
+            "from": 125001,
+            "to": 150000,
+            "amount": 1000
+          },
+          {
+            "from": 150001,
+            "to": 200000,
+            "amount": 1250
+          },
+          {
+            "from": 200001,
+            "to": 250000,
+            "amount": 1500
+          },
+          {
+            "from": 250001,
+            "to": 300000,
+            "amount": 2000
+          },
+          {
+            "from": 300001,
+            "to": 500000,
+            "amount": 2250
+          },
+          {
+            "from": 500001,
+            "to": null,
+            "amount": 2500
+          }
         ]
       },
       "legalSource": "Taxe de développement local, retenue sur le salaire de base : 3 000 à 30 000 FCFA/an (Camerlex, LeFisk) ; barème indicatif DGI (impots.cm, non consulté)",
@@ -146,13 +267,34 @@
       "validTo": null,
       "value": {
         "monthlyHoursHundredths": 17333,
-        "rates": { "hs_20": 2000, "hs_30": 3000, "hs_40": 4000, "hs_50": 5000 },
+        "rates": {
+          "hs_20": 2000,
+          "hs_30": 3000,
+          "hs_40": 4000,
+          "hs_50": 5000
+        },
         "rounding": "nearest"
       },
       "legalSource": "Code du travail et décret sur la durée du travail (40 h/semaine, soit 173,33 h/mois) — majorations à confirmer",
       "questions": [
         "Majorations exactes : 20 % (8 premières heures au-delà de 40 h), 30 % (8 suivantes), 40 % (au-delà), 50 % (nuit, dimanche, jours fériés) ?",
         "Diviseur horaire de 173,33 h confirmé ?"
+      ]
+    },
+    {
+      "code": "echeances",
+      "validFrom": "2026-01-01",
+      "validTo": null,
+      "value": {
+        "dayOfFollowingMonth": {
+          "cnps": 15,
+          "dgi": 15
+        }
+      },
+      "legalSource": "Déclaration et reversement des retenues sur salaires avant le 15 du mois suivant (TopSource, guides 2026) ; CNPS : à confirmer",
+      "questions": [
+        "Échéance CNPS : le 15 du mois suivant pour toutes les entreprises, ou déclaration trimestrielle pour les petites ?",
+        "Si le 15 tombe un week-end ou un jour férié, l'échéance est-elle reportée ?"
       ]
     }
   ]

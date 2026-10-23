@@ -66,13 +66,11 @@ test("paie validée : PDF définitif généré par le worker, téléchargé, pui
     .getByLabel(/Comparer avec votre fichier PDF/)
     .setInputFiles({ name: "b.pdf", mimeType: "application/pdf", buffer: Buffer.concat(chunks) });
   await expect(page.getByText("Le fichier est identique à l'original.")).toBeVisible();
-  await page
-    .getByLabel(/Comparer avec votre fichier PDF/)
-    .setInputFiles({
-      name: "faux.pdf",
-      mimeType: "application/pdf",
-      buffer: Buffer.from("%PDF-faux"),
-    });
+  await page.getByLabel(/Comparer avec votre fichier PDF/).setInputFiles({
+    name: "faux.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from("%PDF-faux"),
+  });
   await expect(
     page.getByText("Le fichier a été modifié : il ne correspond pas à l'original."),
   ).toBeVisible();

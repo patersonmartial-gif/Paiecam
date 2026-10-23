@@ -4,3 +4,4 @@ export * from "./types";
 export * from "./cnps";
 export * from "./brackets";
 export * from "./payslip";
+export * from "./declarations";

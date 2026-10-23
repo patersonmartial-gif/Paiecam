@@ -151,6 +151,9 @@ importers:
 
   packages/documents:
     dependencies:
+      '@paiecam/paie-engine':
+        specifier: workspace:*
+        version: link:../paie-engine
       '@paiecam/security':
         specifier: workspace:*
         version: link:../security
@@ -163,6 +166,9 @@ importers:
       react:
         specifier: ^19.3.1
         version: 19.3.1
+      write-excel-file:
+        specifier: ^4.1.1
+        version: 4.1.1
     devDependencies:
       '@types/node':
         specifier: ^22.20.5
@@ -179,6 +185,9 @@ importers:
       pdf-parse:
         specifier: ^2.4.5
         version: 2.4.5
+      read-excel-file:
+        specifier: ^9.3.12
+        version: 9.3.12
       tsx:
         specifier: ^4.23.15
         version: 4.23.15
