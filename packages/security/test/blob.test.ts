@@ -1,6 +1,14 @@
 import { randomBytes } from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { decryptBlob, encryptBlob, parseKeyring, signMessage, verifySignature } from "../src";
+import {
+  blobKeyId,
+  decryptBlob,
+  encryptBlob,
+  parseKeyring,
+  signMessage,
+  storedKeyId,
+  verifySignature,
+} from "../src";
 
 const k1 = randomBytes(32).toString("base64");
 const k2 = randomBytes(32).toString("base64");
@@ -44,5 +52,19 @@ describe("signMessage / verifySignature", () => {
   });
   it("la clé de signature diffère des clés de chiffrement", () => {
     expect(ring.documentSigningKey("v1").equals(ring.encryptionKey("v1"))).toBe(false);
+  });
+});
+
+describe("identifiant de clé (rotation)", () => {
+  const k = (n: number) => Buffer.alloc(32, n).toString("base64");
+  it("lit la clé d'un fichier et d'une signature sans déchiffrer", () => {
+    const v1 = parseKeyring(`v1:${k(1)}`);
+    const v2 = parseKeyring(`v2:${k(2)},v1:${k(1)}`);
+    expect(blobKeyId(encryptBlob(v1, "a/b.pdf", Buffer.from("x")))).toBe("v1");
+    expect(blobKeyId(encryptBlob(v2, "a/b.pdf", Buffer.from("x")))).toBe("v2");
+    expect(storedKeyId(signMessage(v2, "m"))).toBe("v2");
+    expect(() => blobKeyId(Buffer.from([0]))).toThrow(/mal formé/);
+    expect(() => blobKeyId(Buffer.alloc(0))).toThrow(/mal formé/);
+    expect(() => storedKeyId("pas-de-cle")).toThrow(/identifiant/);
   });
 });

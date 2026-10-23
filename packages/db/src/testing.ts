@@ -29,6 +29,9 @@ export const testOpsDatabaseUrl = () => required("TEST_OPS_DATABASE_URL");
 /** Rôle de sauvegarde (lecture seule, exempté du RLS) sur la base de test. */
 export const testBackupDatabaseUrl = () => required("TEST_BACKUP_DATABASE_URL");
 
+/** Rôle de rotation des clés (colonnes chiffrées uniquement) sur la base de test. */
+export const testRotationDatabaseUrl = () => required("TEST_ROTATION_DATABASE_URL");
+
 /** Administrateur PostgreSQL sur la base cible du test de restauration (paiecam_restore_test). */
 export const testRestoreAdminDatabaseUrl = () => required("TEST_RESTORE_ADMIN_DATABASE_URL");
 

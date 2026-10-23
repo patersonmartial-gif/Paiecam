@@ -24,6 +24,7 @@ jobs:
       TEST_MIGRATION_DATABASE_URL: postgres://paiecam_owner:owner_dev@localhost:5432/paiecam_test
       TEST_OPS_DATABASE_URL: postgres://paiecam_ops:ops_dev@localhost:5432/paiecam_test
       TEST_BACKUP_DATABASE_URL: postgres://paiecam_backup:backup_dev@localhost:5432/paiecam_test
+      TEST_ROTATION_DATABASE_URL: postgres://paiecam_rotation:rotation_dev@localhost:5432/paiecam_test
       TEST_RESTORE_ADMIN_DATABASE_URL: postgres://postgres:postgres_ci@localhost:5432/paiecam_restore_test
     steps:
       - uses: actions/checkout@v4
@@ -62,6 +63,7 @@ jobs:
       TEST_MIGRATION_DATABASE_URL: postgres://paiecam_owner:owner_dev@localhost:5432/paiecam_test
       TEST_OPS_DATABASE_URL: postgres://paiecam_ops:ops_dev@localhost:5432/paiecam_test
       TEST_BACKUP_DATABASE_URL: postgres://paiecam_backup:backup_dev@localhost:5432/paiecam_test
+      TEST_ROTATION_DATABASE_URL: postgres://paiecam_rotation:rotation_dev@localhost:5432/paiecam_test
       TEST_RESTORE_ADMIN_DATABASE_URL: postgres://postgres:postgres_ci@localhost:5432/paiecam_restore_test
       BETTER_AUTH_SECRET: ci-only-secret-ci-only-secret-ci-only
     steps:

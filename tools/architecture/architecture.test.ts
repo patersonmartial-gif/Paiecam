@@ -123,6 +123,7 @@ describe("hygiène", () => {
       "apps/web/src/proxy.ts",
       "apps/web/next.config.ts",
       "apps/web/src/worker.ts",
+      "apps/web/src/rotate-keys.ts",
       "apps/web/src/server/authz/index.ts",
       "packages/db/drizzle.config.ts",
       "packages/db/src/testing.ts",

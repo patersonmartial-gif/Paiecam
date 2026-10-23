@@ -1,4 +1,4 @@
-import { mkdtempSync } from "node:fs";
+import { mkdtempSync, readdirSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -164,6 +164,23 @@ describe("stockage chiffré sur disque", () => {
     expect((await readFile(join(root, "tenant-a/2026-03/doc.pdf"))).includes(pdf)).toBe(false);
     expect(await storage.get("tenant-a/2026-03/doc.pdf")).toEqual(pdf);
     await expect(storage.put("tenant-a/2026-03/doc.pdf", pdf)).rejects.toThrow(/EEXIST/);
+  });
+
+  it("rotation : rechiffre avec la clé courante, sans fichier temporaire restant", async () => {
+    const pdf = Buffer.from("%PDF-1.7 rotation");
+    await storage.put("tenant-a/2026-04/doc.pdf", pdf);
+    const k1 = `v1:${Buffer.alloc(32, 4).toString("base64")}`;
+    const k2 = `v2:${Buffer.alloc(32, 5).toString("base64")}`;
+    const rotated = createFsStorage(root, parseKeyring(`${k2},${k1}`));
+    expect(await rotated.reencrypt("tenant-a/2026-04/doc.pdf")).toBe("rewritten");
+    expect(await rotated.reencrypt("tenant-a/2026-04/doc.pdf")).toBe("current");
+    expect(await createFsStorage(root, parseKeyring(k2)).get("tenant-a/2026-04/doc.pdf")).toEqual(
+      pdf,
+    );
+    expect(readdirSync(join(root, "tenant-a/2026-04"))).toEqual(["doc.pdf"]);
+    await expect(createFsStorage(root, parseKeyring(k2)).reencrypt("../x")).rejects.toThrow(
+      /invalide/,
+    );
   });
 
   it("refuse les clés qui sortent du dossier", async () => {

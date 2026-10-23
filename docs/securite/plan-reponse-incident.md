@@ -33,9 +33,8 @@ en cours dans un canal partagé avec des tiers.
    - comptes : supprimer les sessions (`delete from sessions where user_id = …`), forcer la
      réinitialisation du mot de passe, désactiver la 2FA compromise ;
    - toutes les sessions : changer `BETTER_AUTH_SECRET` et redémarrer (déconnecte tout le monde) ;
-   - clés de chiffrement : ajouter une nouvelle clé en tête de `FIELD_ENCRYPTION_KEYS`, redémarrer,
-     re-chiffrer (**script de re-chiffrement à écrire : pas encore disponible**), puis retirer l'ancienne clé (les documents signés restent vérifiables tant que la
-     clé de signature est conservée) ;
+   - clés de chiffrement : procédure `docs/securite/rotation-des-cles.md` (nouvelle clé en tête
+     du trousseau, commande `rotate-keys --apply`, retrait de l'ancienne clé) ;
    - accès base / S3 / SMTP : révoquer et renouveler les identifiants des rôles concernés ;
    - application : mise en maintenance (proxy) si la fuite est en cours.
 4. **Éradiquer** : corriger la cause, ajouter le **test qui reproduit la faille** (multi-entreprises,

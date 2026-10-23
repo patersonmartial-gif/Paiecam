@@ -20,6 +20,14 @@ export function encryptBlob(keyring: Keyring, storageKey: string, data: Uint8Arr
   return Buffer.concat([Buffer.from([kid.length]), kid, iv, body]);
 }
 
+/** Identifiant de la clé qui a chiffré un fichier (sans le déchiffrer). */
+export function blobKeyId(stored: Uint8Array): string {
+  const kidLength = stored[0] ?? 0;
+  const kid = Buffer.from(stored.subarray(1, 1 + kidLength)).toString("utf8");
+  if (kidLength === 0 || !/^v\d+$/.test(kid)) throw new Error("fichier chiffré mal formé");
+  return kid;
+}
+
 export function decryptBlob(keyring: Keyring, storageKey: string, stored: Uint8Array): Buffer {
   const buf = Buffer.from(stored);
   const kidLength = buf[0] ?? 0;

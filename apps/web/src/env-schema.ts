@@ -43,6 +43,8 @@ const schema = z.object({
     .string()
     .regex(/^(mailto:|https:\/\/)\S+$/)
     .optional(),
+  /** Rôle paiecam_rotation, utilisé seulement par la commande de rotation des clés. */
+  ROTATION_DATABASE_URL: z.url().optional(),
   /** Dossier où écrire les e-mails en développement (interdit en production). */
   MAIL_OUTBOX_DIR: z.string().optional(),
   /** Trousseau « v2:<base64>,v1:<base64> » ; la première clé chiffre. */

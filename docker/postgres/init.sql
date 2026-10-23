@@ -16,6 +16,10 @@ CREATE ROLE paiecam_ops LOGIN PASSWORD 'ops_dev' NOSUPERUSER NOBYPASSRLS NOCREAT
 CREATE ROLE paiecam_backup LOGIN PASSWORD 'backup_dev' NOSUPERUSER BYPASSRLS NOCREATEDB NOCREATEROLE;
 GRANT pg_read_all_data TO paiecam_backup;
 
+-- Rotation des clés de chiffrement : droits limités aux colonnes chiffrées (migration 0020).
+-- Utilisé uniquement pendant une rotation ; mot de passe à changer ensuite.
+CREATE ROLE paiecam_rotation LOGIN PASSWORD 'rotation_dev' NOSUPERUSER BYPASSRLS NOCREATEDB NOCREATEROLE;
+
 CREATE DATABASE paiecam OWNER paiecam_owner;
 CREATE DATABASE paiecam_test OWNER paiecam_owner;
 -- Cible du test de restauration (recréée à chaque test par l'administrateur).

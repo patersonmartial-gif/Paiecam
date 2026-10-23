@@ -141,6 +141,13 @@
       "when": 1792763660531,
       "tag": "0019_login_lockouts_grants",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1792766859099,
+      "tag": "0020_key_rotation_role",
+      "breakpoints": true
     }
   ]
 }

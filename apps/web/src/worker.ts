@@ -3,7 +3,6 @@
  * Il partage le code métier de l'application mais pas son serveur web.
  */
 import { createDb } from "@paiecam/db";
-import { createFsStorage, createS3Storage } from "@paiecam/documents";
 import { parseKeyring } from "@paiecam/security";
 import { parseEnv } from "./env-schema";
 import { generatePeriodDocuments } from "./server/features/documents";
@@ -11,6 +10,7 @@ import { runDeadlineReminders, todayInDouala } from "./server/features/reminders
 import { PDF_QUEUE, REMINDER_QUEUE, startBoss, type PdfJob } from "./server/jobs/boss";
 import { createMailer, smtpTransportFromUrl } from "./server/mail";
 import { log } from "./server/log";
+import { storageFromEnv } from "./storage-from-env";
 
 try {
   process.loadEnvFile("../../.env");
@@ -20,19 +20,7 @@ try {
 const env = parseEnv(process.env);
 const db = createDb(env.DATABASE_URL);
 const keyring = parseKeyring(env.FIELD_ENCRYPTION_KEYS);
-const storage =
-  env.STORAGE_DRIVER === "s3"
-    ? createS3Storage(
-        {
-          endpoint: env.S3_ENDPOINT ?? "",
-          region: env.S3_REGION ?? "",
-          bucket: env.S3_BUCKET ?? "",
-          accessKeyId: env.S3_ACCESS_KEY_ID ?? "",
-          secretAccessKey: env.S3_SECRET_ACCESS_KEY ?? "",
-        },
-        keyring,
-      )
-    : createFsStorage(env.DOCUMENTS_DIR, keyring);
+const storage = storageFromEnv(env, keyring);
 const boss = await startBoss(env.DATABASE_URL);
 
 await boss.work<PdfJob>(PDF_QUEUE, async (jobs) => {

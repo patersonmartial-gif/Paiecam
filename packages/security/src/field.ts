@@ -53,6 +53,13 @@ export function decryptField(keyring: Keyring, ctx: FieldContext, stored: string
   }
 }
 
+/** Identifiant de la clé d'une valeur stockée « <kid>.… » (champ chiffré, empreinte ou signature). */
+export function storedKeyId(stored: string): string {
+  const kid = /^(v\d+)\./.exec(stored)?.[1];
+  if (!kid) throw new Error("valeur stockée sans identifiant de clé");
+  return kid;
+}
+
 /** Indique si la valeur a été chiffrée avec une ancienne clé et doit être rechiffrée. */
 export function needsReencryption(keyring: Keyring, stored: string): boolean {
   return !stored.startsWith(`${keyring.currentId}.`);
