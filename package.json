@@ -1,0 +1,28 @@
+{
+  "name": "paiecam",
+  "private": true,
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:golden": "pnpm --filter @paiecam/paie-engine test:golden",
+    "db:up": "docker compose up -d postgres",
+    "db:generate": "pnpm --filter @paiecam/db db:generate",
+    "db:migrate": "pnpm --filter @paiecam/db db:migrate",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.13.0",
+    "prettier": "^3.6.0",
+    "turbo": "^2.11.10",
+    "typescript": "^5.9.0",
+    "typescript-eslint": "^8.72.0"
+  }
+}

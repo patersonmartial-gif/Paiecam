@@ -1,0 +1,21 @@
+{
+  "name": "@paiecam/paie-engine",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc",
+    "test": "vitest run --coverage",
+    "test:golden": "vitest run test/golden"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^5.0.5",
+    "fast-check": "^4.6.7",
+    "vitest": "^5.0.5",
+    "eslint": "^10.13.0"
+  }
+}
