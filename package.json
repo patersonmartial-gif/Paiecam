@@ -10,7 +10,7 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
-    "test": "turbo run test",
+    "test": "turbo run test --concurrency=1",
     "test:golden": "pnpm --filter @paiecam/paie-engine test:golden",
     "db:up": "docker compose up -d postgres",
     "db:generate": "pnpm --filter @paiecam/db db:generate",

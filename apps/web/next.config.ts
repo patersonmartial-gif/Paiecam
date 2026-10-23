@@ -1,5 +1,12 @@
 import type { NextConfig } from "next";
 
+// Un seul .env, à la racine du monorepo (en CI et en prod, les variables viennent de l'environnement).
+try {
+  process.loadEnvFile("../../.env");
+} catch {
+  // pas de fichier .env
+}
+
 // En-têtes de base. La CSP stricte avec nonce arrive en phase 6 (via proxy.ts).
 const securityHeaders = [
   { key: "X-Frame-Options", value: "DENY" },
@@ -11,6 +18,7 @@ const securityHeaders = [
 
 const config: NextConfig = {
   poweredByHeader: false,
+  serverExternalPackages: ["@node-rs/argon2"],
   transpilePackages: ["@paiecam/paie-engine", "@paiecam/db"],
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];

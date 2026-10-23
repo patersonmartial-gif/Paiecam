@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { eq, sql } from "drizzle-orm";
 import { uuidv7 } from "uuidv7";
 import { createTenantWithOwner, withTenant, withUser, type NewTenant } from "../src";
-import { auditLog, memberships, tenants } from "../src/schema";
+import { auditLog, memberships, tenants, users } from "../src/schema";
 import { db } from "./db";
 
 const fakeTenant = (n: string): NewTenant => ({
@@ -22,6 +22,9 @@ const asA = <T>(fn: Parameters<typeof withTenant<T>>[2]) =>
   withTenant(db, { tenantId: tenantA, userId: userA }, fn);
 
 beforeAll(async () => {
+  await db
+    .insert(users)
+    .values([userA, userB, "user-c"].map((id) => ({ id, name: id, email: `${id}@exemple.test` })));
   tenantA = await withUser(db, userA, (tx) => createTenantWithOwner(tx, userA, fakeTenant("A")));
   tenantB = await withUser(db, userB, (tx) => createTenantWithOwner(tx, userB, fakeTenant("B")));
   await withTenant(db, { tenantId: tenantB, userId: userB }, (tx) =>
