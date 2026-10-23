@@ -213,6 +213,12 @@
       "employees_tenant_matricule_key": "This employee ID is already in use.",
       "employees_tenant_cnps_key": "This CNPS number is already assigned to another employee.",
       "too_many_attempts": "Too many password attempts: try again in a few minutes."
+    },
+    "dataRights": {
+      "title": "Employee's right of access",
+      "help": "Export of all data held about this employee, to be sent to them on request (Law No. 2024/017). Every export is recorded in the audit log.",
+      "json": "Export as JSON",
+      "pdf": "Export as PDF"
     }
   },
   "import": {

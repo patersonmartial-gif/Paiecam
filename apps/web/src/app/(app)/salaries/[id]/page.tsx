@@ -42,6 +42,26 @@ export default async function EmployeePage({ params }: { params: Promise<{ id: s
         canWrite={canWrite}
         canReveal={can(member.role, "employees:sensitive")}
       />
+      {can(member.role, "employees:sensitive") && (
+        <section className="max-w-md rounded-lg border border-stone-200 bg-white p-4">
+          <h2 className="mb-1 font-semibold">{t("dataRights.title")}</h2>
+          <p className="mb-3 text-sm text-stone-600">{t("dataRights.help")}</p>
+          <div className="flex gap-3 text-sm">
+            <a
+              href={`/salaries/${employee.id}/export?format=pdf`}
+              className="rounded-md border border-stone-300 px-3 py-1.5 font-medium"
+            >
+              {t("dataRights.pdf")}
+            </a>
+            <a
+              href={`/salaries/${employee.id}/export?format=json`}
+              className="rounded-md border border-stone-300 px-3 py-1.5 font-medium"
+            >
+              {t("dataRights.json")}
+            </a>
+          </div>
+        </section>
+      )}
       {canWrite && <ArchiveForm employeeId={employee.id} />}
     </main>
   );

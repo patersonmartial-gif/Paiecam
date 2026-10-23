@@ -213,6 +213,12 @@
       "employees_tenant_matricule_key": "Ce matricule est déjà utilisé.",
       "employees_tenant_cnps_key": "Ce n° CNPS est déjà attribué à un autre salarié.",
       "too_many_attempts": "Trop d'essais de mot de passe : réessayez dans quelques minutes."
+    },
+    "dataRights": {
+      "title": "Droit d'accès du salarié",
+      "help": "Export de toutes les données détenues sur ce salarié, à lui transmettre sur sa demande (loi n° 2024/017). Chaque export est enregistré dans le journal d'audit.",
+      "json": "Exporter en JSON",
+      "pdf": "Exporter en PDF"
     }
   },
   "import": {
