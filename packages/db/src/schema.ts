@@ -1,5 +1,18 @@
 import { sql } from "drizzle-orm";
-import { check, date, index, jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+  check,
+  date,
+  index,
+  inet,
+  integer,
+  jsonb,
+  pgEnum,
+  pgTable,
+  text,
+  timestamp,
+  unique,
+  uuid,
+} from "drizzle-orm/pg-core";
 import { uuidv7 } from "uuidv7";
 
 const id = () =>
@@ -28,4 +41,71 @@ export const payRules = pgTable(
     index("pay_rules_code_valid_from_idx").on(t.code, t.validFrom),
     check("pay_rules_period_chk", sql`${t.validTo} is null or ${t.validTo} >= ${t.validFrom}`),
   ],
+);
+
+export const regimeEnum = pgEnum("regime", ["general", "agricole", "enseignement_prive"]);
+
+export const memberRoleEnum = pgEnum("member_role", [
+  "owner",
+  "payroll_manager",
+  "accountant",
+  "employee",
+]);
+
+/** Une entreprise cliente. RLS : visible uniquement quand app.tenant_id = id. */
+export const tenants = pgTable(
+  "tenants",
+  {
+    id: uuid("id").primaryKey(),
+    legalName: text("legal_name").notNull(),
+    niu: text("niu").notNull(),
+    cnpsEmployerNumber: text("cnps_employer_number").notNull(),
+    regime: regimeEnum("regime").notNull(),
+    /** Taux AT/MP notifié, en points de base (175, 250 ou 500). */
+    workAccidentRate: integer("work_accident_rate").notNull(),
+    commune: text("commune").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique("tenants_niu_key").on(t.niu)],
+);
+
+/** Rôle d'un utilisateur dans une entreprise. RLS : par tenant, ou ses propres lignes. */
+export const memberships = pgTable(
+  "memberships",
+  {
+    id: id(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id),
+    userId: text("user_id").notNull(),
+    role: memberRoleEnum("role").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    unique("memberships_tenant_user_key").on(t.tenantId, t.userId),
+    index("memberships_user_idx").on(t.userId),
+  ],
+);
+
+/**
+ * Journal des actions sensibles, en insertion seule (le rôle applicatif n'a ni UPDATE ni DELETE).
+ * tenant_id est nul pour les événements hors entreprise (ex. échec de connexion).
+ * before/after ne contiennent jamais de donnée personnelle en clair (utiliser maskPII()).
+ */
+export const auditLog = pgTable(
+  "audit_log",
+  {
+    id: id(),
+    tenantId: uuid("tenant_id").references(() => tenants.id),
+    actorUserId: text("actor_user_id"),
+    action: text("action").notNull(),
+    entityType: text("entity_type"),
+    entityId: text("entity_id"),
+    ip: inet("ip"),
+    userAgent: text("user_agent"),
+    before: jsonb("before"),
+    after: jsonb("after"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("audit_log_tenant_created_idx").on(t.tenantId, t.createdAt)],
 );
