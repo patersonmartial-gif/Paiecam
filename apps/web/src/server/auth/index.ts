@@ -10,4 +10,5 @@ export const auth = createAuth({
   baseURL: env.APP_URL,
   mailer,
   checkPwnedPasswords: env.PWNED_PASSWORDS_CHECK === "on",
+  pwnedBestEffort: env.DEPLOYMENT === "local" && env.PWNED_PASSWORDS_CHECK === "on",
 });

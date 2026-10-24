@@ -104,18 +104,23 @@ export function makeInvite(db: Db, deps: { mailer: Mailer; baseURL: string }) {
         .returning({ id: schema.invitations.id });
       const [tenant] = await tx.select({ name: schema.tenants.legalName }).from(schema.tenants);
 
+      const link = `${deps.baseURL}/invitation/${token}`;
       // Envoi dans la transaction : si l'e-mail échoue, l'invitation n'existe pas.
-      await deps.mailer.send({
-        to: input.email,
-        subject: `Invitation à rejoindre ${tenant?.name ?? "une entreprise"} sur PaieCam`,
-        text: `Vous êtes invité(e) sur PaieCam. Ce lien est valable ${INVITATION_DAYS} jours et ne sert qu'une fois :\n${deps.baseURL}/invitation/${token}`,
-      });
+      if (deps.mailer.enabled) {
+        await deps.mailer.send({
+          to: input.email,
+          subject: `Invitation à rejoindre ${tenant?.name ?? "une entreprise"} sur PaieCam`,
+          text: `Vous êtes invité(e) sur PaieCam. Ce lien est valable ${INVITATION_DAYS} jours et ne sert qu'une fois :\n${link}`,
+        });
+      }
       audit({
         entityType: "invitation",
         entityId: inv?.id ?? "",
         after: { email: input.email, role: input.role },
       });
-      return { invitationId: inv?.id ?? "" };
+      // Sans e-mail (installation locale), le lien est remis à celui qui invite, une seule fois :
+      // seule son empreinte est conservée.
+      return { invitationId: inv?.id ?? "", ...(deps.mailer.enabled ? {} : { link }) };
     },
   );
 }

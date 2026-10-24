@@ -4,6 +4,11 @@ import { parseKeyring } from "@paiecam/security";
 /** Seul point d'entrée des variables d'environnement côté serveur. */
 const schema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+  /**
+   * hosted : SaaS derrière un proxy (S3, SMTP, contact sécurité obligatoires en production).
+   * local : logiciel installé sur un PC, accessible uniquement depuis ce PC (127.0.0.1).
+   */
+  DEPLOYMENT: z.enum(["hosted", "local"]).default("hosted"),
   DATABASE_URL: z.url(),
   APP_URL: z.url(),
   BETTER_AUTH_SECRET: z.string().min(32),
@@ -75,17 +80,26 @@ export function parseEnv(source: Record<string, string | undefined>): Env {
     const names = parsed.error.issues.map((i) => i.path.join(".")).join(", ");
     throw new Error(`Variables d'environnement invalides : ${names}`);
   }
-  if (parsed.data.NODE_ENV === "production" && !parsed.data.TRUSTED_PROXY_HEADER) {
+  const prod = parsed.data.NODE_ENV === "production";
+  const hosted = prod && parsed.data.DEPLOYMENT === "hosted";
+  if (hosted && !parsed.data.TRUSTED_PROXY_HEADER) {
     throw new Error("TRUSTED_PROXY_HEADER est obligatoire en production");
   }
-  if (parsed.data.NODE_ENV === "production" && (!parsed.data.SMTP_URL || !parsed.data.MAIL_FROM)) {
+  if (hosted && (!parsed.data.SMTP_URL || !parsed.data.MAIL_FROM)) {
     throw new Error("SMTP_URL et MAIL_FROM sont obligatoires en production");
   }
-  if (parsed.data.NODE_ENV === "production" && !parsed.data.SECURITY_CONTACT) {
+  if (hosted && !parsed.data.SECURITY_CONTACT) {
     throw new Error("SECURITY_CONTACT est obligatoire en production (mailto:… ou https://…)");
   }
-  if (parsed.data.NODE_ENV === "production" && parsed.data.STORAGE_DRIVER !== "s3") {
+  if (hosted && parsed.data.STORAGE_DRIVER !== "s3") {
     throw new Error("STORAGE_DRIVER=s3 est obligatoire en production");
+  }
+  // Installation locale : aucun proxy devant l'application, l'en-tête serait falsifiable.
+  if (parsed.data.DEPLOYMENT === "local" && parsed.data.TRUSTED_PROXY_HEADER) {
+    throw new Error("TRUSTED_PROXY_HEADER est interdit en installation locale");
+  }
+  if (Boolean(parsed.data.SMTP_URL) !== Boolean(parsed.data.MAIL_FROM)) {
+    throw new Error("SMTP_URL et MAIL_FROM vont ensemble");
   }
   if (
     parsed.data.STORAGE_DRIVER === "s3" &&
@@ -101,13 +115,14 @@ export function parseEnv(source: Record<string, string | undefined>): Env {
       "Stockage S3 : S3_ENDPOINT, S3_REGION, S3_BUCKET, S3_ACCESS_KEY_ID et S3_SECRET_ACCESS_KEY sont requis",
     );
   }
-  if (parsed.data.NODE_ENV === "production" && parsed.data.MAIL_OUTBOX_DIR) {
+  if (prod && parsed.data.MAIL_OUTBOX_DIR) {
     throw new Error("MAIL_OUTBOX_DIR est interdit en production");
   }
   if (!parsed.data.FIELD_ENCRYPTION_KEYS) {
     throw new Error("FIELD_ENCRYPTION_KEYS est obligatoire (voir .env.example)");
   }
-  if (parsed.data.NODE_ENV === "production" && parsed.data.PWNED_PASSWORDS_CHECK === "off") {
+  // Hors ligne (installation locale), la liste intégrée des mots de passe courants reste appliquée.
+  if (hosted && parsed.data.PWNED_PASSWORDS_CHECK === "off") {
     throw new Error("PWNED_PASSWORDS_CHECK=off est interdit en production");
   }
   const allowDraft =

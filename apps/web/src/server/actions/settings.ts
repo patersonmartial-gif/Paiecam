@@ -26,7 +26,7 @@ const changeRole = makeChangeRole(db);
 const remove = makeRemoveMember(db);
 const accept = makeAcceptInvitation(db);
 
-export type SettingsState = { error?: ActionError; ok?: boolean } | undefined;
+export type SettingsState = { error?: ActionError; ok?: boolean; link?: string } | undefined;
 
 export async function updateCompanyAction(
   _prev: SettingsState,
@@ -48,7 +48,8 @@ export async function inviteAction(_prev: SettingsState, form: FormData): Promis
   });
   if (!res.ok) return { error: res.error };
   revalidatePath("/parametres/equipe");
-  return { ok: true };
+  // Installation sans e-mail : le lien est affiché une seule fois, à transmettre soi-même.
+  return { ok: true, ...(res.data.link ? { link: res.data.link } : {}) };
 }
 
 export async function revokeInvitationAction(form: FormData): Promise<void> {

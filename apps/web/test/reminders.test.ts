@@ -23,7 +23,7 @@ import {
 import { makeCreateEmployee } from "@/server/features/employees";
 import { makeCalculatePeriod, makeOpenPeriod, makeValidatePeriod } from "@/server/features/payroll";
 import { reminderStage, runDeadlineReminders, todayInDouala } from "@/server/features/reminders";
-import type { Mail } from "@/server/mail";
+import type { Mail, Mailer } from "@/server/mail";
 
 describe("reminderStage", () => {
   it("fenêtres J-7, J-2, J0 et retard", () => {
@@ -45,8 +45,8 @@ const db = createDb(testDatabaseUrl());
 const keyring = parseKeyring(`v1:${Buffer.alloc(32, 1).toString("base64")}`);
 const storage = createFsStorage(mkdtempSync(join(tmpdir(), "paiecam-rem-")), keyring);
 const sent: Mail[] = [];
-const mailer = { send: async (m: Mail) => void sent.push(m) };
-const run = (today: string, m = mailer) =>
+const mailer = { enabled: true, send: async (m: Mail) => void sent.push(m) };
+const run = (today: string, m: Mailer = mailer) =>
   runDeadlineReminders(db, { mailer: m, baseURL: "http://localhost", today });
 
 const U = {
@@ -167,7 +167,10 @@ describe("runDeadlineReminders", () => {
 
   it("une étape manquée est rattrapée ; un envoi échoué est retenté", async () => {
     const err = vi.spyOn(console, "error").mockImplementation(() => {});
-    const failing = { send: async () => Promise.reject(new Error("SMTP indisponible")) };
+    const failing = {
+      enabled: true,
+      send: async () => Promise.reject(new Error("SMTP indisponible")),
+    };
     expect(await run("2026-08-14", failing)).toEqual({ sent: 0, recipients: 0 });
     err.mockRestore();
     expect((await run("2026-08-14")).sent).toBe(6);
@@ -188,5 +191,14 @@ describe("runDeadlineReminders", () => {
     const subjectsA = sent.filter((m) => m.text.startsWith("Hôtel fictif A")).map((m) => m.subject);
     expect(subjectsA.some((s) => s.includes("DGI"))).toBe(false);
     expect(subjectsA.filter((s) => s.includes("EN RETARD")).length).toBe(4);
+  });
+});
+
+describe("rappels sans e-mail (installation locale)", () => {
+  it("aucun envoi ni étape consommée : les échéances restent affichées dans l'application", async () => {
+    const before = sent.length;
+    const disabled = { enabled: false, send: async () => Promise.reject(new Error("désactivé")) };
+    expect(await run("2026-09-14", disabled)).toEqual({ sent: 0, recipients: 0 });
+    expect(sent).toHaveLength(before);
   });
 });

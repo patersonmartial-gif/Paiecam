@@ -25,7 +25,7 @@ import { MASK } from "@/server/log";
 
 const db = createDb(testDatabaseUrl());
 const sent: Mail[] = [];
-const mailer = { send: async (m: Mail) => void sent.push(m) };
+const mailer = { enabled: true, send: async (m: Mail) => void sent.push(m) };
 
 const invite = makeInvite(db, { mailer, baseURL: "http://localhost:3000" });
 const list = makeListMembers(db);
@@ -105,6 +105,26 @@ describe("invitation d'un collaborateur", () => {
     expect(tokenOf(sent[0])).toHaveLength(43);
     const listed = await list(ctx(U.ownerA, tenantA), {});
     expect(listed.ok && listed.data.pending.map((p) => p.email)).toEqual([email(U.newcomer)]);
+  });
+
+  it("sans e-mail (installation locale) : le lien est remis à celui qui invite, rien n'est envoyé", async () => {
+    sent.length = 0;
+    const offline = makeInvite(db, {
+      mailer: { enabled: false, send: async () => Promise.reject(new Error("désactivé")) },
+      baseURL: "http://localhost:3000",
+    });
+    const res = await offline(ctx(U.ownerA, tenantA), {
+      email: "hors-ligne@exemple.test",
+      role: "accountant",
+    });
+    expect(res.ok && res.data.link).toMatch(/^http:\/\/localhost:3000\/invitation\/[\w-]{43}$/);
+    expect(sent).toEqual([]);
+    // Avec e-mail, le lien n'est jamais renvoyé à l'écran.
+    const withMail = await invite(ctx(U.ownerA, tenantA), {
+      email: "avec-mail@exemple.test",
+      role: "accountant",
+    });
+    expect(withMail.ok && "link" in withMail.data).toBe(false);
   });
 
   it("l'audit ne contient pas l'adresse en clair, la base ne contient pas le jeton", async () => {

@@ -121,7 +121,9 @@
       "owner": "Le rôle d'un propriétaire ne peut pas être modifié ici.",
       "not_found": "Élément introuvable.",
       "rate_limited": "Trop d'invitations envoyées : réessayez dans une heure."
-    }
+    },
+    "inviteLinkHelp": "Aucun e-mail n'est configuré sur cette installation. Transmettez ce lien à la personne invitée (valable 7 jours, une seule fois). Il ne sera plus affiché.",
+    "inviteLink": "Lien d'invitation"
   },
   "invitation": {
     "title": "Invitation",

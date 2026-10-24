@@ -10,13 +10,14 @@ const db = createDb(testDatabaseUrl());
 const ops = createDb(testOpsDatabaseUrl());
 const sent: Mail[] = [];
 const baseURL = "http://localhost:3000";
-const makeAuth = (checkPwnedPasswords = false) =>
+const makeAuth = (checkPwnedPasswords = false, pwnedBestEffort = false) =>
   createAuth({
     db,
     secret: "s".repeat(32),
     baseURL,
-    mailer: { send: async (m) => void sent.push(m) },
+    mailer: { enabled: true, send: async (m) => void sent.push(m) },
     checkPwnedPasswords,
+    pwnedBestEffort,
   });
 const auth = makeAuth();
 
@@ -78,6 +79,53 @@ describe("inscription", () => {
     expect(account?.password).toMatch(/^\$argon2id\$v=19\$m=19456,t=2,p=1\$/);
     expect(account?.password).not.toContain(password);
     expect(user.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-7/);
+  });
+
+  it("refuse un mot de passe courant de la liste intégrée, même sans réseau", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch");
+    try {
+      for (const common of ["123456789qwerty", "  Laurel12Creek "]) {
+        const res = await post("/sign-up/email", {
+          email: newEmail(),
+          password: common,
+          name: "A",
+        });
+        expect(res.status).toBe(400);
+        expect(await res.text()).toMatch(/fuite de données/);
+      }
+      expect(fetchSpy).not.toHaveBeenCalled();
+    } finally {
+      fetchSpy.mockRestore();
+    }
+  });
+
+  it("installation locale : Have I Been Pwned tenté, l'inscription passe hors ligne", async () => {
+    const local = makeAuth(true, true);
+    const offline = vi.spyOn(globalThis, "fetch").mockRejectedValue(new TypeError("fetch failed"));
+    try {
+      const res = await post("/sign-up/email", { email: newEmail(), password, name: "A" }, local);
+      expect(res.status).toBe(200);
+      expect(String(offline.mock.calls[0]?.[0])).toMatch(
+        /^https:\/\/api\.pwnedpasswords\.com\/range\/[0-9A-F]{5}$/,
+      );
+    } finally {
+      offline.mockRestore();
+    }
+    const leaked = "fuite-locale-fictive";
+    const sha1 = createHash("sha1").update(leaked).digest("hex").toUpperCase();
+    const online = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(new Response(`${sha1.slice(5)}:3\r\n`));
+    try {
+      const res = await post(
+        "/sign-up/email",
+        { email: newEmail(), password: leaked, name: "A" },
+        local,
+      );
+      expect(res.status).toBe(400);
+    } finally {
+      online.mockRestore();
+    }
   });
 
   it("refuse un mot de passe présent dans une fuite (Have I Been Pwned, k-anonymat)", async () => {

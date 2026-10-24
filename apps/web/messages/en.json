@@ -121,7 +121,9 @@
       "owner": "An owner's role cannot be changed here.",
       "not_found": "Item not found.",
       "rate_limited": "Too many invitations sent: try again in an hour."
-    }
+    },
+    "inviteLinkHelp": "No e-mail is configured on this installation. Give this link to the person invited (valid 7 days, once). It will not be shown again.",
+    "inviteLink": "Invitation link"
   },
   "invitation": {
     "title": "Invitation",

@@ -48,3 +48,21 @@ describe("createMailer", () => {
     ).rejects.toThrow(/fournisseur/);
   });
 });
+
+describe("createMailer en installation locale", () => {
+  it("sans SMTP : désactivé, sans erreur au démarrage ; avec SMTP : envoie normalement", async () => {
+    const off = createMailer("production", { local: true });
+    expect(off.enabled).toBe(false);
+    await expect(off.send({ to: "a@exemple.test", subject: "x", text: "" })).rejects.toThrow(
+      /désactivé/,
+    );
+    const sent: unknown[] = [];
+    const on = createMailer("production", {
+      local: true,
+      smtp: { transport: { sendMail: async (m) => sent.push(m) }, from: "p@exemple.test" },
+    });
+    expect(on.enabled).toBe(true);
+    await on.send({ to: "a@exemple.test", subject: "x", text: "" });
+    expect(sent).toHaveLength(1);
+  });
+});

@@ -9,6 +9,7 @@ import { createAuthMiddleware } from "better-auth/api";
 import { auditAuthAfter, auditAuthEvent } from "./audit";
 import { signInLockoutAfter, signInLockoutBefore } from "./lockout-hooks";
 import { hashPassword, verifyPassword } from "./password";
+import { passwordPolicyBefore } from "./password-policy";
 
 export interface AuthDeps {
   db: Db;
@@ -17,11 +18,23 @@ export interface AuthDeps {
   mailer: Mailer;
   /** Désactivable dans les tests et hors ligne en dev ; jamais en production (voir env.ts). */
   checkPwnedPasswords?: boolean;
+  /**
+   * Installation locale : Have I Been Pwned tenté sans bloquer hors ligne (au lieu du plugin, qui
+   * refuse l'inscription quand le service est injoignable).
+   */
+  pwnedBestEffort?: boolean;
 }
 
 const EIGHT_HOURS = 8 * 60 * 60;
 
-export function createAuth({ db, secret, baseURL, mailer, checkPwnedPasswords = true }: AuthDeps) {
+export function createAuth({
+  db,
+  secret,
+  baseURL,
+  mailer,
+  checkPwnedPasswords = true,
+  pwnedBestEffort = false,
+}: AuthDeps) {
   return betterAuth({
     appName: "PaieCam",
     secret,
@@ -59,7 +72,10 @@ export function createAuth({ db, secret, baseURL, mailer, checkPwnedPasswords = 
       },
     },
     hooks: {
-      before: createAuthMiddleware(async (ctx) => signInLockoutBefore(db, ctx)),
+      before: createAuthMiddleware(async (ctx) => {
+        await passwordPolicyBefore(ctx, { onlineBestEffort: pwnedBestEffort });
+        await signInLockoutBefore(db, ctx);
+      }),
       after: createAuthMiddleware(async (ctx) => {
         await auditAuthAfter(db, ctx);
         await signInLockoutAfter(db, ctx);
@@ -99,7 +115,7 @@ export function createAuth({ db, secret, baseURL, mailer, checkPwnedPasswords = 
     },
     plugins: [
       twoFactor({ issuer: "PaieCam" }),
-      ...(checkPwnedPasswords
+      ...(checkPwnedPasswords && !pwnedBestEffort
         ? [
             haveIBeenPwned({
               customPasswordCompromisedMessage:

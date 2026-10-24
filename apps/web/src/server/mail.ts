@@ -16,6 +16,8 @@ export function sanitizeMail(mail: Mail): Mail {
 }
 
 export interface Mailer {
+  /** Faux quand aucun e-mail ne peut partir (installation locale sans fournisseur). */
+  readonly enabled: boolean;
   send(mail: Mail): Promise<void>;
 }
 
@@ -25,6 +27,8 @@ export interface SmtpTransport {
 }
 
 export interface MailerOptions {
+  /** Installation locale : sans SMTP, pas d'erreur mais pas d'envoi (les écrans s'adaptent). */
+  local?: boolean | undefined;
   outboxDir?: string | undefined;
   smtp?: { transport: SmtpTransport; from: string } | undefined;
 }
@@ -43,20 +47,31 @@ export function createMailer(
   if (opts.smtp) {
     const { transport, from } = opts.smtp;
     return {
+      enabled: true,
       async send(raw) {
         const mail = sanitizeMail(raw);
         await transport.sendMail({ from, to: mail.to, subject: mail.subject, text: mail.text });
       },
     };
   }
+  if (nodeEnv === "production" && opts.local) {
+    return {
+      enabled: false,
+      async send() {
+        throw new Error("Envoi d'e-mail désactivé sur cette installation");
+      },
+    };
+  }
   if (nodeEnv === "production") {
     return {
+      enabled: true,
       async send() {
         throw new Error("Aucun fournisseur d'e-mail configuré");
       },
     };
   }
   return {
+    enabled: true,
     async send(raw) {
       const mail = sanitizeMail(raw);
       console.warn(`[mail:dev] à ${mail.to} — ${mail.subject}\n${mail.text}`);

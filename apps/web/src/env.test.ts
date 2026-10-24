@@ -93,4 +93,26 @@ describe("parseEnv", () => {
       /SECURITY_CONTACT/,
     );
   });
+
+  it("installation locale : ni proxy, ni S3, ni SMTP, ni contact obligatoires", () => {
+    const local = {
+      ...ok,
+      NODE_ENV: "production",
+      DEPLOYMENT: "local",
+      PWNED_PASSWORDS_CHECK: "off",
+      DOCUMENTS_DIR: "C:/PaieCam/donnees/documents",
+    };
+    expect(parseEnv(local)).toMatchObject({ DEPLOYMENT: "local", STORAGE_DRIVER: "fs" });
+    expect(parseEnv(ok).DEPLOYMENT).toBe("hosted");
+    // Un en-tête d'IP de confiance n'a pas de sens sans proxy : il serait falsifiable.
+    expect(() => parseEnv({ ...local, TRUSTED_PROXY_HEADER: "x-forwarded-for" })).toThrow(
+      /interdit en installation locale/,
+    );
+    expect(() => parseEnv({ ...local, SMTP_URL: "smtp://smtp.exemple.test" })).toThrow(
+      /vont ensemble/,
+    );
+    expect(() => parseEnv({ ...local, MAIL_OUTBOX_DIR: "/tmp/x" })).toThrow(/interdit/);
+    // Les brouillons de paie restent interdits en production locale, sauf pilote déclaré.
+    expect(parseEnv(local).PAYROLL_ALLOW_DRAFT_RULES).toBe("off");
+  });
 });

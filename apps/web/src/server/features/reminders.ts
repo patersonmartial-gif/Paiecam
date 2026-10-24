@@ -54,6 +54,8 @@ export async function runDeadlineReminders(
   db: Db,
   deps: { mailer: Mailer; baseURL: string; today: string },
 ): Promise<{ sent: number; recipients: number }> {
+  // Sans e-mail (installation locale), les échéances restent affichées dans l'application.
+  if (!deps.mailer.enabled) return { sent: 0, recipients: 0 };
   const horizon = new Date(Date.parse(`${deps.today}T00:00:00Z`) + 7 * DAY)
     .toISOString()
     .slice(0, 10);
