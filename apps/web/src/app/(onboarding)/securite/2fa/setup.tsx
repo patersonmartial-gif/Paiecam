@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import QRCode from "qrcode";
 import { Alert, Button, Field } from "@/components/ui";
 import { authClient } from "@/lib/auth-client";
+import { useHydrated } from "@/lib/use-hydrated";
 import { authErrorKey } from "@/lib/auth-errors";
 
 type Step =
@@ -15,6 +16,7 @@ export function TwoFactorSetup() {
   const [step, setStep] = useState<Step>({ kind: "password" });
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const hydrated = useHydrated();
 
   async function start(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -48,7 +50,7 @@ export function TwoFactorSetup() {
 
   if (step.kind === "password") {
     return (
-      <form onSubmit={start}>
+      <form method="post" onSubmit={start}>
         {error && <Alert>{t(error)}</Alert>}
         <Field
           label={t("twoFactor.confirmPassword")}
@@ -57,7 +59,9 @@ export function TwoFactorSetup() {
           autoComplete="current-password"
           required
         />
-        <Button disabled={pending}>{pending ? t("common.loading") : t("twoFactor.start")}</Button>
+        <Button disabled={pending || !hydrated}>
+          {pending ? t("common.loading") : t("twoFactor.start")}
+        </Button>
       </form>
     );
   }
@@ -77,7 +81,7 @@ export function TwoFactorSetup() {
           <li key={c}>{c}</li>
         ))}
       </ul>
-      <form onSubmit={verify}>
+      <form method="post" onSubmit={verify}>
         <Field
           label={t("twoFactor.code")}
           name="code"
@@ -85,7 +89,7 @@ export function TwoFactorSetup() {
           autoComplete="one-time-code"
           required
         />
-        <Button disabled={pending}>
+        <Button disabled={pending || !hydrated}>
           {pending ? t("common.loading") : t("twoFactor.activate")}
         </Button>
       </form>

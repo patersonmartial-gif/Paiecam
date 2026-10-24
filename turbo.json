@@ -15,7 +15,11 @@
       "passThroughEnv": [
         "TEST_DATABASE_URL",
         "TEST_MIGRATION_DATABASE_URL",
-        "TEST_OPS_DATABASE_URL"
+        "TEST_OPS_DATABASE_URL",
+        "TEST_BACKUP_DATABASE_URL",
+        "TEST_ROTATION_DATABASE_URL",
+        "TEST_RESTORE_ADMIN_DATABASE_URL",
+        "PATH"
       ],
       "cache": false
     }

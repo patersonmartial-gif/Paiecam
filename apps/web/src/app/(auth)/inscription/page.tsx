@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Alert, Button, Card, Field } from "@/components/ui";
 import { authClient } from "@/lib/auth-client";
+import { useHydrated } from "@/lib/use-hydrated";
 import { authErrorKey } from "@/lib/auth-errors";
 import { safeNext } from "@/lib/safe-next";
 
@@ -11,6 +12,7 @@ export default function SignUpPage() {
   const t = useTranslations();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const hydrated = useHydrated();
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -35,7 +37,7 @@ export default function SignUpPage() {
   return (
     <Card title={t("auth.signUpTitle")}>
       {error && <Alert>{t(error)}</Alert>}
-      <form onSubmit={onSubmit}>
+      <form method="post" onSubmit={onSubmit}>
         <Field label={t("auth.name")} name="name" autoComplete="name" required />
         <Field label={t("auth.email")} name="email" type="email" autoComplete="email" required />
         <Field
@@ -48,7 +50,7 @@ export default function SignUpPage() {
           hint={t("auth.passwordHint")}
           required
         />
-        <Button disabled={pending}>
+        <Button disabled={pending || !hydrated}>
           {pending ? t("common.loading") : t("auth.createAccount")}
         </Button>
       </form>

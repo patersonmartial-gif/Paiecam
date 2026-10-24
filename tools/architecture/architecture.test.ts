@@ -112,6 +112,18 @@ describe("autorisation", () => {
 describe("hygiène", () => {
   const app = all.filter((f) => !isTest(f));
 
+  it("un formulaire géré côté client est en POST : jamais de mot de passe dans l'URL avant hydratation", () => {
+    const bad = offenders(
+      (_f, src) =>
+        [...src.matchAll(/<form\b[^>]*>/g)].some(
+          // Avec action={…} (Server Action), Next.js rend déjà le formulaire en POST.
+          ([tag]) => /onSubmit=/.test(tag) && !/\baction=/.test(tag) && !/method="post"/.test(tag),
+        ),
+      app,
+    );
+    expect(bad).toEqual([]);
+  });
+
   it("aucun dangerouslySetInnerHTML", () => {
     expect(offenders((_f, s) => s.includes("dangerouslySetInnerHTML"), app)).toEqual([]);
   });

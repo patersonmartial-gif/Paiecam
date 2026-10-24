@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Alert, Button, Card, Field } from "@/components/ui";
 import { authClient } from "@/lib/auth-client";
+import { useHydrated } from "@/lib/use-hydrated";
 import { authErrorKey } from "@/lib/auth-errors";
 import { safeNext } from "@/lib/safe-next";
 
@@ -12,6 +13,7 @@ export default function VerifyTwoFactorPage() {
   const [backup, setBackup] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const hydrated = useHydrated();
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -33,7 +35,7 @@ export default function VerifyTwoFactorPage() {
     <Card title={t("twoFactor.verifyTitle")}>
       {error && <Alert>{t(error)}</Alert>}
       <p className="mb-4 text-sm text-stone-600">{t("twoFactor.verifyHelp")}</p>
-      <form onSubmit={onSubmit}>
+      <form method="post" onSubmit={onSubmit}>
         <Field
           label={backup ? t("twoFactor.backupCode") : t("twoFactor.code")}
           name="code"
@@ -42,7 +44,9 @@ export default function VerifyTwoFactorPage() {
           autoFocus
           required
         />
-        <Button disabled={pending}>{pending ? t("common.loading") : t("common.submit")}</Button>
+        <Button disabled={pending || !hydrated}>
+          {pending ? t("common.loading") : t("common.submit")}
+        </Button>
       </form>
       <button
         className="mt-4 w-full text-center text-sm text-brand underline"

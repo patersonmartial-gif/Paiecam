@@ -30,6 +30,7 @@ export function ImportForm() {
     <div>
       <form
         ref={formRef}
+        method="post"
         onSubmit={(e) => {
           e.preventDefault();
           submit(false);
