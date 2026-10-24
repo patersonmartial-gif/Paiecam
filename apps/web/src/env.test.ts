@@ -101,6 +101,9 @@ describe("parseEnv", () => {
       DEPLOYMENT: "local",
       PWNED_PASSWORDS_CHECK: "off",
       DOCUMENTS_DIR: "C:/PaieCam/donnees/documents",
+      BACKUP_DIR: "C:/PaieCam/sauvegardes",
+      BACKUP_RECIPIENT: `age1${"q".repeat(58)}`,
+      BACKUP_DATABASE_URL: "postgres://paiecam_backup:x@127.0.0.1:5433/paiecam",
     };
     expect(parseEnv(local)).toMatchObject({ DEPLOYMENT: "local", STORAGE_DRIVER: "fs" });
     expect(parseEnv(ok).DEPLOYMENT).toBe("hosted");
@@ -112,6 +115,10 @@ describe("parseEnv", () => {
       /vont ensemble/,
     );
     expect(() => parseEnv({ ...local, MAIL_OUTBOX_DIR: "/tmp/x" })).toThrow(/interdit/);
+    expect(() => parseEnv({ ...local, BACKUP_RECIPIENT: undefined })).toThrow(/BACKUP_DIR/);
+    expect(() => parseEnv({ ...local, BACKUP_RECIPIENT: "AGE-SECRET-KEY-1XYZ" })).toThrow(
+      /BACKUP_RECIPIENT/,
+    );
     // Les brouillons de paie restent interdits en production locale, sauf pilote déclaré.
     expect(parseEnv(local).PAYROLL_ALLOW_DRAFT_RULES).toBe("off");
   });

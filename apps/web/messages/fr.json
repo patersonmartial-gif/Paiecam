@@ -93,7 +93,9 @@
     "team": "Équipe",
     "switchCompany": "Changer d'entreprise",
     "payroll": "Paie",
-    "declarations": "Échéances"
+    "declarations": "Échéances",
+    "backups": "Sauvegardes",
+    "backupLate": "Aucune sauvegarde depuis plus de 3 jours."
   },
   "settings": {
     "companyTitle": "Informations de l'entreprise",
@@ -462,5 +464,13 @@
       "loan_on_calculated_payslip": "Ce prêt figure sur un bulletin calculé : rouvrez le mois avant de le modifier.",
       "period_not_open": "La saisie est fermée pour ce mois."
     }
+  },
+  "backups": {
+    "title": "Sauvegardes",
+    "help": "PaieCam sauvegarde chaque jour à 12 h 30 la base, les documents et les clés de l'installation, dans un fichier chiffré. Seule la clé du kit de récupération permet de le relire.",
+    "copyAdvice": "Copiez régulièrement le dossier {dir} sur une clé USB ou un disque externe rangé hors du bureau : si le PC tombe en panne ou est volé, c'est votre seule copie.",
+    "now": "Sauvegarder maintenant",
+    "requested": "Sauvegarde demandée : elle apparaîtra dans la liste d'ici une minute.",
+    "empty": "Aucune sauvegarde pour l'instant."
   }
 }

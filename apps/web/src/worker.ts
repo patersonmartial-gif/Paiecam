@@ -7,7 +7,14 @@ import { parseKeyring } from "@paiecam/security";
 import { parseEnv } from "./env-schema";
 import { generatePeriodDocuments } from "./server/features/documents";
 import { runDeadlineReminders, todayInDouala } from "./server/features/reminders";
-import { PDF_QUEUE, REMINDER_QUEUE, startBoss, type PdfJob } from "./server/jobs/boss";
+import {
+  BACKUP_QUEUE,
+  PDF_QUEUE,
+  REMINDER_QUEUE,
+  startBoss,
+  type PdfJob,
+} from "./server/jobs/boss";
+import { backupIsDue, localBackupConfigured, runLocalBackup } from "./server/jobs/local-backup";
 import { createMailer, smtpTransportFromUrl } from "./server/mail";
 import { log } from "./server/log";
 import { storageFromEnv } from "./storage-from-env";
@@ -50,6 +57,17 @@ await boss.work(REMINDER_QUEUE, async () => {
   });
   log("info", "rappels d'échéance", result);
 });
+
+if (localBackupConfigured(env)) {
+  // Chaque jour à 12 h 30 (heure de Douala : le PC est allumé), et au démarrage si la dernière
+  // sauvegarde a plus de 20 h.
+  await boss.schedule(BACKUP_QUEUE, "30 12 * * *", {}, { tz: "Africa/Douala" });
+  await boss.work(BACKUP_QUEUE, async () => {
+    const b = await runLocalBackup(env);
+    log("info", "sauvegarde locale", { file: b.name, sizeBytes: b.sizeBytes });
+  });
+  if (await backupIsDue(env)) await boss.send(BACKUP_QUEUE, {}, { singletonKey: "backup" });
+}
 
 log("info", "worker démarré", { queue: PDF_QUEUE });
 

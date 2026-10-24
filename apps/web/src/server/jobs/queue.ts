@@ -1,7 +1,7 @@
 import "server-only";
 import type { PgBoss } from "pg-boss";
 import { env } from "@/env";
-import { PDF_QUEUE, startBoss, type PdfJob } from "./boss";
+import { BACKUP_QUEUE, PDF_QUEUE, startBoss, type PdfJob } from "./boss";
 
 let boss: Promise<PgBoss> | null = null;
 
@@ -12,4 +12,10 @@ export async function enqueuePayslipPdfs(periodId: string, tenantId: string): Pr
   await (
     await boss
   ).send(PDF_QUEUE, data, { singletonKey: periodId, retryLimit: 5, retryBackoff: true });
+}
+
+/** Demande une sauvegarde immédiate au worker (une seule à la fois). */
+export async function enqueueBackup(): Promise<void> {
+  boss ??= startBoss(env.DATABASE_URL);
+  await (await boss).send(BACKUP_QUEUE, {}, { singletonKey: "backup", retryLimit: 2 });
 }

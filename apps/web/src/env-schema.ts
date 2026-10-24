@@ -50,6 +50,17 @@ const schema = z.object({
     .optional(),
   /** Rôle paiecam_rotation, utilisé seulement par la commande de rotation des clés. */
   ROTATION_DATABASE_URL: z.url().optional(),
+  /** Installation locale : sauvegardes quotidiennes chiffrées (voir @paiecam/local). */
+  BACKUP_DIR: z.string().min(1).optional(),
+  /** Clé publique age (age1…) du kit de récupération : la clé secrète n'est jamais sur le PC. */
+  BACKUP_RECIPIENT: z
+    .string()
+    .regex(/^age1[0-9a-z]{58}$/)
+    .optional(),
+  /** Rôle paiecam_backup (lecture seule, exempté du RLS). */
+  BACKUP_DATABASE_URL: z.url().optional(),
+  /** Dossier de pg_dump / pg_restore livrés avec l'installation (vide : dans le PATH). */
+  PG_BIN_DIR: z.string().min(1).optional(),
   /** Dossier où écrire les e-mails en développement (interdit en production). */
   MAIL_OUTBOX_DIR: z.string().optional(),
   /** Trousseau « v2:<base64>,v1:<base64> » ; la première clé chiffre. */
@@ -97,6 +108,16 @@ export function parseEnv(source: Record<string, string | undefined>): Env {
   // Installation locale : aucun proxy devant l'application, l'en-tête serait falsifiable.
   if (parsed.data.DEPLOYMENT === "local" && parsed.data.TRUSTED_PROXY_HEADER) {
     throw new Error("TRUSTED_PROXY_HEADER est interdit en installation locale");
+  }
+  // Installation locale en production : sans sauvegarde automatique, une panne du PC perd tout.
+  if (
+    prod &&
+    parsed.data.DEPLOYMENT === "local" &&
+    !(parsed.data.BACKUP_DIR && parsed.data.BACKUP_RECIPIENT && parsed.data.BACKUP_DATABASE_URL)
+  ) {
+    throw new Error(
+      "Installation locale : BACKUP_DIR, BACKUP_RECIPIENT et BACKUP_DATABASE_URL sont obligatoires",
+    );
   }
   if (Boolean(parsed.data.SMTP_URL) !== Boolean(parsed.data.MAIL_FROM)) {
     throw new Error("SMTP_URL et MAIL_FROM vont ensemble");

@@ -33,7 +33,7 @@ const config: NextConfig = {
     },
   },
   serverExternalPackages: ["@node-rs/argon2"],
-  transpilePackages: ["@paiecam/paie-engine", "@paiecam/db", "@paiecam/security"],
+  transpilePackages: ["@paiecam/paie-engine", "@paiecam/db", "@paiecam/security", "@paiecam/local"],
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

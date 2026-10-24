@@ -93,7 +93,9 @@
     "team": "Team",
     "switchCompany": "Switch company",
     "payroll": "Payroll",
-    "declarations": "Deadlines"
+    "declarations": "Deadlines",
+    "backups": "Backups",
+    "backupLate": "No backup for more than 3 days."
   },
   "settings": {
     "companyTitle": "Company information",
@@ -462,5 +464,13 @@
       "loan_on_calculated_payslip": "This loan is on a calculated payslip: reopen the month before changing it.",
       "period_not_open": "Entry is closed for this month."
     }
+  },
+  "backups": {
+    "title": "Backups",
+    "help": "PaieCam backs up the database, documents and installation keys every day at 12:30, into an encrypted file. Only the recovery kit key can read it.",
+    "copyAdvice": "Regularly copy the {dir} folder to a USB stick or external drive kept outside the office: if the PC breaks down or is stolen, it is your only copy.",
+    "now": "Back up now",
+    "requested": "Backup requested: it will appear in the list within a minute.",
+    "empty": "No backup yet."
   }
 }
