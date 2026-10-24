@@ -299,6 +299,34 @@ describe("règles particulières", () => {
     expect(p.warnings).toContain("net_negative");
   });
 
+  it("plafond des retenues : avertit au-delà de la part retenable, au franc près", () => {
+    // Net avant retenues du cas 1 : 345 015 FCFA ; part provisoire d'un tiers (3 333 bp, arrondi
+    // inférieur) : 345 015 × 3 333 / 10 000 = 114 993.
+    const withDeduction = (amount: number) =>
+      computePayslip(
+        input({
+          items: [
+            {
+              code: "pret",
+              label: "Prêt",
+              kind: "deduction",
+              amount,
+              subjectToCnps: false,
+              taxable: false,
+            },
+          ],
+        }),
+        rules,
+      );
+    expect(withDeduction(114_993).warnings).not.toContain("deductions_above_limit");
+    expect(withDeduction(114_994).warnings).toContain("deductions_above_limit");
+    expect(withDeduction(114_993).rulesUsed.map((r) => r.code)).toContain("retenues.plafond");
+    // Sans retenue, la règle n'est pas utilisée (un brouillon ne rend pas le bulletin provisoire).
+    expect(computePayslip(input(), rules).rulesUsed.map((r) => r.code)).not.toContain(
+      "retenues.plafond",
+    );
+  });
+
   it("refuse les entrées invalides", () => {
     expect(() =>
       computePayslip(input({ period: { start: "2026-03-01", end: "2026-03-15" } }), rules),

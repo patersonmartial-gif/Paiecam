@@ -31,6 +31,7 @@ Hors ligne en développement, `PWNED_PASSWORDS_CHECK=off` coupe l'appel à Have 
 - [x] Phase 2 — Référentiels : fiche entreprise, invitations, salariés, champs chiffrés, import Excel
 - [~] Phase 3 — Moteur de paie : calcul complet fait sur un référentiel 2026 en BROUILLON ; validation de l'expert-comptable et bulletins golden en attente
 - [x] Phase 4 — Cycle mensuel (saisie, calcul, contrôle, validation) et bulletins PDF signés
+  - Prêts et avances : échéancier, retenue automatique, suspension d'un mois, solde suivi ; plafond légal des retenues en brouillon (barème du décret n° 94/197/PM à fournir par l'expert-comptable)
 - [x] Phase 5 — Déclarations (états CNPS, DGI, DIPE provisoire, journal), dépôts, verrouillage, rappels e-mail
 - [~] Phase 6 — Durcissement : revue ASVS L2, SMTP/S3/Docker, sauvegardes testées, textes juridiques en projet, plan d'incident ; en attente : relecture par l'avocat, durées de conservation (purge), préproduction (ZAP, test d'intrusion)
 

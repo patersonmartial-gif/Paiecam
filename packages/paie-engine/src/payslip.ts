@@ -85,7 +85,9 @@ export interface Payslip {
   totals: PayslipTotals;
   /** Instantané des règles utilisées : conservé avec la paie validée. */
   rulesUsed: RuleRef[];
-  warnings: ("net_negative" | "irpp_below_threshold" | "partial_month")[];
+  warnings: (
+    "net_negative" | "irpp_below_threshold" | "partial_month" | "deductions_above_limit"
+  )[];
 }
 
 const fr = new Intl.NumberFormat("fr-FR");
@@ -387,6 +389,13 @@ export function computePayslip(
   const employerContributions = cnps.totalEmployer + cfcEmployer + fne;
   const netPay = gross - inKind + nonTaxableAllowances - employeeContributions - deductions;
   if (netPay < 0) warnings.push("net_negative");
+  // Plafond légal des retenues sur salaire : contrôlé seulement s'il y a des retenues (la règle
+  // n'entre alors dans les règles utilisées que pour ces bulletins).
+  if (deductions > 0) {
+    const limitRule = rule(RULE_CODES.deductionLimit);
+    const limit = progressiveTax(limitRule.brackets, netPay + deductions, limitRule.rounding);
+    if (deductions > limit) warnings.push("deductions_above_limit");
+  }
   const employerCost = gross + nonTaxableAllowances + employerContributions;
 
   const rulesUsed: RuleRef[] = [...used.values()]

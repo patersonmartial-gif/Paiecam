@@ -72,10 +72,18 @@ const who = (d: DeclarationSheetData, id: string) =>
 const write = (rows: Cell[][], sheet: string, widths: number[]) =>
   writeXlsxFile(rows as never, { sheet, columns: widths.map((width) => ({ width })) }).toBuffer();
 
+/** Toutes les échéances de prêts et avances (« item.loan:<id> ») tiennent dans une seule colonne. */
+const LOANS_COLUMN = { code: "item.loans", label: "Prêts et avances" };
+const journalLine = (l: { code: string; label: string; amount: number }) =>
+  l.code.startsWith("item.loan:") ? { ...LOANS_COLUMN, amount: l.amount } : l;
+
 /** Journal de paie : une ligne par salarié, une colonne par rubrique, totaux. */
 export function buildPayrollJournal(d: DeclarationSheetData): Promise<Buffer> {
   const columns: { code: string; label: string }[] = [];
-  for (const lines of Object.values(d.journal)) {
+  const journal = Object.fromEntries(
+    Object.entries(d.journal).map(([id, lines]) => [id, lines.map(journalLine)]),
+  );
+  for (const lines of Object.values(journal)) {
     for (const l of lines)
       if (!columns.some((c) => c.code === l.code)) columns.push({ code: l.code, label: l.label });
   }
@@ -93,7 +101,7 @@ export function buildPayrollJournal(d: DeclarationSheetData): Promise<Buffer> {
   const totals = new Map<string, number>();
   for (const e of sorted(d)) {
     const id = who(d, e.employeeId);
-    const lines = d.journal[e.employeeId] ?? [];
+    const lines = journal[e.employeeId] ?? [];
     const amounts = columns.map((c) =>
       lines.filter((l) => l.code === c.code).reduce((s, l) => s + l.amount, 0),
     );

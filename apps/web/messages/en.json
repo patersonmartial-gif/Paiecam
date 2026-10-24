@@ -303,7 +303,9 @@
       "irpp_below_threshold": "Below IRPP threshold",
       "net_negative": "Negative net",
       "missing_cnps_number": "Missing CNPS number",
-      "net_variation": "Large net change"
+      "net_variation": "Large net change",
+      "deductions_above_limit": "Deductions above the assignable share",
+      "loan_balance_at_exit": "Loan not repaid at exit"
     },
     "payslip": {
       "title": "Payslip",
@@ -341,7 +343,8 @@
       "unknown_item": "Unknown pay item.",
       "unknown_overtime": "Unknown overtime category.",
       "pay_periods_tenant_month_key": "This month is already open.",
-      "too_many_attempts": "Too many password attempts: try again in a few minutes."
+      "too_many_attempts": "Too many password attempts: try again in a few minutes.",
+      "loans_changed": "A loan changed since the calculation: recalculate the month before validating it."
     }
   },
   "verify": {
@@ -414,5 +417,47 @@
     "mentions": "Legal notice",
     "privacy": "Privacy",
     "terms": "Terms of use"
+  },
+  "loans": {
+    "title": "Loans and advances",
+    "help": "Deducted automatically from net pay each month. The balance goes down when the month is validated.",
+    "empty": "No loans or advances.",
+    "new": "New loan or advance",
+    "kind": "Type",
+    "kinds": {
+      "loan": "Loan",
+      "advance": "Salary advance"
+    },
+    "label": "Label",
+    "principal": "Amount (FCFA)",
+    "installment": "Monthly deduction (FCFA)",
+    "installmentHelp": "Advance: leave empty to deduct it in one go.",
+    "grantedOn": "Date granted",
+    "start": "First deduction (month)",
+    "create": "Save loan",
+    "created": "Saved.",
+    "status": {
+      "active": "Ongoing",
+      "settled": "Repaid",
+      "cancelled": "Cancelled"
+    },
+    "summary": "{repaid} repaid of {principal} — {remaining} left",
+    "perMonth": "{installment} / month from {start}",
+    "history": "Instalments paid",
+    "changeInstallment": "Change monthly deduction",
+    "saveInstallment": "Change",
+    "cancel": "Cancel loan",
+    "cancelConfirm": "The remaining balance will no longer be deducted. Instalments already paid are kept.",
+    "skip": "Skip the {period} instalment",
+    "unskip": "Restore the {period} instalment",
+    "skipped": "Instalment skipped for {period}.",
+    "errors": {
+      "not_found": "Loan or employee not found.",
+      "employee_left": "This employee has left the company.",
+      "loan_closed": "This loan is repaid or cancelled.",
+      "installment_too_high": "The monthly deduction exceeds the amount lent.",
+      "loan_on_calculated_payslip": "This loan is on a calculated payslip: reopen the month before changing it.",
+      "period_not_open": "Entry is closed for this month."
+    }
   }
 }

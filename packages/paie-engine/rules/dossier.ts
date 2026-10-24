@@ -75,6 +75,8 @@ function describe(r: RuleFileEntry): string {
       )
         .map(([k, r]) => `${k} = ${pct(r)}`)
         .join(", ")}`;
+    case "retenues.plafond":
+      return `Part retenable du net avant retenues, par tranche :\n${brackets(v.brackets as never)}`;
     default:
       return JSON.stringify(v);
   }

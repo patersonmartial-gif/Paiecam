@@ -296,6 +296,27 @@
         "Échéance CNPS : le 15 du mois suivant pour toutes les entreprises, ou déclaration trimestrielle pour les petites ?",
         "Si le 15 tombe un week-end ou un jour férié, l'échéance est-elle reportée ?"
       ]
+    },
+    {
+      "code": "retenues.plafond",
+      "validFrom": "2026-01-01",
+      "validTo": null,
+      "value": {
+        "brackets": [
+          {
+            "from": 0,
+            "to": null,
+            "rate": 3333
+          }
+        ],
+        "rounding": "down"
+      },
+      "legalSource": "Décret n° 94/197/PM du 9 mai 1994 (quotité saisissable et cessible par tranches de salaire), Code du travail : barème NON relevé — valeur provisoire d'un tiers du net, à remplacer",
+      "questions": [
+        "Barème exact de la quotité cessible et saisissable (décret n° 94/197/PM du 9 mai 1994) : tranches de salaire et fraction retenable pour chacune ?",
+        "Assiette : net avant retenues (choix actuel), ou salaire après seules cotisations obligatoires ? Les avantages en nature et indemnités non imposables en font-ils partie ?",
+        "Les avances sur salaire (salaire déjà gagné) sont-elles soumises au même plafond que les remboursements de prêt ?"
+      ]
     }
   ]
 }

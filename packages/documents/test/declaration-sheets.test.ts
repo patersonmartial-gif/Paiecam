@@ -94,6 +94,37 @@ describe("états déclaratifs", () => {
     expect(total.at(-1)).toBe(605_015);
   });
 
+  it("journal : toutes les échéances de prêts dans une seule colonne « Prêts et avances »", async () => {
+    const [first] = Object.keys(data.journal);
+    const withLoans = {
+      ...data,
+      journal: {
+        ...data.journal,
+        [first ?? ""]: [
+          ...(data.journal[first ?? ""] ?? []),
+          {
+            code: "item.loan:0190a000-0000-7000-8000-000000000001",
+            label: "Prêt — échéance 1/3",
+            amount: 10_000,
+          },
+          {
+            code: "item.loan:0190a000-0000-7000-8000-000000000002",
+            label: "Avance — échéance 1/1",
+            amount: 5_000,
+          },
+        ],
+      },
+    };
+    const rows = await cellsOf(await buildPayrollJournal(withLoans));
+    const head = rows[4] ?? [];
+    expect(head.filter((h) => String(h).includes("échéance"))).toEqual([]);
+    const col = head.indexOf("Prêts et avances");
+    expect(col).toBeGreaterThan(0);
+    const matricule = data.employees[first ?? ""]?.matricule;
+    expect(rows.find((r) => r[0] === matricule)?.[col]).toBe(15_000);
+    expect(rows.find((r) => r[0] === "TOTAL")?.[col]).toBe(15_000);
+  });
+
   it("état CNPS : n° CNPS, assiettes et total par branche", async () => {
     const rows = await cellsOf(await buildCnpsStatement(data));
     expect(rows[5]?.slice(0, 3)).toEqual(["E-001", "AWA Marie", "111222333"]);

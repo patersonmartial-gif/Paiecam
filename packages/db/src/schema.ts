@@ -336,7 +336,7 @@ export const payPeriods = pgTable(
 /**
  * Variables du mois pour un salarié. `key` désigne la variable :
  * « item:<code> » (montant FCFA d'une rubrique), « hs:<catégorie> » (heures en centièmes),
- * « absence » (jours d'absence non payés).
+ * « absence » (jours d'absence non payés), « loan_skip:<prêt> » (échéance suspendue ce mois, valeur 1).
  */
 export const payVariables = pgTable(
   "pay_variables",
@@ -360,7 +360,7 @@ export const payVariables = pgTable(
     unique("pay_variables_period_employee_key_key").on(t.periodId, t.employeeId, t.key),
     check(
       "pay_variables_key_chk",
-      sql`${t.key} ~ '^(item:[a-z0-9_]{1,40}|hs:[a-z0-9_]{1,20}|absence)$'`,
+      sql`${t.key} ~ '^(item:[a-z0-9_]{1,40}|hs:[a-z0-9_]{1,20}|absence|loan_skip:[0-9a-f-]{36})$'`,
     ),
     check("pay_variables_value_chk", sql`${t.value} >= 0`),
   ],
@@ -516,5 +516,83 @@ export const reminderDeliveries = pgTable(
   (t) => [
     unique("reminder_deliveries_once_key").on(t.declarationId, t.stage, t.channel),
     check("reminder_deliveries_stage_chk", sql`${t.stage} in ('j-7', 'j-2', 'j0', 'late')`),
+  ],
+);
+
+export const loanKindEnum = pgEnum("loan_kind", ["loan", "advance"]);
+export const loanStatusEnum = pgEnum("loan_status", ["active", "settled", "cancelled"]);
+
+/**
+ * Prêt ou avance consenti à un salarié, remboursé par retenues mensuelles sur le net.
+ * Montant, salarié et départ sont immuables ; seule la mensualité peut changer tant qu'il est en
+ * cours (déclencheurs, migration 0022). Le solde = montant − remboursements des mois validés.
+ */
+export const employeeLoans = pgTable(
+  "employee_loans",
+  {
+    id: id(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id),
+    employeeId: uuid("employee_id")
+      .notNull()
+      .references(() => employees.id),
+    kind: loanKindEnum("kind").notNull(),
+    label: text("label").notNull(),
+    /** Montant prêté, en FCFA entiers. */
+    principal: integer("principal").notNull(),
+    /** Retenue mensuelle prévue (la dernière échéance est le reste dû). */
+    installment: integer("installment").notNull(),
+    grantedOn: date("granted_on").notNull(),
+    /** Premier mois de paie où la retenue s'applique. */
+    startYear: integer("start_year").notNull(),
+    startMonth: integer("start_month").notNull(),
+    status: loanStatusEnum("status").notNull().default("active"),
+    createdBy: text("created_by").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
+    cancelledBy: text("cancelled_by"),
+  },
+  (t) => [
+    unique("employee_loans_tenant_id_id_key").on(t.tenantId, t.id),
+    index("employee_loans_tenant_employee_idx").on(t.tenantId, t.employeeId),
+    check("employee_loans_label_chk", sql`char_length(${t.label}) between 1 and 80`),
+    check("employee_loans_principal_chk", sql`${t.principal} between 1 and 100000000`),
+    check(
+      "employee_loans_installment_chk",
+      sql`${t.installment} >= 1 and ${t.installment} <= ${t.principal}`,
+    ),
+    check(
+      "employee_loans_start_chk",
+      sql`${t.startMonth} between 1 and 12 and ${t.startYear} between 2020 and 2100`,
+    ),
+    check(
+      "employee_loans_cancel_chk",
+      sql`(${t.status} = 'cancelled') = (${t.cancelledAt} is not null and ${t.cancelledBy} is not null)`,
+    ),
+  ],
+);
+
+/** Remboursement d'un prêt par la paie d'un mois validé. Jamais modifié ni supprimé. */
+export const loanRepayments = pgTable(
+  "loan_repayments",
+  {
+    id: id(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id),
+    loanId: uuid("loan_id")
+      .notNull()
+      .references(() => employeeLoans.id),
+    periodId: uuid("period_id")
+      .notNull()
+      .references(() => payPeriods.id),
+    amount: integer("amount").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    unique("loan_repayments_loan_period_key").on(t.loanId, t.periodId),
+    index("loan_repayments_tenant_loan_idx").on(t.tenantId, t.loanId),
+    check("loan_repayments_amount_chk", sql`${t.amount} >= 1`),
   ],
 );

@@ -303,7 +303,9 @@
       "irpp_below_threshold": "Sous le seuil IRPP",
       "net_negative": "Net négatif",
       "missing_cnps_number": "N° CNPS manquant",
-      "net_variation": "Net en forte variation"
+      "net_variation": "Net en forte variation",
+      "deductions_above_limit": "Retenues au-delà de la part cessible",
+      "loan_balance_at_exit": "Prêt non soldé à la sortie"
     },
     "payslip": {
       "title": "Bulletin de paie",
@@ -341,7 +343,8 @@
       "unknown_item": "Rubrique inconnue.",
       "unknown_overtime": "Catégorie d'heures supplémentaires inconnue.",
       "pay_periods_tenant_month_key": "Ce mois est déjà ouvert.",
-      "too_many_attempts": "Trop d'essais de mot de passe : réessayez dans quelques minutes."
+      "too_many_attempts": "Trop d'essais de mot de passe : réessayez dans quelques minutes.",
+      "loans_changed": "Un prêt a changé depuis le calcul : recalculez le mois avant de le valider."
     }
   },
   "verify": {
@@ -414,5 +417,47 @@
     "mentions": "Mentions légales",
     "privacy": "Confidentialité",
     "terms": "Conditions d'utilisation"
+  },
+  "loans": {
+    "title": "Prêts et avances",
+    "help": "Retenus automatiquement sur le net à chaque paie. Le solde baisse quand le mois est validé.",
+    "empty": "Aucun prêt ni avance.",
+    "new": "Nouveau prêt ou avance",
+    "kind": "Type",
+    "kinds": {
+      "loan": "Prêt",
+      "advance": "Avance sur salaire"
+    },
+    "label": "Libellé",
+    "principal": "Montant (FCFA)",
+    "installment": "Retenue mensuelle (FCFA)",
+    "installmentHelp": "Avance : laissez vide pour la retenir en une fois.",
+    "grantedOn": "Date d'octroi",
+    "start": "Première retenue (mois)",
+    "create": "Enregistrer le prêt",
+    "created": "Enregistré.",
+    "status": {
+      "active": "En cours",
+      "settled": "Soldé",
+      "cancelled": "Annulé"
+    },
+    "summary": "{repaid} remboursés sur {principal} — reste {remaining}",
+    "perMonth": "{installment} / mois à partir de {start}",
+    "history": "Échéances payées",
+    "changeInstallment": "Modifier la mensualité",
+    "saveInstallment": "Modifier",
+    "cancel": "Annuler le prêt",
+    "cancelConfirm": "Le reste dû ne sera plus retenu. Les échéances déjà payées sont conservées.",
+    "skip": "Suspendre l'échéance de {period}",
+    "unskip": "Rétablir l'échéance de {period}",
+    "skipped": "Échéance suspendue pour {period}.",
+    "errors": {
+      "not_found": "Prêt ou salarié introuvable.",
+      "employee_left": "Ce salarié a quitté l'entreprise.",
+      "loan_closed": "Ce prêt est soldé ou annulé.",
+      "installment_too_high": "La mensualité dépasse le montant prêté.",
+      "loan_on_calculated_payslip": "Ce prêt figure sur un bulletin calculé : rouvrez le mois avant de le modifier.",
+      "period_not_open": "La saisie est fermée pour ce mois."
+    }
   }
 }

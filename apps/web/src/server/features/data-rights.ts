@@ -39,6 +39,30 @@ export function makeExportEmployeeData(db: Db, keyring: Keyring) {
       const field = (table: string, column: string, value: string | null | undefined) =>
         value ? decryptField(keyring, { tenantId, table, column, rowId: e.id }, value) : null;
 
+      const loans = await tx
+        .select()
+        .from(schema.employeeLoans)
+        .where(eq(schema.employeeLoans.employeeId, e.id))
+        .orderBy(asc(schema.employeeLoans.createdAt));
+      const loanRepayments = loans.length
+        ? await tx
+            .select({
+              loanId: schema.loanRepayments.loanId,
+              amount: schema.loanRepayments.amount,
+              year: schema.payPeriods.year,
+              month: schema.payPeriods.month,
+            })
+            .from(schema.loanRepayments)
+            .innerJoin(schema.payPeriods, eq(schema.payPeriods.id, schema.loanRepayments.periodId))
+            .where(
+              inArray(
+                schema.loanRepayments.loanId,
+                loans.map((l) => l.id),
+              ),
+            )
+            .orderBy(asc(schema.payPeriods.year), asc(schema.payPeriods.month))
+        : [];
+
       const slips = await tx
         .select({
           id: schema.payslips.id,
@@ -159,6 +183,18 @@ export function makeExportEmployeeData(db: Db, keyring: Keyring) {
               verificationCode: code,
             })),
         })),
+        loansAndAdvances: loans.map((l) => ({
+          kind: l.kind,
+          label: l.label,
+          principal: l.principal,
+          installment: l.installment,
+          grantedOn: l.grantedOn,
+          start: `${l.startYear}-${pad(l.startMonth)}`,
+          status: l.status,
+          repayments: loanRepayments
+            .filter((r) => r.loanId === l.id)
+            .map((r) => ({ period: `${r.year}-${pad(r.month)}`, amount: r.amount })),
+        })),
         monthlyVariables: variables,
         auditTrail,
       };
@@ -207,6 +243,18 @@ export function makeExportEmployeeData(db: Db, keyring: Keyring) {
             rows: data.payslips.map((p) => [p.period, p.status, amount(p.gross), amount(p.netPay)]),
           },
           note: "Le détail ligne par ligne figure dans l'export JSON et sur chaque bulletin PDF.",
+        },
+        {
+          title: "Prêts et avances",
+          table: {
+            headers: ["Libellé", "Montant", "Remboursé", "État"],
+            rows: data.loansAndAdvances.map((l) => [
+              `${l.label} (${l.kind === "loan" ? "prêt" : "avance"}, ${l.grantedOn})`,
+              amount(l.principal),
+              amount(l.repayments.reduce((s, r) => s + r.amount, 0)),
+              l.status,
+            ]),
+          },
         },
         {
           title: "Historique des opérations sur la fiche",

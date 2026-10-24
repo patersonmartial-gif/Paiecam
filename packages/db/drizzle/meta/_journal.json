@@ -148,6 +148,20 @@
       "when": 1792766859099,
       "tag": "0020_key_rotation_role",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1792826922640,
+      "tag": "0021_employee_loans",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1792826927528,
+      "tag": "0022_employee_loans_rls",
+      "breakpoints": true
     }
   ]
 }

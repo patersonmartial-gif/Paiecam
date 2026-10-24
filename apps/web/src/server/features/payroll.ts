@@ -20,6 +20,7 @@ import {
   type PayslipInput,
 } from "@paiecam/paie-engine";
 import { createTenantAction, RuleError } from "../authz/action";
+import { loanDeductionsForPeriod, recordLoanRepayments } from "./loans";
 
 /** Rubriques proposées à chaque entreprise (modifiables) : des libellés, aucun taux. */
 export const DEFAULT_PAY_ITEMS = [
@@ -354,6 +355,17 @@ export function makeCalculatePeriod(db: Db, deps: PayrollDeps) {
 
       await tx.delete(schema.payslips).where(eq(schema.payslips.periodId, period.id));
 
+      // Échéances de prêts et avances (sauf celles suspendues ce mois-ci).
+      const skipped = new Set(
+        variables.filter((v) => v.key.startsWith("loan_skip:")).map((v) => v.key.slice(10)),
+      );
+      const loanItems = await loanDeductionsForPeriod(
+        tx,
+        period,
+        emps.map((e) => e.id),
+        skipped,
+      );
+
       let provisional = 0;
       const summary: { employeeId: string; netPay: number; warnings: string[] }[] = [];
       for (const e of emps) {
@@ -372,6 +384,8 @@ export function makeCalculatePeriod(db: Db, deps: PayrollDeps) {
               taxable: item.taxable,
             };
           });
+        const loans = loanItems.get(e.id);
+        payItems.push(...(loans?.items ?? []));
         const engineInput: PayslipInput = {
           period: { start, end },
           employer: { regime: tenant.regime, workAccidentRate: tenant.workAccidentRate },
@@ -394,6 +408,9 @@ export function makeCalculatePeriod(db: Db, deps: PayrollDeps) {
 
         const warnings: string[] = [...result.warnings];
         if (e.cnpsNumberEnc === null) warnings.push("missing_cnps_number");
+        // Sortie dans le mois avec un prêt non soldé : le reste dû est à régler à part.
+        if (e.endDate && e.endDate <= end && (loans?.balanceAfter ?? 0) > 0)
+          warnings.push("loan_balance_at_exit");
         const before = prevNet.get(e.id);
         if (
           before !== undefined &&
@@ -507,7 +524,7 @@ export function makeValidatePeriod(
       input: z.object({ periodId: z.uuid(), password: z.string().min(1).max(128) }),
       audit: "payroll.validate",
     },
-    async ({ tx, userId, audit }, input) => {
+    async ({ tx, tenantId, userId, audit }, input) => {
       if (!(await deps.verifyPassword(userId, input.password))) throw new RuleError("bad_password");
       const period = await findPeriod(tx, input.periodId);
       if (period.status !== "calculated") throw new RuleError("period_not_calculated");
@@ -521,7 +538,13 @@ export function makeValidatePeriod(
         .update(schema.payPeriods)
         .set({ status: "validated", validatedAt: new Date(), validatedBy: userId })
         .where(eq(schema.payPeriods.id, period.id));
-      audit({ entityType: "pay_period", entityId: period.id, after: { payslips: slips.length } });
+      // Échéances de prêts : enregistrées avec la paie validée, dans la même transaction.
+      const loans = await recordLoanRepayments(tx, tenantId, period.id);
+      audit({
+        entityType: "pay_period",
+        entityId: period.id,
+        after: { payslips: slips.length, loanRepayments: loans },
+      });
       return { periodId: period.id };
     },
   );

@@ -88,6 +88,14 @@ export const ruleSchemas = {
     rates: z.record(z.string().regex(/^[a-z0-9_]+$/), bp),
     rounding,
   }),
+  "retenues.plafond": z.object({
+    /**
+     * Part du salaire qui peut être retenue (prêts, avances), par tranches du net avant retenues :
+     * le plafond est la somme, tranche par tranche, de la part retenable.
+     */
+    brackets: rateBrackets,
+    rounding,
+  }),
   echeances: z.object({
     /** Jour du mois suivant la paie où chaque déclaration (et son paiement) est due. */
     dayOfFollowingMonth: z.object({
@@ -122,4 +130,5 @@ export const RULE_CODES = {
   tdl: "tdl",
   overtime: "heures_sup.majorations",
   deadlines: "echeances",
+  deductionLimit: "retenues.plafond",
 } as const satisfies Record<string, RuleCode>;
