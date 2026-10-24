@@ -154,6 +154,12 @@ export function layout(root: string): InstallLayout {
   };
 }
 
+/**
+ * Chemins écrits avec « / » (acceptés par Node sous Windows) : une barre oblique inverse dans un
+ * fichier .env peut être lue comme un échappement (« C:\nouveau » → retour à la ligne).
+ */
+const portablePath = (p: string) => p.replaceAll("\\", "/");
+
 const envLine = (k: string, v: string | number) => {
   const value = String(v);
   if (/[\r\n"]/.test(value)) throw new Error(`valeur invalide pour ${k}`);
@@ -179,12 +185,12 @@ export function appEnvFile(
     ["BETTER_AUTH_SECRET", s.betterAuthSecret],
     ["FIELD_ENCRYPTION_KEYS", s.fieldEncryptionKeys],
     ["STORAGE_DRIVER", "fs"],
-    ["DOCUMENTS_DIR", l.documentsDir],
-    ["BACKUP_DIR", l.backupDir],
+    ["DOCUMENTS_DIR", portablePath(l.documentsDir)],
+    ["BACKUP_DIR", portablePath(l.backupDir)],
     ["BACKUP_RECIPIENT", s.recovery.recipient],
     ["PWNED_PASSWORDS_CHECK", "on"],
   ];
-  if (o.pgBinDir) lines.push(["PG_BIN_DIR", o.pgBinDir]);
+  if (o.pgBinDir) lines.push(["PG_BIN_DIR", portablePath(o.pgBinDir)]);
   return `# PaieCam — configuration de cette installation. Ne pas copier ni partager.\n${lines
     .map(([k, v]) => envLine(k, v))
     .join("\n")}\n`;

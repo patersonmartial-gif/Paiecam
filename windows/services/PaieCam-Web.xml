@@ -1,0 +1,26 @@
+<!--
+  Service Windows PaieCam (Application), géré par WinSW 2.12 (services\PaieCam-Web.exe).
+  Les secrets restent dans %ProgramData%\PaieCam\config\paiecam.env (droits restreints),
+  jamais dans ce fichier. Compte « Service réseau » : aucun droit d'administration.
+-->
+<service>
+  <id>PaieCam-Web</id>
+  <name>PaieCam - Application</name>
+  <description>Application web PaieCam (http://localhost:3000, accessible depuis ce PC uniquement).</description>
+  <executable>%BASE%\..\node\node.exe</executable>
+  <arguments>"%BASE%\..\outils\launch.mjs" web "%ProgramData%\PaieCam\config\paiecam.env" "%BASE%\..\web\apps\web\server.js"</arguments>
+  <workingdirectory>%BASE%\..\web</workingdirectory>
+  <depend>PaieCam-Base</depend>
+  <startmode>Automatic</startmode>
+  <onfailure action="restart" delay="10 sec"/>
+  <resetfailure>1 hour</resetfailure>
+  <logpath>%ProgramData%\PaieCam\journaux</logpath>
+  <log mode="roll-by-size">
+    <sizeThreshold>10240</sizeThreshold>
+    <keepFiles>5</keepFiles>
+  </log>
+  <serviceaccount>
+    <domain>NT AUTHORITY</domain>
+    <user>NetworkService</user>
+  </serviceaccount>
+</service>

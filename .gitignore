@@ -15,3 +15,5 @@ captures
 dossier
 .data
 .e2e-documents
+dist/
+windows/Output/

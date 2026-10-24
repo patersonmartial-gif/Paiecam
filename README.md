@@ -35,6 +35,11 @@ Hors ligne en développement, `PWNED_PASSWORDS_CHECK=off` coupe l'appel à Have 
 - [x] Phase 5 — Déclarations (états CNPS, DGI, DIPE provisoire, journal), dépôts, verrouillage, rappels e-mail
 - [~] Phase 6 — Durcissement : revue ASVS L2, SMTP/S3/Docker, sauvegardes testées, textes juridiques en projet, plan d'incident ; en attente : relecture par l'avocat, durées de conservation (purge), préproduction (ZAP, test d'intrusion)
 
+## Installation locale (PC Windows)
+
+Version installable sur un seul PC, sans hébergement : voir [docs/installation-locale.md](docs/installation-locale.md).
+Construction de l'installateur : workflow « Installateur Windows » (GitHub Actions).
+
 Les taux du moteur ne sont pas dans le code : ils viennent de `pay_rules`. Les fixtures de test
 sont fictives et doivent être remplacées par le référentiel validé par l'expert-comptable.
 

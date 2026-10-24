@@ -1,0 +1,120 @@
+name: Installateur Windows
+
+# Construit PaieCam-Setup-<version>.exe sur Windows, puis l'installe réellement sur le runner :
+# services démarrés, application qui répond, première sauvegarde, désinstallation sans perte.
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+env:
+  # Composants embarqués : versions et empreintes épinglées (téléchargement refusé sinon).
+  NODE_VERSION: "22.23.4"
+  NODE_SHA256: "cbc74b5e0982c9dbb41525fd8fb5dcd32fbee237863f7829072f4639a1ce5f20"
+  # Vérifier à chaque version qu'aucune 16.x plus récente n'est sortie (correctifs de sécurité).
+  PG_VERSION: "16.14-1"
+  # À RELEVER au premier passage : l'étape affiche l'empreinte obtenue et s'arrête.
+  PG_SHA256: "A_RELEVER"
+  WINSW_VERSION: "v2.12.0"
+  WINSW_SHA256: "05b82d46ad331cc16bdc00de5c6332c1ef818df8ceefcd49c726553209b3a0da"
+
+jobs:
+  installer:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Application web (Next.js autonome, adresse locale)
+        shell: bash
+        run: APP_URL=http://localhost:3000 sh scripts/build-web.sh
+
+      - name: Assemblage
+        run: |
+          $d = "dist\paiecam"
+          node scripts/windows/bundle.mjs "$d\outils"
+          if ($LASTEXITCODE) { throw "regroupement" }
+          Copy-Item -Recurse apps\web\.next\standalone "$d\web"
+          Copy-Item -Recurse apps\web\.next\static "$d\web\apps\web\.next\static"
+          # Module natif Argon2 (outil d'administration : réinitialisation des mots de passe).
+          $argon = Resolve-Path apps\web\node_modules\@node-rs\argon2
+          New-Item -ItemType Directory -Force "$d\outils\node_modules\@node-rs" | Out-Null
+          Copy-Item -Recurse (Get-Item $argon).Target "$d\outils\node_modules\@node-rs\argon2"
+          $native = Get-ChildItem -Directory node_modules\.pnpm -Filter "@node-rs+argon2-win32-x64-msvc*" | Select-Object -First 1
+          Copy-Item -Recurse "$($native.FullName)\node_modules\@node-rs\argon2-win32-x64-msvc" "$d\outils\node_modules\@node-rs\"
+          Copy-Item -Recurse windows\scripts "$d\scripts"
+          New-Item -ItemType Directory -Force "$d\services" | Out-Null
+          Copy-Item windows\services\*.xml "$d\services\"
+
+      - name: Composants externes (vérifiés par empreinte)
+        run: |
+          $d = "dist\paiecam"
+          function Get-Verified($url, $file, $sha) {
+            Invoke-WebRequest -UseBasicParsing $url -OutFile $file
+            $got = (Get-FileHash -Algorithm SHA256 $file).Hash.ToLower()
+            if ($got -ne $sha) { throw "Empreinte inattendue pour $url : $got (attendu : $sha)" }
+          }
+          Get-Verified "https://nodejs.org/dist/v$env:NODE_VERSION/node-v$env:NODE_VERSION-win-x64.zip" node.zip $env:NODE_SHA256
+          Expand-Archive node.zip -DestinationPath node-tmp
+          Move-Item "node-tmp\node-v$env:NODE_VERSION-win-x64" "$d\node"
+          Get-Verified "https://get.enterprisedb.com/postgresql/postgresql-$env:PG_VERSION-windows-x64-binaries.zip" pg.zip $env:PG_SHA256
+          Expand-Archive pg.zip -DestinationPath pg-tmp
+          # Seuls le serveur et ses outils : ni pgAdmin, ni StackBuilder, ni documentation.
+          New-Item -ItemType Directory -Force "$d\pgsql" | Out-Null
+          foreach ($p in "bin", "lib", "share") { Copy-Item -Recurse "pg-tmp\pgsql\$p" "$d\pgsql\$p" }
+          Get-Verified "https://github.com/winsw/winsw/releases/download/$env:WINSW_VERSION/WinSW-x64.exe" winsw.exe $env:WINSW_SHA256
+          foreach ($s in "PaieCam-Web", "PaieCam-Worker") { Copy-Item winsw.exe "$d\services\$s.exe" }
+
+      - name: Installateur (Inno Setup)
+        run: |
+          $version = (Get-Content apps\web\package.json | ConvertFrom-Json).version
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DVersion=$version" "/DSource=$PWD\dist\paiecam" windows\paiecam.iss
+          if ($LASTEXITCODE) { throw "ISCC" }
+
+      - name: Essai réel sur Windows
+        run: |
+          $setup = Get-ChildItem windows\Output\PaieCam-Setup-*.exe | Select-Object -First 1
+          Start-Process $setup.FullName -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/LOG=install.log" -Wait
+          $data = "$env:ProgramData\PaieCam"
+          Get-Content "$data\journaux\installation.log" -ErrorAction SilentlyContinue
+          foreach ($s in "PaieCam-Base", "PaieCam-Web", "PaieCam-Worker") {
+            if ((Get-Service $s).Status -ne "Running") { throw "service $s arrêté" }
+          }
+          $r = Invoke-WebRequest -UseBasicParsing http://localhost:3000/api/health
+          if ($r.StatusCode -ne 200) { throw "application injoignable" }
+          # Le worker sauvegarde au premier démarrage.
+          for ($i = 0; $i -lt 60 -and -not (Get-ChildItem "$data\sauvegardes\*.sauvegarde" -ErrorAction SilentlyContinue); $i++) { Start-Sleep 2 }
+          if (-not (Get-ChildItem "$data\sauvegardes\*.sauvegarde")) { throw "aucune sauvegarde" }
+          # Réservé aux administrateurs : le groupe Utilisateurs n'a aucun droit sur les données.
+          if ((icacls "$data\config\paiecam.env") -match "BUILTIN\\Users|BUILTIN\\Utilisateurs") { throw "configuration lisible par tous" }
+          # L'application n'écoute que sur ce PC.
+          $listen = Get-NetTCPConnection -State Listen -LocalPort 3000, 5433
+          if ($listen | Where-Object { $_.LocalAddress -notin "127.0.0.1" }) { throw "écoute hors de 127.0.0.1" }
+          $uninstall = Get-ChildItem "$env:ProgramFiles\PaieCam\unins*.exe" | Select-Object -First 1
+          Start-Process $uninstall.FullName -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES" -Wait
+          if (Get-Service PaieCam-Web -ErrorAction SilentlyContinue) { throw "service non retiré" }
+          if (-not (Test-Path "$data\config\paiecam.env")) { throw "données supprimées à la désinstallation" }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PaieCam-Setup
+          path: windows/Output/PaieCam-Setup-*.exe
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: journaux-installation
+          path: |
+            install.log
+            C:\ProgramData\PaieCam\journaux

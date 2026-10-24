@@ -3,6 +3,7 @@
  * installer, mettre à jour (sauvegarde d'abord), restaurer une sauvegarde.
  */
 import { access, mkdir, readdir, rename, writeFile } from "node:fs/promises";
+import { dirname } from "node:path";
 import { loadPayRules, runMigrations, type RuleToLoad } from "@paiecam/db/maintenance";
 import { createBackup, restoreBackup } from "./backup";
 import { runPg } from "./pg";
@@ -53,8 +54,11 @@ export async function installLocal(o: InstallOptions) {
     port,
     runAs: o.runAs,
   };
-  for (const d of [l.documentsDir, l.backupDir, `${o.root}/config`]) {
-    await mkdir(d, { recursive: true });
+  // Dossiers réservés au compte qui fait tourner PaieCam (Windows : droits posés par l'installateur).
+  // Le parent « donnees » reste traversable par le compte de PostgreSQL (dossier de la base).
+  await mkdir(dirname(l.dataDir), { recursive: true });
+  for (const d of [l.documentsDir, l.backupDir, dirname(l.configFile)]) {
+    await mkdir(d, { recursive: true, mode: 0o700 });
   }
   await initCluster({ ...cluster, superuserPassword: secrets.superuserPassword });
   await startCluster(cluster);

@@ -85,7 +85,7 @@ describe("installation locale", () => {
     expect(env.PG_SUPERUSER_URL).toBeUndefined();
     expect(readFileSync(l.configFile, "utf8")).not.toContain(identity);
     expect(readFileSync(l.recoveryKitFile, "utf8")).toContain(identity);
-    for (const f of [l.configFile, l.adminConfigFile, l.recoveryKitFile]) {
+    for (const f of [l.configFile, l.adminConfigFile, l.recoveryKitFile, l.backupDir]) {
       expect(statSync(f).mode & 0o077).toBe(0);
     }
   });
@@ -163,5 +163,22 @@ describe("installation locale", () => {
     expect(after.BETTER_AUTH_SECRET).toBe("secret-de-la-sauvegarde");
     expect(after.DATABASE_URL).toBe(env.DATABASE_URL);
     expect(after.PWNED_PASSWORDS_CHECK).toBe("on");
+  });
+});
+
+describe("configuration sous Windows", () => {
+  it("chemins écrits avec « / » : aucune barre oblique inverse lue comme un échappement", async () => {
+    const { appEnvFile, generateSecrets } = await import("../src");
+    const l = layout("C:\\ProgramData\\PaieCam");
+    const text = appEnvFile(l, await generateSecrets(), {
+      port: 5433,
+      appPort: 3000,
+      pgBinDir: "C:\\Program Files\\PaieCam\\pgsql\\bin",
+    });
+    const { parseEnv } = await import("node:util");
+    const env = parseEnv(text) as Record<string, string>;
+    expect(env.DOCUMENTS_DIR).toBe("C:/ProgramData/PaieCam/donnees/documents");
+    expect(env.BACKUP_DIR).toBe("C:/ProgramData/PaieCam/sauvegardes");
+    expect(env.PG_BIN_DIR).toBe("C:/Program Files/PaieCam/pgsql/bin");
   });
 });

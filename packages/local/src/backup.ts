@@ -129,7 +129,7 @@ export async function createBackup(cfg: BackupConfig): Promise<BackupFile> {
   const path = join(cfg.backupDir, name);
   // Écriture à côté puis renommage : jamais de sauvegarde à moitié écrite sous le nom final.
   const tmp = `${path}.partiel`;
-  await writeFile(tmp, encrypted, { flag: "wx" });
+  await writeFile(tmp, encrypted, { flag: "wx", mode: 0o600 });
   await rename(tmp, path);
 
   const all = await listBackups(cfg.backupDir);

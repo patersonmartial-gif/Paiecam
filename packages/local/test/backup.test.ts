@@ -1,4 +1,4 @@
-import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -78,6 +78,7 @@ describe("sauvegarde locale", () => {
     expect(raw).not.toContain("secret-fictif");
     expect(raw).not.toContain("%PDF-chiffre-fictif");
     expect(readdirSync(backupDir)).toEqual([b.name]);
+    expect(statSync(b.path).mode & 0o077).toBe(0);
   });
 
   it("se relit avec la clé du kit : base, documents et secrets", async () => {
