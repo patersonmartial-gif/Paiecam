@@ -86,7 +86,11 @@ export interface Payslip {
   /** Instantané des règles utilisées : conservé avec la paie validée. */
   rulesUsed: RuleRef[];
   warnings: (
-    "net_negative" | "irpp_below_threshold" | "partial_month" | "deductions_above_limit"
+    | "net_negative"
+    | "irpp_below_threshold"
+    | "partial_month"
+    | "deductions_above_limit"
+    | "below_minimum_wage"
   )[];
 }
 
@@ -152,6 +156,8 @@ export function computePayslip(
   const presence = presenceDays(input);
   const proratedBase = mulDiv([baseSalary, presence.days], presence.daysInPeriod, "nearest");
   if (presence.days < presence.daysInPeriod) warnings.push("partial_month");
+  // Salaire de base mensuel (temps plein, avant proratisation) inférieur au SMIG.
+  if (baseSalary < rule(RULE_CODES.minimumWage).monthlyAmount) warnings.push("below_minimum_wage");
   lines.push({
     code: "base",
     label: "Salaire de base",

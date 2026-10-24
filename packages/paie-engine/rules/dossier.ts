@@ -75,6 +75,8 @@ function describe(r: RuleFileEntry): string {
       )
         .map(([k, r]) => `${k} = ${pct(r)}`)
         .join(", ")}`;
+    case "smig":
+      return `${money(v.monthlyAmount as number)} par mois (temps plein)`;
     case "retenues.plafond":
       return `Part retenable du net avant retenues, par tranche :\n${brackets(v.brackets as never)}`;
     default:
@@ -93,7 +95,7 @@ const simple = (base: number, label: string): [string, PayslipInput] => [
   },
 ];
 const scenarios: [string, PayslipInput][] = [
-  simple(55_000, "Salaire sous le seuil d'exonération IRPP"),
+  simple(55_000, "Salaire sous le seuil d'exonération IRPP (et sous le SMIG : avertissement)"),
   simple(62_000, "Salaire au seuil d'exonération"),
   simple(150_000, "Petit salaire, mois complet"),
   simple(400_000, "Salaire moyen, mois complet"),

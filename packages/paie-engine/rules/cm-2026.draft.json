@@ -2,6 +2,20 @@
   "$comment": "Référentiel de paie Cameroun 2026 — BROUILLON. Aucune valeur n'est validée : chaque règle doit être confirmée par écrit par un expert-comptable camerounais avant usage en production (le moteur refuse les règles « draft » en production). Les sources ci-dessous sont des sources secondaires relevées le 2026-10-23 ; les textes officiels (CGI, loi de finances 2026, circulaires CNPS) font foi.",
   "rules": [
     {
+      "code": "smig",
+      "validFrom": "2026-01-01",
+      "validTo": null,
+      "value": {
+        "monthlyAmount": 65000
+      },
+      "legalSource": "Montant indiqué par le porteur du projet (65 000 FCFA) ; décret non retrouvé. Sources consultées contradictoires : décret n° 2023/00338/PM du 21 mars 2023, décret n° 2024/0168/PM du 23 février 2024, presse 2026",
+      "questions": [
+        "Montant du SMIG en vigueur en 2026 et référence exacte du décret ?",
+        "Le montant diffère-t-il selon le secteur (agricole, autres secteurs) ?",
+        "À comparer au salaire de base seul, ou au salaire de base plus les primes permanentes ?"
+      ]
+    },
+    {
       "code": "cnps.pension",
       "validFrom": "2026-01-01",
       "validTo": null,

@@ -88,6 +88,10 @@ export const ruleSchemas = {
     rates: z.record(z.string().regex(/^[a-z0-9_]+$/), bp),
     rounding,
   }),
+  smig: z.object({
+    /** Salaire minimum interprofessionnel garanti, mensuel, pour un temps plein. */
+    monthlyAmount: fcfa,
+  }),
   "retenues.plafond": z.object({
     /**
      * Part du salaire qui peut être retenue (prêts, avances), par tranches du net avant retenues :
@@ -131,4 +135,5 @@ export const RULE_CODES = {
   overtime: "heures_sup.majorations",
   deadlines: "echeances",
   deductionLimit: "retenues.plafond",
+  minimumWage: "smig",
 } as const satisfies Record<string, RuleCode>;

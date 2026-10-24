@@ -67,6 +67,7 @@ describe("cas de contrôle 1 : 400 000 FCFA, mois complet, sans variable", () =>
       "fne",
       "irpp.bareme",
       "rav",
+      "smig",
       "tdl",
     ]);
     expect(p.rulesUsed.every((r) => r.status === "draft" && r.validFrom === "2026-01-01")).toBe(
@@ -297,6 +298,23 @@ describe("règles particulières", () => {
     );
     expect(p.totals.netPay).toBeLessThan(0);
     expect(p.warnings).toContain("net_negative");
+  });
+
+  it("SMIG : avertit quand le salaire de base mensuel est inférieur, pas au montant exact", () => {
+    const at = (baseSalary: number) =>
+      computePayslip(
+        input({ employee: { baseSalary, hireDate: "2024-01-15", endDate: null } }),
+        rules,
+      ).warnings;
+    expect(at(64_999)).toContain("below_minimum_wage");
+    expect(at(65_000)).not.toContain("below_minimum_wage");
+    // Une entrée en cours de mois proratise le salaire, mais c'est le salaire mensuel qui compte.
+    const partial = computePayslip(
+      input({ employee: { baseSalary: 65_000, hireDate: "2026-03-16", endDate: null } }),
+      rules,
+    );
+    expect(partial.warnings).toContain("partial_month");
+    expect(partial.warnings).not.toContain("below_minimum_wage");
   });
 
   it("plafond des retenues : avertit au-delà de la part retenable, au franc près", () => {

@@ -305,7 +305,8 @@
       "missing_cnps_number": "Missing CNPS number",
       "net_variation": "Large net change",
       "deductions_above_limit": "Deductions above the assignable share",
-      "loan_balance_at_exit": "Loan not repaid at exit"
+      "loan_balance_at_exit": "Loan not repaid at exit",
+      "below_minimum_wage": "Base salary below minimum wage"
     },
     "payslip": {
       "title": "Payslip",

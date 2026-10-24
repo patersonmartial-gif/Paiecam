@@ -305,7 +305,8 @@
       "missing_cnps_number": "N° CNPS manquant",
       "net_variation": "Net en forte variation",
       "deductions_above_limit": "Retenues au-delà de la part cessible",
-      "loan_balance_at_exit": "Prêt non soldé à la sortie"
+      "loan_balance_at_exit": "Prêt non soldé à la sortie",
+      "below_minimum_wage": "Salaire de base sous le SMIG"
     },
     "payslip": {
       "title": "Bulletin de paie",
