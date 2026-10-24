@@ -1,4 +1,4 @@
-import { createBackup, listBackups } from "@paiecam/local";
+import { createBackup, listBackups } from "@paiecam/local/backup";
 import type { Env } from "@/env-schema";
 import { APP_VERSION } from "@/version";
 

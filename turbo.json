@@ -19,7 +19,8 @@
         "TEST_BACKUP_DATABASE_URL",
         "TEST_ROTATION_DATABASE_URL",
         "TEST_RESTORE_ADMIN_DATABASE_URL",
-        "PATH"
+        "PATH",
+        "PG_BIN"
       ],
       "cache": false
     }

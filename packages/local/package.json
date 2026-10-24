@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./backup": "./src/backup.ts"
   },
   "scripts": {
     "lint": "eslint .",
@@ -12,15 +13,16 @@
     "test": "vitest run --coverage"
   },
   "devDependencies": {
-    "@paiecam/db": "workspace:*",
     "@types/node": "^22.0.0",
     "@vitest/coverage-v8": "^5.0.5",
     "eslint": "^10.13.0",
     "postgres": "3.4.9",
-    "vitest": "^5.0.5"
+    "vitest": "^5.0.5",
+    "@paiecam/paie-engine": "workspace:*"
   },
   "dependencies": {
     "age-encryption": "0.3.1",
-    "fflate": "0.8.3"
+    "fflate": "0.8.3",
+    "@paiecam/db": "workspace:*"
   }
 }

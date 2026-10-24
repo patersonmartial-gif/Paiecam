@@ -9,11 +9,11 @@
  * Tout est en mémoire : adapté au volume d'une PME (quelques dizaines de Mo) ; à passer en flux
  * si les volumes grossissent.
  */
-import { spawn } from "node:child_process";
 import { mkdir, readdir, readFile, rename, rm, stat, writeFile } from "node:fs/promises";
 import { dirname, join, normalize, relative, sep } from "node:path";
 import { Decrypter, Encrypter } from "age-encryption";
 import { strFromU8, strToU8, unzipSync, zipSync, type Zippable } from "fflate";
+import { runPg } from "./pg";
 
 export const BACKUP_FORMAT = 1;
 const NAME = /^paiecam-(\d{4})-(\d{2})-(\d{2})-(\d{2})(\d{2})(\d{2})\.sauvegarde$/;
@@ -42,36 +42,6 @@ export interface BackupConfig {
   /** Nombre de sauvegardes conservées dans le dossier (les plus anciennes sont supprimées). */
   keep?: number;
   now?: Date;
-}
-
-/** Lance un outil PostgreSQL ; le mot de passe passe par PGPASSWORD, jamais par la ligne de commande. */
-function runPg(
-  bin: string,
-  pgBinDir: string | undefined,
-  url: string,
-  args: string[],
-  input?: Uint8Array,
-): Promise<Buffer> {
-  const u = new URL(url);
-  const password = decodeURIComponent(u.password);
-  u.password = "";
-  const exe = pgBinDir ? join(pgBinDir, process.platform === "win32" ? `${bin}.exe` : bin) : bin;
-  return new Promise((resolve, reject) => {
-    const child = spawn(exe, [`--dbname=${u.toString()}`, ...args], {
-      env: { ...process.env, PGPASSWORD: password },
-      stdio: ["pipe", "pipe", "pipe"],
-    });
-    const out: Buffer[] = [];
-    const err: Buffer[] = [];
-    child.stdout.on("data", (d: Buffer) => out.push(d));
-    child.stderr.on("data", (d: Buffer) => err.push(d));
-    child.on("error", reject);
-    child.on("close", (code) => {
-      if (code === 0) resolve(Buffer.concat(out));
-      else reject(new Error(`${bin} a échoué (${code}) : ${Buffer.concat(err).toString().trim()}`));
-    });
-    child.stdin.end(input ?? Buffer.alloc(0));
-  });
 }
 
 async function walk(dir: string, root = dir, out: string[] = []): Promise<string[]> {

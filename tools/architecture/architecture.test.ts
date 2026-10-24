@@ -140,10 +140,10 @@ describe("hygiène", () => {
       "packages/db/drizzle.config.ts",
       "packages/db/src/testing.ts",
       "packages/db/scripts/load-rules.ts",
-      "packages/local/src/backup.ts",
+      "packages/local/src/pg.ts",
     ];
     // authz/index.ts : NODE_ENV pour l'attribut Secure du cookie d'entreprise.
-    // local/src/backup.ts : environnement transmis à pg_dump avec PGPASSWORD (jamais en argument).
+    // local/src/pg.ts : environnement transmis à pg_dump avec PGPASSWORD (jamais en argument).
     expect(offenders((f, s) => /process\.env\b/.test(s) && !ALLOWED.includes(f), app)).toEqual([]);
   });
 

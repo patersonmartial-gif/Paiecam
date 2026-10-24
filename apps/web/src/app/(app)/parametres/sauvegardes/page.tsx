@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getFormatter, getTranslations } from "next-intl/server";
-import { listBackups } from "@paiecam/local";
+import { listBackups } from "@paiecam/local/backup";
 import { env } from "@/env";
 import { can } from "@/server/authz/permissions";
 import { requireMember } from "@/server/guards";

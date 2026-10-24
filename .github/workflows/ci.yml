@@ -25,6 +25,7 @@ jobs:
       TEST_OPS_DATABASE_URL: postgres://paiecam_ops:ops_dev@localhost:5432/paiecam_test
       TEST_BACKUP_DATABASE_URL: postgres://paiecam_backup:backup_dev@localhost:5432/paiecam_test
       TEST_ROTATION_DATABASE_URL: postgres://paiecam_rotation:rotation_dev@localhost:5432/paiecam_test
+      PG_BIN: /usr/lib/postgresql/16/bin
       TEST_RESTORE_ADMIN_DATABASE_URL: postgres://postgres:postgres_ci@localhost:5432/paiecam_restore_test
     steps:
       - uses: actions/checkout@v4
@@ -38,8 +39,8 @@ jobs:
         run: psql -h localhost -U postgres -f docker/postgres/init.sql
         env:
           PGPASSWORD: postgres_ci
-      - name: Outils du test de sauvegarde (age, client PostgreSQL 16)
-        run: sudo apt-get update -q && sudo apt-get install -yq age postgresql-client-16
+      - name: Outils des tests de sauvegarde et d'installation locale (age, PostgreSQL 16)
+        run: sudo apt-get update -q && sudo apt-get install -yq age postgresql-16
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
