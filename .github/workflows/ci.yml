@@ -81,7 +81,7 @@ jobs:
           PGPASSWORD: postgres_ci
       - run: pnpm --filter @paiecam/web exec playwright install --with-deps chromium
       - run: pnpm --filter @paiecam/web test:e2e
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: playwright-traces

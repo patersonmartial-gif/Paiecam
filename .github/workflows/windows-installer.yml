@@ -106,12 +106,12 @@ jobs:
           if (Get-Service PaieCam-Web -ErrorAction SilentlyContinue) { throw "service non retiré" }
           if (-not (Test-Path "$data\config\paiecam.env")) { throw "données supprimées à la désinstallation" }
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: PaieCam-Setup
           path: windows/Output/PaieCam-Setup-*.exe
           retention-days: 30
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: journaux-installation
