@@ -36,7 +36,9 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
+      # node_modules à plat (sans liens symboliques) : l'application autonome de Next.js se copie
+      # alors fichier par fichier, sans paquet perdu en route (ex. @swc/helpers).
+      - run: pnpm install --frozen-lockfile --config.node-linker=hoisted
 
       - name: Application web (Next.js autonome, adresse locale)
         shell: bash
@@ -53,11 +55,13 @@ jobs:
           node scripts/windows/copy-tree.mjs apps\web\.next\static "$d\web\apps\web\.next\static"
           if ($LASTEXITCODE) { throw "copie des fichiers statiques" }
           # Module natif Argon2 (outil d'administration : réinitialisation des mots de passe).
-          $argon = Resolve-Path apps\web\node_modules\@node-rs\argon2
           New-Item -ItemType Directory -Force "$d\outils\node_modules\@node-rs" | Out-Null
-          node scripts/windows/copy-tree.mjs $argon "$d\outils\node_modules\@node-rs\argon2"
-          $native = Get-ChildItem -Directory node_modules\.pnpm -Filter "@node-rs+argon2-win32-x64-msvc*" | Select-Object -First 1
-          node scripts/windows/copy-tree.mjs "$($native.FullName)\node_modules\@node-rs\argon2-win32-x64-msvc" "$d\outils\node_modules\@node-rs\argon2-win32-x64-msvc"
+          foreach ($pkg in "@node-rs/argon2", "@node-rs/argon2-win32-x64-msvc") {
+            $dir = node -e "const p=require('path');console.log(p.dirname(require.resolve('$pkg/package.json',{paths:['apps/web']})))"
+            if ($LASTEXITCODE -or -not $dir) { throw "paquet $pkg introuvable" }
+            node scripts/windows/copy-tree.mjs $dir "$d\outils\node_modules\$($pkg -replace '/', '\')"
+            if ($LASTEXITCODE) { throw "copie de $pkg" }
+          }
           Copy-Item -Recurse windows\scripts "$d\scripts"
           New-Item -ItemType Directory -Force "$d\services" | Out-Null
           Copy-Item windows\services\*.xml "$d\services\"
