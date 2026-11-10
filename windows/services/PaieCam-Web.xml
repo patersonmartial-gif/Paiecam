@@ -6,7 +6,7 @@
 <service>
   <id>PaieCam-Web</id>
   <name>PaieCam - Application</name>
-  <description>Application web PaieCam (http://localhost:3000, accessible depuis ce PC uniquement).</description>
+  <description>Application web PaieCam (http://127.0.0.1:3000, accessible depuis ce PC uniquement).</description>
   <executable>%BASE%\..\node\node.exe</executable>
   <arguments>"%BASE%\..\outils\launch.mjs" web "%ProgramData%\PaieCam\config\paiecam.env" "%BASE%\..\web\apps\web\server.js"</arguments>
   <workingdirectory>%BASE%\..\web</workingdirectory>

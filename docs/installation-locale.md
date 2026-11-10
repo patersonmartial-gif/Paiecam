@@ -2,7 +2,7 @@
 
 PaieCam s'installe sur **un seul PC Windows** : la base de données, l'application et les
 sauvegardes restent sur ce PC. On l'utilise dans le navigateur de ce PC, à l'adresse
-http://localhost:3000. Rien n'est accessible depuis le réseau ni depuis internet.
+http://127.0.0.1:3000 (icône PaieCam sur le bureau). Rien n'est accessible depuis le réseau ni depuis internet.
 
 ## Avant d'installer
 

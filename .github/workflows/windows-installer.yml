@@ -42,7 +42,7 @@ jobs:
 
       - name: Application web (Next.js autonome, adresse locale)
         shell: bash
-        run: APP_URL=http://localhost:3000 sh scripts/build-web.sh
+        run: APP_URL=http://127.0.0.1:3000 sh scripts/build-web.sh
 
       - name: Assemblage
         run: |
@@ -107,7 +107,7 @@ jobs:
           foreach ($s in "PaieCam-Base", "PaieCam-Web", "PaieCam-Worker") {
             if ((Get-Service $s).Status -ne "Running") { throw "service $s arrêté" }
           }
-          $r = Invoke-WebRequest -UseBasicParsing http://localhost:3000/api/health
+          $r = Invoke-WebRequest -UseBasicParsing -NoProxy http://127.0.0.1:3000/api/health
           if ($r.StatusCode -ne 200) { throw "application injoignable" }
           # Le worker sauvegarde au premier démarrage.
           for ($i = 0; $i -lt 60 -and -not (Get-ChildItem "$data\sauvegardes\*.sauvegarde" -ErrorAction SilentlyContinue); $i++) { Start-Sleep 2 }

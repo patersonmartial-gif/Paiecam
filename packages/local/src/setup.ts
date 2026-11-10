@@ -175,7 +175,8 @@ export function appEnvFile(
   const lines: [string, string | number][] = [
     ["NODE_ENV", "production"],
     ["DEPLOYMENT", "local"],
-    ["APP_URL", `http://localhost:${o.appPort}`],
+    // Une seule adresse, en IPv4 : sous Windows « localhost » peut viser ::1, où rien n'écoute.
+    ["APP_URL", `http://127.0.0.1:${o.appPort}`],
     ["PORT", o.appPort],
     // Le serveur web n'écoute que sur ce PC.
     ["HOSTNAME", "127.0.0.1"],

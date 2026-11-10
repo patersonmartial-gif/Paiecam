@@ -73,7 +73,7 @@ describe("installation locale", () => {
     expect(env).toMatchObject({
       NODE_ENV: "production",
       DEPLOYMENT: "local",
-      APP_URL: "http://localhost:3999",
+      APP_URL: "http://127.0.0.1:3999",
       HOSTNAME: "127.0.0.1",
       STORAGE_DRIVER: "fs",
       DOCUMENTS_DIR: l.documentsDir,

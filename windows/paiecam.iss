@@ -41,8 +41,8 @@ Source: "{#Source}\services\*"; DestDir: "{app}\services"; Flags: ignoreversion
 Source: "{#Source}\scripts\*"; DestDir: "{app}\scripts"; Flags: ignoreversion
 
 [Icons]
-Name: "{group}\PaieCam"; Filename: "http://localhost:3000"; IconFilename: "{app}\node\node.exe"
-Name: "{commondesktop}\PaieCam"; Filename: "http://localhost:3000"; IconFilename: "{app}\node\node.exe"
+Name: "{group}\PaieCam"; Filename: "http://127.0.0.1:3000"; IconFilename: "{app}\node\node.exe"
+Name: "{commondesktop}\PaieCam"; Filename: "http://127.0.0.1:3000"; IconFilename: "{app}\node\node.exe"
 Name: "{group}\Sauvegarder maintenant"; Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\scripts\sauvegarder.ps1"""
 Name: "{group}\Restaurer une sauvegarde"; Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\scripts\restaurer.ps1"""
 Name: "{group}\Dépanner un compte"; Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\scripts\depanner-compte.ps1"""
@@ -50,7 +50,7 @@ Name: "{group}\Dossier des sauvegardes"; Filename: "{commonappdata}\PaieCam\sauv
 
 [Run]
 Filename: "notepad.exe"; Parameters: """{commonappdata}\PaieCam\KIT-DE-RECUPERATION.txt"""; Description: "Ouvrir le kit de récupération (à imprimer, puis à supprimer du PC)"; Flags: postinstall shellexec skipifdoesntexist nowait skipifsilent
-Filename: "http://localhost:3000"; Description: "Ouvrir PaieCam"; Flags: postinstall shellexec nowait skipifsilent
+Filename: "http://127.0.0.1:3000"; Description: "Ouvrir PaieCam"; Flags: postinstall shellexec nowait skipifsilent
 
 [UninstallRun]
 Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\scripts\desinstaller.ps1"""; Flags: runhidden waituntilterminated; RunOnceId: "PaieCamServices"

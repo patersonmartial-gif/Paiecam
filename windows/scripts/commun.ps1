@@ -54,14 +54,21 @@ function Start-PaieCamApp {
   foreach ($s in "PaieCam-Base", "PaieCam-Web", "PaieCam-Worker") { Start-ServiceWithTimeout $s }
 }
 
+# Contrôle direct, sans le proxy du système (Invoke-WebRequest de PowerShell 5.1 l'utiliserait).
 function Wait-PaieCam([int]$Seconds = 90) {
+  $url = "http://127.0.0.1:3000/api/health"
   for ($i = 0; $i -lt $Seconds; $i++) {
     try {
-      $r = Invoke-WebRequest -UseBasicParsing -TimeoutSec 2 "http://localhost:3000/api/health"
-      if ($r.StatusCode -eq 200) { return }
+      $req = [System.Net.HttpWebRequest]::Create($url)
+      $req.Proxy = $null
+      $req.Timeout = 3000
+      $res = $req.GetResponse()
+      $ok = [int]$res.StatusCode -eq 200
+      $res.Close()
+      if ($ok) { return }
     } catch { Start-Sleep -Seconds 1 }
   }
-  throw "PaieCam ne répond pas sur http://localhost:3000"
+  throw "PaieCam ne répond pas sur $url"
 }
 
 function Pause-Fin { Write-Host ""; Read-Host "Appuyez sur Entrée pour fermer" | Out-Null }
