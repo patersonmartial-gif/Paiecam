@@ -43,8 +43,10 @@ installe tout (5 à 10 minutes) : PostgreSQL 16, dépendances, base migrée, rè
 secrets tirés au hasard pour ce seul Codespace. PaieCam s'ouvre ensuite sur le port 3000.
 
 - **Données fictives uniquement** : un Codespace n'est pas un hébergement conforme à la loi 2024/017.
-- Pas de serveur d'e-mail : le lien de vérification du compte s'affiche dans
-  `.data/journaux/web.log` (commande `grep -A3 "mail:dev" .data/journaux/web.log`).
+- La connexion exige une application d'authentification (double facteur) : Google Authenticator,
+  Microsoft Authenticator ou équivalent, sur le téléphone.
+- Pas de serveur d'e-mail : les e-mails (invitations, réinitialisation du mot de passe) s'affichent
+  dans `.data/journaux/web.log` (`grep -A6 "mail:dev" .data/journaux/web.log`).
 - Arrêtez le Codespace après l'essai (quota gratuit limité) ; il reprend où il en était.
 
 ## Installation locale (PC Windows)
