@@ -49,8 +49,8 @@ Name: "{group}\Dépanner un compte"; Filename: "powershell.exe"; Parameters: "-N
 Name: "{group}\Dossier des sauvegardes"; Filename: "{commonappdata}\PaieCam\sauvegardes"
 
 [Run]
-Filename: "notepad.exe"; Parameters: """{commonappdata}\PaieCam\KIT-DE-RECUPERATION.txt"""; Description: "Ouvrir le kit de récupération (à imprimer, puis à supprimer du PC)"; Flags: postinstall shellexec skipifdoesntexist
-Filename: "http://localhost:3000"; Description: "Ouvrir PaieCam"; Flags: postinstall shellexec nowait
+Filename: "notepad.exe"; Parameters: """{commonappdata}\PaieCam\KIT-DE-RECUPERATION.txt"""; Description: "Ouvrir le kit de récupération (à imprimer, puis à supprimer du PC)"; Flags: postinstall shellexec skipifdoesntexist nowait skipifsilent
+Filename: "http://localhost:3000"; Description: "Ouvrir PaieCam"; Flags: postinstall shellexec nowait skipifsilent
 
 [UninstallRun]
 Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\scripts\desinstaller.ps1"""; Flags: runhidden waituntilterminated; RunOnceId: "PaieCamServices"

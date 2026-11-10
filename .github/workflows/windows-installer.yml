@@ -25,6 +25,7 @@ env:
 jobs:
   installer:
     runs-on: windows-latest
+    timeout-minutes: 40
     defaults:
       run:
         shell: pwsh
@@ -87,6 +88,7 @@ jobs:
           if ($LASTEXITCODE) { throw "ISCC" }
 
       - name: Essai réel sur Windows
+        timeout-minutes: 15
         run: |
           $setup = Get-ChildItem windows\Output\PaieCam-Setup-*.exe | Select-Object -First 1
           Start-Process $setup.FullName -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/LOG=install.log" -Wait
@@ -111,9 +113,12 @@ jobs:
           if (-not (Test-Path "$data\config\paiecam.env")) { throw "données supprimées à la désinstallation" }
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        # Publié même si l'essai échoue : il reste possible de l'essayer à la main.
+        if: always()
         with:
           name: PaieCam-Setup
           path: windows/Output/PaieCam-Setup-*.exe
+          if-no-files-found: ignore
           retention-days: 30
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: failure()
