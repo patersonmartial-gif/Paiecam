@@ -36,6 +36,17 @@ Hors ligne en développement, `PWNED_PASSWORDS_CHECK=off` coupe l'appel à Have 
 - [x] Phase 7 — Clinique et pharmacie : catalogue et prix libres, stock par lot et péremption (FEFO), caisse et factures (numérotation sans trou, avoirs, reçus vérifiables), clôture de caisse, rapports et export Excel, tableau de bord ; TVA en brouillon (à valider)
 - [~] Phase 6 — Durcissement : revue ASVS L2, SMTP/S3/Docker, sauvegardes testées, textes juridiques en projet, plan d'incident ; en attente : relecture par l'avocat, durées de conservation (purge), préproduction (ZAP, test d'intrusion)
 
+## Essayer en ligne (GitHub Codespaces)
+
+Sur la page du dépôt : **Code → Codespaces → Create codespace on main**. La première ouverture
+installe tout (5 à 10 minutes) : PostgreSQL 16, dépendances, base migrée, règles de paie chargées,
+secrets tirés au hasard pour ce seul Codespace. PaieCam s'ouvre ensuite sur le port 3000.
+
+- **Données fictives uniquement** : un Codespace n'est pas un hébergement conforme à la loi 2024/017.
+- Pas de serveur d'e-mail : le lien de vérification du compte s'affiche dans
+  `.data/journaux/web.log` (commande `grep -A3 "mail:dev" .data/journaux/web.log`).
+- Arrêtez le Codespace après l'essai (quota gratuit limité) ; il reprend où il en était.
+
 ## Installation locale (PC Windows)
 
 Version installable sur un seul PC, sans hébergement : voir [docs/installation-locale.md](docs/installation-locale.md).

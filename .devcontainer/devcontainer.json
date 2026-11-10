@@ -1,0 +1,15 @@
+// Environnement GitHub Codespaces : PaieCam et PostgreSQL 16, prêts à l'emploi.
+// Données FICTIVES uniquement : ce n'est pas un hébergement de production.
+{
+  "name": "PaieCam",
+  "dockerComposeFile": "compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": { "label": "PaieCam", "onAutoForward": "openPreview" }
+  },
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "postStartCommand": "bash .devcontainer/start.sh",
+  "hostRequirements": { "cpus": 2, "memory": "4gb" }
+}
