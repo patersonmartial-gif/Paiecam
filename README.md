@@ -40,7 +40,9 @@ Hors ligne en développement, `PWNED_PASSWORDS_CHECK=off` coupe l'appel à Have 
 
 Sur la page du dépôt : **Code → Codespaces → Create codespace on main**. La première ouverture
 installe tout (5 à 10 minutes) : PostgreSQL 16, dépendances, base migrée, règles de paie chargées,
-secrets tirés au hasard pour ce seul Codespace. PaieCam s'ouvre ensuite sur le port 3000.
+secrets tirés au hasard pour ce seul Codespace. PaieCam s'ouvre ensuite sur le port 3000 ;
+une erreur 502 dans les premières minutes signifie que les pages sont encore en compilation :
+patienter puis recharger.
 
 - **Données fictives uniquement** : un Codespace n'est pas un hébergement conforme à la loi 2024/017.
 - La connexion exige une application d'authentification (double facteur) : Google Authenticator,
