@@ -84,6 +84,8 @@ export const tenants = pgTable(
     /** Taux AT/MP notifié, en points de base (175, 250 ou 500). */
     workAccidentRate: integer("work_accident_rate").notNull(),
     commune: text("commune").notNull(),
+    /** Alerte de péremption des médicaments : nombre de jours avant la date de péremption. */
+    expiryAlertDays: integer("expiry_alert_days").notNull().default(90),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [unique("tenants_niu_key").on(t.niu)],
@@ -664,3 +666,77 @@ export const catalogPrices = pgTable(
   ],
 );
 
+/** Lot d'un médicament : la quantité n'évolue que par les mouvements (déclencheur, migration 0026). */
+export const stockLots = pgTable(
+  "stock_lots",
+  {
+    id: id(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id),
+    itemId: uuid("item_id")
+      .notNull()
+      .references(() => catalogItems.id),
+    lotNumber: text("lot_number").notNull(),
+    expiryDate: date("expiry_date").notNull(),
+    /** Coût d'achat unitaire (FCFA), pour la valeur du stock et la marge. */
+    unitCost: integer("unit_cost").notNull(),
+    supplier: text("supplier"),
+    quantityOnHand: integer("quantity_on_hand").notNull().default(0),
+    receivedAt: timestamp("received_at", { withTimezone: true }).notNull().defaultNow(),
+    receivedBy: text("received_by").notNull(),
+  },
+  (t) => [
+    unique("stock_lots_tenant_id_id_key").on(t.tenantId, t.id),
+    unique("stock_lots_item_lot_expiry_key").on(t.tenantId, t.itemId, t.lotNumber, t.expiryDate),
+    index("stock_lots_item_expiry_idx").on(t.tenantId, t.itemId, t.expiryDate),
+    check("stock_lots_quantity_chk", sql`${t.quantityOnHand} >= 0`),
+    check("stock_lots_cost_chk", sql`${t.unitCost} between 0 and 100000000`),
+    check("stock_lots_number_chk", sql`char_length(${t.lotNumber}) between 1 and 40`),
+  ],
+);
+
+export const stockMovementKindEnum = pgEnum("stock_movement_kind", [
+  "reception",
+  "sale",
+  "sale_cancelled",
+  "breakage",
+  "expired",
+  "inventory",
+]);
+
+/** Registre des mouvements de stock : jamais modifié ni supprimé. */
+export const stockMovements = pgTable(
+  "stock_movements",
+  {
+    id: id(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id),
+    lotId: uuid("lot_id")
+      .notNull()
+      .references(() => stockLots.id),
+    kind: stockMovementKindEnum("kind").notNull(),
+    /** Positif pour une entrée, négatif pour une sortie. */
+    quantity: integer("quantity").notNull(),
+    reason: text("reason"),
+    /** Vente ou annulation : facture concernée. */
+    invoiceId: uuid("invoice_id"),
+    createdBy: text("created_by").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index("stock_movements_lot_idx").on(t.tenantId, t.lotId, t.createdAt),
+    check("stock_movements_quantity_chk", sql`${t.quantity} <> 0`),
+    check(
+      "stock_movements_sign_chk",
+      sql`(${t.kind} in ('reception', 'sale_cancelled') and ${t.quantity} > 0)
+        or (${t.kind} in ('sale', 'breakage', 'expired') and ${t.quantity} < 0)
+        or ${t.kind} = 'inventory'`,
+    ),
+    check(
+      "stock_movements_reason_chk",
+      sql`${t.kind} not in ('breakage', 'expired', 'inventory') or char_length(coalesce(${t.reason}, '')) between 3 and 200`,
+    ),
+  ],
+);

@@ -98,7 +98,8 @@
     "declarations": "Deadlines",
     "backups": "Backups",
     "backupLate": "No backup for more than 3 days.",
-    "catalog": "Catalogue"
+    "catalog": "Catalogue",
+    "stock": "Stock"
   },
   "settings": {
     "companyTitle": "Company information",
@@ -512,6 +513,61 @@
     "errors": {
       "not_found": "Item not found.",
       "catalog_items_tenant_code_key": "This code is already used."
+    }
+  },
+  "stock": {
+    "title": "Pharmacy stock",
+    "summary": "Value of saleable stock: {value} FCFA · {alerts} medicine(s) on alert · expiry alert at {days} days",
+    "empty": "No medicine in the catalogue.",
+    "medicine": "Medicine",
+    "available": "Available",
+    "nextExpiry": "Next expiry",
+    "value": "Value (FCFA)",
+    "alerts": "Alerts",
+    "alert": {
+      "out_of_stock": "Out of stock",
+      "low_stock": "Low stock",
+      "expiring_soon": "{soon} expiring soon",
+      "expired_on_hand": "{expired} expired to remove"
+    },
+    "alertDays": "Expiry alert (days)",
+    "save": "Save",
+    "saved": "Saved.",
+    "lots": "Batches",
+    "noLots": "No batch received.",
+    "lot": "Batch",
+    "lotNumber": "Batch number",
+    "expiryDate": "Expiry",
+    "onHand": "In stock",
+    "unitCost": "Unit purchase cost (FCFA)",
+    "supplier": "Supplier",
+    "quantity": "Quantity received",
+    "receive": "Receive a delivery",
+    "receiveButton": "Record the delivery",
+    "received": "Delivery recorded.",
+    "adjust": "Write-off or stock count",
+    "adjustHelp": "Breakage and expired: quantity removed. Stock count: quantity actually counted in the batch.",
+    "adjustKind": "Operation",
+    "adjustQuantity": "Quantity",
+    "adjustQuantityHint": "Stock count: counted quantity.",
+    "reason": "Reason",
+    "adjustButton": "Save",
+    "adjusted": "Movement recorded.",
+    "history": "Latest movements",
+    "noHistory": "No movement.",
+    "kinds": {
+      "reception": "Delivery",
+      "sale": "Sale",
+      "sale_cancelled": "Sale cancelled",
+      "breakage": "Breakage",
+      "expired": "Expired removed",
+      "inventory": "Stock count"
+    },
+    "errors": {
+      "not_found": "Medicine or batch not found.",
+      "already_expired": "This batch has already expired: it cannot enter stock.",
+      "lot_cost_mismatch": "This batch already exists with another purchase cost: check the batch number.",
+      "insufficient_stock": "Insufficient stock."
     }
   }
 }

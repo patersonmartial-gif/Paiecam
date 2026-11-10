@@ -98,7 +98,8 @@
     "declarations": "Échéances",
     "backups": "Sauvegardes",
     "backupLate": "Aucune sauvegarde depuis plus de 3 jours.",
-    "catalog": "Catalogue"
+    "catalog": "Catalogue",
+    "stock": "Stock"
   },
   "settings": {
     "companyTitle": "Informations de l'entreprise",
@@ -512,6 +513,61 @@
     "errors": {
       "not_found": "Article introuvable.",
       "catalog_items_tenant_code_key": "Ce code est déjà utilisé."
+    }
+  },
+  "stock": {
+    "title": "Stock de la pharmacie",
+    "summary": "Valeur du stock vendable : {value} FCFA · {alerts} médicament(s) en alerte · alerte de péremption à {days} jours",
+    "empty": "Aucun médicament au catalogue.",
+    "medicine": "Médicament",
+    "available": "Disponible",
+    "nextExpiry": "Prochaine péremption",
+    "value": "Valeur (FCFA)",
+    "alerts": "Alertes",
+    "alert": {
+      "out_of_stock": "Rupture",
+      "low_stock": "Stock bas",
+      "expiring_soon": "{soon} bientôt périmé(s)",
+      "expired_on_hand": "{expired} périmé(s) à retirer"
+    },
+    "alertDays": "Alerte de péremption (jours)",
+    "save": "Enregistrer",
+    "saved": "Enregistré.",
+    "lots": "Lots",
+    "noLots": "Aucun lot reçu.",
+    "lot": "Lot",
+    "lotNumber": "N° de lot",
+    "expiryDate": "Péremption",
+    "onHand": "En stock",
+    "unitCost": "Coût d'achat unitaire (FCFA)",
+    "supplier": "Fournisseur",
+    "quantity": "Quantité reçue",
+    "receive": "Réception d'une livraison",
+    "receiveButton": "Enregistrer la réception",
+    "received": "Réception enregistrée.",
+    "adjust": "Sortie ou inventaire",
+    "adjustHelp": "Casse et périmés : quantité sortie. Inventaire : quantité réellement comptée dans le lot.",
+    "adjustKind": "Opération",
+    "adjustQuantity": "Quantité",
+    "adjustQuantityHint": "Inventaire : quantité comptée.",
+    "reason": "Motif",
+    "adjustButton": "Enregistrer",
+    "adjusted": "Mouvement enregistré.",
+    "history": "Derniers mouvements",
+    "noHistory": "Aucun mouvement.",
+    "kinds": {
+      "reception": "Réception",
+      "sale": "Vente",
+      "sale_cancelled": "Vente annulée",
+      "breakage": "Casse",
+      "expired": "Périmés retirés",
+      "inventory": "Inventaire"
+    },
+    "errors": {
+      "not_found": "Médicament ou lot introuvable.",
+      "already_expired": "Ce lot est déjà périmé : il ne peut pas entrer en stock.",
+      "lot_cost_mismatch": "Ce lot existe déjà avec un autre coût d'achat : vérifiez le numéro de lot.",
+      "insufficient_stock": "Stock insuffisant."
     }
   }
 }

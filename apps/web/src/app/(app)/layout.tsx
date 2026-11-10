@@ -21,6 +21,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       label: t("declarations"),
       show: can(member.role, "declarations:read"),
     },
+    { href: "/stock", label: t("stock"), show: can(member.role, "stock:read") },
     { href: "/catalogue", label: t("catalog"), show: can(member.role, "catalog:read") },
     { href: "/parametres/entreprise", label: t("company"), show: can(member.role, "tenant:read") },
     { href: "/parametres/equipe", label: t("team"), show: can(member.role, "members:read") },
