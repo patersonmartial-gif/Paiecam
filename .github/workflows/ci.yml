@@ -28,7 +28,7 @@ jobs:
       PG_BIN: /usr/lib/postgresql/16/bin
       TEST_RESTORE_ADMIN_DATABASE_URL: postgres://postgres:postgres_ci@localhost:5432/paiecam_restore_test
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -68,7 +68,7 @@ jobs:
       TEST_RESTORE_ADMIN_DATABASE_URL: postgres://postgres:postgres_ci@localhost:5432/paiecam_restore_test
       BETTER_AUTH_SECRET: ci-only-secret-ci-only-secret-ci-only
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -91,7 +91,7 @@ jobs:
   gitleaks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - uses: gitleaks/gitleaks-action@v2
@@ -103,5 +103,5 @@ jobs:
     container:
       image: semgrep/semgrep
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: semgrep scan --config p/typescript --config p/owasp-top-ten --config p/secrets --config .semgrep.yml --error
