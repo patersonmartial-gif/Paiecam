@@ -94,4 +94,28 @@ test("caisse : vente d'une consultation et d'un médicament, reçu, vérificatio
   await page.getByRole("link", { name: "Factures", exact: true }).click();
   await expect(page.getByRole("row", { name: /F\d{4}-000001/ })).toContainText("Annulée");
   await expect(page.getByText("Total encaissé (net)")).toBeVisible();
+
+  // Clôture de la journée : encaissé net nul après l'avoir, aucune espèce attendue.
+  await page.getByRole("link", { name: "Clôture de caisse" }).click();
+  await page.getByLabel("Espèces comptées (FCFA)").fill("0");
+  await page.getByRole("button", { name: "Clôturer la journée" }).click();
+  await expect(page.getByText(/Journée clôturée|La journée est déjà clôturée/)).toBeVisible();
+
+  // Rapport de la période et export Excel
+  await page.getByRole("link", { name: "Rapports", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Rapports de ventes" })).toBeVisible();
+  await expect(page.getByText("Avoirs", { exact: true })).toBeVisible();
+  const exportHref = await page
+    .getByRole("link", { name: "Exporter (Excel)" })
+    .getAttribute("href");
+  const xlsx = await page.request.get(exportHref ?? "");
+  expect(xlsx.status()).toBe(200);
+  expect(xlsx.headers()["content-type"]).toContain("spreadsheetml");
+
+  // Tableau de bord : tuiles de la caisse, du stock et de la paie
+  await page.getByRole("link", { name: "Tableau de bord" }).click();
+  await expect(page.getByText("Ventes du jour")).toBeVisible();
+  await expect(page.getByText("Médicaments en alerte")).toBeVisible();
+  await expect(page.getByText("Dernier mois de paie")).toBeVisible();
+  await expect(page.getByText(/prochaines phases/)).toHaveCount(0);
 });

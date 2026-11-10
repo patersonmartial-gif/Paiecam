@@ -22,7 +22,7 @@ test("créer un salarié, saisir son IBAN, l'afficher en clair puis enregistrer 
 }) => {
   await ownerWithCompany(page, uniqueEmail("proprio-sal"), "Pharmacie Fictive", "M000000000020P");
 
-  await page.getByRole("link", { name: "Salariés" }).click();
+  await page.getByRole("link", { name: "Salariés", exact: true }).click();
   await expect(page.getByText("Aucun salarié pour l'instant.")).toBeVisible();
   await page.getByRole("link", { name: "Ajouter un salarié" }).click();
   await fillEmployee(page);

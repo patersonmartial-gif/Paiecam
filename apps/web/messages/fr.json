@@ -86,7 +86,15 @@
     "title": "Tableau de bord",
     "welcome": "Bienvenue, {name}.",
     "role": "Votre rôle : {role}",
-    "comingSoon": "Les salariés et la paie arrivent dans les prochaines phases."
+    "salesToday": "Ventes du jour",
+    "invoicesCount": "{n} facture(s)",
+    "stockAlerts": "Médicaments en alerte",
+    "stockValue": "Stock : {value} FCFA",
+    "payroll": "Dernier mois de paie",
+    "noPeriod": "Aucun mois ouvert",
+    "nextDeclaration": "Prochaine déclaration",
+    "noDeclaration": "Rien à déposer",
+    "employees": "Salariés actifs"
   },
   "nav": {
     "dashboard": "Tableau de bord",
@@ -101,7 +109,8 @@
     "catalog": "Catalogue",
     "stock": "Stock",
     "cash": "Caisse",
-    "invoices": "Factures"
+    "invoices": "Factures",
+    "reports": "Rapports"
   },
   "settings": {
     "companyTitle": "Informations de l'entreprise",
@@ -653,6 +662,51 @@
       "cancelled": "Facture annulée par un avoir",
       "creditNote": "Avoir"
     },
-    "verificationCode": "Code de vérification"
+    "verificationCode": "Code de vérification",
+    "closingLink": "Clôture de caisse",
+    "reportsLink": "Rapports"
+  },
+  "closing": {
+    "title": "Clôture de caisse",
+    "back": "Factures du jour",
+    "help": "En fin de journée : comptez les espèces de la caisse. L'écart avec l'encaissé attendu est enregistré ; une clôture ne se modifie pas.",
+    "expectedCash": "Espèces attendues aujourd'hui (factures moins avoirs) : {amount} FCFA",
+    "countedCash": "Espèces comptées (FCFA)",
+    "note": "Commentaire",
+    "close": "Clôturer la journée",
+    "closed": "Journée clôturée : attendu {expected} FCFA, compté {counted} FCFA, écart {difference} FCFA.",
+    "alreadyClosed": "La journée est déjà clôturée.",
+    "history": "Clôtures récentes",
+    "none": "Aucune clôture.",
+    "day": "Jour",
+    "expected": "Espèces attendues",
+    "counted": "Comptées",
+    "difference": "Écart",
+    "errors": {
+      "already_closed": "Cette journée est déjà clôturée.",
+      "future_day": "On ne clôture pas une journée à venir."
+    }
+  },
+  "reports": {
+    "title": "Rapports de ventes",
+    "from": "Du",
+    "to": "Au",
+    "show": "Afficher",
+    "export": "Exporter (Excel)",
+    "totalTtc": "Chiffre d'affaires TTC",
+    "totalHt": "Chiffre d'affaires HT",
+    "vat": "TVA collectée",
+    "margin": "Marge brute médicaments",
+    "invoices": "Factures",
+    "creditNotes": "Avoirs",
+    "stockValue": "Valeur du stock (aujourd'hui)",
+    "empty": "Aucune vente sur la période.",
+    "item": "Article",
+    "quantity": "Quantité",
+    "salesTtc": "CA TTC",
+    "salesHt": "CA HT",
+    "cost": "Coût d'achat",
+    "itemMargin": "Marge",
+    "note": "Factures moins avoirs. Marge brute = CA HT − coût d'achat des lots réellement sortis (médicaments). Montants en FCFA."
   }
 }

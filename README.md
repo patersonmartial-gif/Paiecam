@@ -33,6 +33,7 @@ Hors ligne en développement, `PWNED_PASSWORDS_CHECK=off` coupe l'appel à Have 
 - [x] Phase 4 — Cycle mensuel (saisie, calcul, contrôle, validation) et bulletins PDF signés
   - Prêts et avances : échéancier, retenue automatique, suspension d'un mois, solde suivi ; plafond légal des retenues en brouillon (barème du décret n° 94/197/PM à fournir par l'expert-comptable)
 - [x] Phase 5 — Déclarations (états CNPS, DGI, DIPE provisoire, journal), dépôts, verrouillage, rappels e-mail
+- [x] Phase 7 — Clinique et pharmacie : catalogue et prix libres, stock par lot et péremption (FEFO), caisse et factures (numérotation sans trou, avoirs, reçus vérifiables), clôture de caisse, rapports et export Excel, tableau de bord ; TVA en brouillon (à valider)
 - [~] Phase 6 — Durcissement : revue ASVS L2, SMTP/S3/Docker, sauvegardes testées, textes juridiques en projet, plan d'incident ; en attente : relecture par l'avocat, durées de conservation (purge), préproduction (ZAP, test d'intrusion)
 
 ## Installation locale (PC Windows)

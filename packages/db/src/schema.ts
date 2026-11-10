@@ -857,3 +857,29 @@ export const invoiceLines = pgTable(
   ],
 );
 
+/**
+ * Clôture de caisse d'une journée : encaissé attendu par mode de paiement (factures et avoirs),
+ * espèces comptées et écart. Une seule par jour, jamais modifiée.
+ */
+export const cashClosings = pgTable(
+  "cash_closings",
+  {
+    id: id(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id),
+    day: date("day").notNull(),
+    expected: jsonb("expected").notNull(),
+    countedCash: integer("counted_cash").notNull(),
+    difference: integer("difference").notNull(),
+    invoiceCount: integer("invoice_count").notNull(),
+    note: text("note"),
+    closedBy: text("closed_by").notNull(),
+    closedAt: timestamp("closed_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    unique("cash_closings_tenant_day_key").on(t.tenantId, t.day),
+    check("cash_closings_counted_chk", sql`${t.countedCash} >= 0`),
+  ],
+);
+

@@ -11,7 +11,7 @@ test("importer des salariés depuis le modèle Excel, avec correction d'une erre
   page,
 }) => {
   await ownerWithCompany(page, uniqueEmail("proprio-imp"), "Garage Fictif", "M000000000030G");
-  await page.getByRole("link", { name: "Salariés" }).click();
+  await page.getByRole("link", { name: "Salariés", exact: true }).click();
   await page.getByRole("link", { name: "Importer depuis Excel" }).click();
 
   // Le modèle se télécharge et contient les bons en-têtes

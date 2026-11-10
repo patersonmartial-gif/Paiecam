@@ -23,7 +23,18 @@ export default async function InvoicesPage({
   return (
     <main className="mx-auto max-w-5xl space-y-6 px-4 py-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <h1 className="text-2xl font-semibold">{t("journalTitle")}</h1>
+        <div>
+          <h1 className="text-2xl font-semibold">{t("journalTitle")}</h1>
+          <p className="mt-1 text-sm">
+            <a href="/factures/cloture" className="underline">
+              {t("closingLink")}
+            </a>{" "}
+            ·{" "}
+            <a href="/rapports" className="underline">
+              {t("reportsLink")}
+            </a>
+          </p>
+        </div>
         <form className="flex items-end gap-2 text-sm">
           <label>
             <span className="mb-1 block">{t("day")}</span>

@@ -86,7 +86,15 @@
     "title": "Dashboard",
     "welcome": "Welcome, {name}.",
     "role": "Your role: {role}",
-    "comingSoon": "Employees and payroll arrive in the next phases."
+    "salesToday": "Sales today",
+    "invoicesCount": "{n} invoice(s)",
+    "stockAlerts": "Medicines on alert",
+    "stockValue": "Stock: {value} FCFA",
+    "payroll": "Latest payroll month",
+    "noPeriod": "No month opened",
+    "nextDeclaration": "Next declaration",
+    "noDeclaration": "Nothing to file",
+    "employees": "Active employees"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -101,7 +109,8 @@
     "catalog": "Catalogue",
     "stock": "Stock",
     "cash": "Cash desk",
-    "invoices": "Invoices"
+    "invoices": "Invoices",
+    "reports": "Reports"
   },
   "settings": {
     "companyTitle": "Company information",
@@ -653,6 +662,51 @@
       "cancelled": "Invoice cancelled by a credit note",
       "creditNote": "Credit note"
     },
-    "verificationCode": "Verification code"
+    "verificationCode": "Verification code",
+    "closingLink": "Cash closing",
+    "reportsLink": "Reports"
+  },
+  "closing": {
+    "title": "Cash closing",
+    "back": "Invoices of the day",
+    "help": "At the end of the day: count the cash in the till. The difference from the expected amount is recorded; a closing cannot be changed.",
+    "expectedCash": "Cash expected today (invoices minus credit notes): {amount} FCFA",
+    "countedCash": "Cash counted (FCFA)",
+    "note": "Comment",
+    "close": "Close the day",
+    "closed": "Day closed: expected {expected} FCFA, counted {counted} FCFA, difference {difference} FCFA.",
+    "alreadyClosed": "The day is already closed.",
+    "history": "Recent closings",
+    "none": "No closing.",
+    "day": "Day",
+    "expected": "Cash expected",
+    "counted": "Counted",
+    "difference": "Difference",
+    "errors": {
+      "already_closed": "This day is already closed.",
+      "future_day": "A future day cannot be closed."
+    }
+  },
+  "reports": {
+    "title": "Sales reports",
+    "from": "From",
+    "to": "To",
+    "show": "Show",
+    "export": "Export (Excel)",
+    "totalTtc": "Revenue incl. tax",
+    "totalHt": "Revenue excl. tax",
+    "vat": "VAT collected",
+    "margin": "Medicines gross margin",
+    "invoices": "Invoices",
+    "creditNotes": "Credit notes",
+    "stockValue": "Stock value (today)",
+    "empty": "No sales over the period.",
+    "item": "Item",
+    "quantity": "Quantity",
+    "salesTtc": "Revenue incl. tax",
+    "salesHt": "Revenue excl. tax",
+    "cost": "Purchase cost",
+    "itemMargin": "Margin",
+    "note": "Invoices minus credit notes. Gross margin = revenue excl. tax − purchase cost of the batches actually sold (medicines). Amounts in FCFA."
   }
 }
