@@ -28,6 +28,6 @@
     "pdf-parse": "^2.4.5",
     "read-excel-file": "^9.3.12",
     "tsx": "^4.23.15",
-    "vitest": "^5.0.5"
+    "vitest": "^5.1.0"
   }
 }
