@@ -93,7 +93,12 @@ jobs:
           $setup = Get-ChildItem windows\Output\PaieCam-Setup-*.exe | Select-Object -First 1
           $data = "$env:ProgramData\PaieCam"
           $p = Start-Process $setup.FullName -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/LOG=install.log" -PassThru
-          if (-not $p.WaitForExit(600000)) { $p.Kill(); throw "installateur bloqué plus de 10 minutes" }
+          if (-not $p.WaitForExit(600000)) {
+            # Le script de préparation (PowerShell) tourne encore : on l'arrête pour lire ses journaux.
+            Get-Process powershell -ErrorAction SilentlyContinue | Stop-Process -Force
+            $p.Kill()
+            throw "installateur bloqué plus de 10 minutes"
+          }
           if ($p.ExitCode -ne 0) { throw "installateur : code $($p.ExitCode)" }
           foreach ($s in "PaieCam-Base", "PaieCam-Web", "PaieCam-Worker") {
             if ((Get-Service $s).Status -ne "Running") { throw "service $s arrêté" }
@@ -130,7 +135,16 @@ jobs:
           Copy-Item "$env:ProgramData\PaieCam\journaux\*" journaux\ -ErrorAction SilentlyContinue
           Copy-Item "$env:ProgramData\PaieCam\donnees\base\demarrage.log" journaux\ -ErrorAction SilentlyContinue
           Copy-Item "$env:ProgramData\PaieCam\donnees\base\log\*" journaux\ -ErrorAction SilentlyContinue
+          Copy-Item "$env:ProgramFiles\PaieCam\services\*.log" journaux\ -ErrorAction SilentlyContinue
           foreach ($f in Get-ChildItem journaux -File) { Write-Host "===== $($f.Name)"; Get-Content $f.FullName -Tail 80 }
+          Write-Host "===== services"
+          Get-Service PaieCam-* -ErrorAction SilentlyContinue | Format-Table -AutoSize Name, Status, StartType | Out-String | Write-Host
+          Write-Host "===== gestionnaire de services (erreurs récentes)"
+          Get-WinEvent -FilterHashtable @{ LogName = "System"; ProviderName = "Service Control Manager"; Level = 1, 2, 3 } -MaxEvents 15 -ErrorAction SilentlyContinue |
+            Format-List TimeCreated, Message | Out-String | Write-Host
+          Write-Host "===== application (erreurs récentes)"
+          Get-WinEvent -FilterHashtable @{ LogName = "Application"; Level = 1, 2 } -MaxEvents 10 -ErrorAction SilentlyContinue |
+            Format-List TimeCreated, ProviderName, Message | Out-String | Write-Host
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:

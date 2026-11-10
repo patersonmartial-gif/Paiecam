@@ -6,17 +6,22 @@ $Config = Join-Path $DataDir "config\paiecam.env"
 
 New-Item -ItemType Directory -Force -Path $DataDir, (Join-Path $DataDir "journaux") | Out-Null
 Start-Transcript -Path (Join-Path $DataDir "journaux\installation.log") -Append | Out-Null
-trap { Write-Host "ÉCHEC : $_"; Stop-Transcript | Out-Null; exit 1 }
+trap { Write-Etape "ÉCHEC : $_"; Stop-Transcript | Out-Null; exit 1 }
+Write-Etape "préparation de PaieCam (dossier $DataDir)"
 # Données : Administrateurs et SYSTEM (contrôle total), Service réseau (modification), personne d'autre.
 icacls $DataDir /inheritance:r /grant:r "*S-1-5-32-544:(OI)(CI)F" "*S-1-5-18:(OI)(CI)F" "*S-1-5-20:(OI)(CI)M" | Out-Null
 if ($LASTEXITCODE -ne 0) { throw "droits du dossier $DataDir" }
 
+Write-Etape "droits du dossier des données posés"
 if (Test-Path $Config) {
+  Write-Etape "mise à jour d'une installation existante"
   # Mise à jour : la base tourne, sauvegarde complète puis migrations (paiecam-admin update).
-  Start-Service PaieCam-Base
+  Start-ServiceWithTimeout PaieCam-Base
   Invoke-PaieCamAdmin update --dossier $DataDir --migrations $Migrations --referentiel $Rules
 } else {
+  Write-Etape "première installation : base de données, rôles, migrations, référentiel"
   Invoke-PaieCamAdmin install --dossier $DataDir --pg-bin $PgBin --migrations $Migrations --referentiel $Rules
+  Write-Etape "base créée ; enregistrement du service PaieCam-Base"
   $Base = Join-Path $DataDir "donnees\base"
   icacls $Base /grant "*S-1-5-20:(OI)(CI)F" | Out-Null
   & (Join-Path $PgBin "pg_ctl.exe") register -N "PaieCam-Base" -D $Base -S auto -U "NT AUTHORITY\NetworkService" -w
@@ -24,12 +29,15 @@ if (Test-Path $Config) {
 }
 
 foreach ($s in "PaieCam-Web", "PaieCam-Worker") {
+  Write-Etape "service $s"
   if (-not (Get-Service $s -ErrorAction SilentlyContinue)) {
     & (Join-Path $AppDir "services\$s.exe") install
     if ($LASTEXITCODE -ne 0) { throw "installation du service $s" }
   }
 }
 Start-PaieCamApp
+Write-Etape "attente de l'application"
 Wait-PaieCam
+Write-Etape "PaieCam répond : installation terminée"
 Stop-Transcript | Out-Null
 exit 0

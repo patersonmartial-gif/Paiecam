@@ -28,10 +28,30 @@ function Stop-PaieCamApp {
   }
 }
 
-function Start-PaieCamApp {
-  foreach ($s in "PaieCam-Base", "PaieCam-Web", "PaieCam-Worker") {
-    if (Get-Service $s -ErrorAction SilentlyContinue) { Start-Service $s }
+# Journal des étapes : fichier séparé, lisible pendant que le script tourne encore.
+$EtapesLog = Join-Path $DataDir "journaux\etapes.log"
+function Write-Etape([string]$Message) {
+  $line = "$(Get-Date -Format s) $Message"
+  Write-Host $line
+  try { Add-Content -Path $EtapesLog -Value $line -Encoding UTF8 } catch { }
+}
+
+# Démarre un service sans jamais attendre indéfiniment (Start-Service peut rester bloqué).
+function Start-ServiceWithTimeout([string]$Name, [int]$Seconds = 90) {
+  $svc = Get-Service $Name -ErrorAction SilentlyContinue
+  if (-not $svc) { return }
+  if ($svc.Status -ne "Running") { sc.exe start $Name | Out-Null }
+  try {
+    $svc.WaitForStatus("Running", [TimeSpan]::FromSeconds($Seconds))
+  } catch {
+    $state = (Get-Service $Name).Status
+    throw "le service $Name n'a pas démarré en $Seconds s (état : $state)"
   }
+  Write-Etape "service $Name démarré"
+}
+
+function Start-PaieCamApp {
+  foreach ($s in "PaieCam-Base", "PaieCam-Web", "PaieCam-Worker") { Start-ServiceWithTimeout $s }
 }
 
 function Wait-PaieCam([int]$Seconds = 90) {
