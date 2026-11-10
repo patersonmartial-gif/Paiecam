@@ -14,8 +14,28 @@ export function run(
     input?: Uint8Array;
     /** Linux/macOS : utilisateur système non privilégié (initdb refuse root). */
     runAs?: { uid: number; gid: number } | undefined;
+    /**
+     * Programme qui lance un serveur durable (pg_ctl start) : sous Windows, le serveur hérite des
+     * canaux de sortie et les garde ouverts. On n'en lit rien et on attend la seule fin du
+     * programme lancé ; ses messages vont dans son propre fichier journal.
+     */
+    detachedOutput?: boolean;
   } = {},
 ): Promise<Buffer> {
+  if (options.detachedOutput) {
+    return new Promise((resolve, reject) => {
+      const child = spawn(exe, args, {
+        env: { ...process.env, ...options.env },
+        stdio: "ignore",
+        ...(options.runAs ?? {}),
+      });
+      child.on("error", reject);
+      child.on("exit", (code) => {
+        if (code === 0) resolve(Buffer.alloc(0));
+        else reject(new Error(`${exe} a échoué (${code}) : voir son fichier journal`));
+      });
+    });
+  }
   return new Promise((resolve, reject) => {
     const child = spawn(exe, args, {
       env: { ...process.env, ...options.env },

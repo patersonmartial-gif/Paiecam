@@ -108,7 +108,7 @@ export async function startCluster(opts: ClusterOptions) {
   await run(
     pgTool("pg_ctl", opts.pgBinDir),
     ["-D", opts.dataDir, "-l", join(opts.dataDir, "demarrage.log"), "-w", "start"],
-    { runAs: opts.runAs },
+    { runAs: opts.runAs, detachedOutput: true },
   );
 }
 
