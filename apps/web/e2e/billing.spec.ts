@@ -11,6 +11,8 @@ async function choose(select: Locator, text: string) {
 test("caisse : vente d'une consultation et d'un médicament, reçu, vérification, annulation par avoir", async ({
   page,
 }) => {
+  // Scénario long (vente, PDF, vérification, avoir) : en CI, chaque page se compile au premier accès.
+  test.slow();
   await ownerWithCompany(
     page,
     uniqueEmail("proprio-caisse"),
