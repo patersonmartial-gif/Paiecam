@@ -75,6 +75,7 @@ export async function loanDeductionsForPeriod(
       amount,
       subjectToCnps: false,
       taxable: false,
+      explanation: "Échéance automatique du prêt (solde suivi sur la fiche du salarié)",
     });
   }
   return out;

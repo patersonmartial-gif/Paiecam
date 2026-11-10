@@ -18,6 +18,8 @@ export interface PayItemInput {
   amount: Fcfa;
   subjectToCnps: boolean;
   taxable: boolean;
+  /** Explication affichée sur le bulletin (par défaut : « Montant saisi »). */
+  explanation?: string;
 }
 
 export interface OvertimeInput {
@@ -217,7 +219,9 @@ export function computePayslip(
       label: i.label,
       section,
       amount: i.amount,
-      explanation: `${i.kind === "in_kind" ? "Avantage en nature, non versé" : "Montant saisi"}${flags}`,
+      explanation:
+        i.explanation ??
+        `${i.kind === "in_kind" ? "Avantage en nature, non versé" : "Montant saisi"}${flags}`,
     });
   }
   const inBrut = (i: PayItemInput) => i.kind === "earning" || i.kind === "in_kind";

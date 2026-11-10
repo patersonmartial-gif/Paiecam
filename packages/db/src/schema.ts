@@ -68,6 +68,8 @@ export const memberRoleEnum = pgEnum("member_role", [
   "payroll_manager",
   "accountant",
   "employee",
+  "cashier",
+  "stock_manager",
 ]);
 
 /** Une entreprise cliente. RLS : visible uniquement quand app.tenant_id = id. */
@@ -131,7 +133,12 @@ export const auditLog = pgTable(
   (t) => [index("audit_log_tenant_created_idx").on(t.tenantId, t.createdAt)],
 );
 
-export const inviteRoleEnum = pgEnum("invite_role", ["payroll_manager", "accountant"]);
+export const inviteRoleEnum = pgEnum("invite_role", [
+  "payroll_manager",
+  "accountant",
+  "cashier",
+  "stock_manager",
+]);
 
 /**
  * Invitation d'un collaborateur. Seule l'empreinte SHA-256 du jeton est stockée.
@@ -596,3 +603,64 @@ export const loanRepayments = pgTable(
     check("loan_repayments_amount_chk", sql`${t.amount} >= 1`),
   ],
 );
+
+export const catalogKindEnum = pgEnum("catalog_kind", ["service", "medicine"]);
+/** Catégorie fiscale d'un article ; les taux viennent de la règle « tva » (pay_rules), jamais du code. */
+export const taxCategoryEnum = pgEnum("tax_category", ["standard", "exempt"]);
+
+/**
+ * Catalogue de l'établissement : prestations (consultation, soins, examens) et médicaments.
+ * Le prix n'est pas ici : il a son historique (catalog_prices), une facture garde le sien.
+ */
+export const catalogItems = pgTable(
+  "catalog_items",
+  {
+    id: id(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id),
+    kind: catalogKindEnum("kind").notNull(),
+    /** Code interne court (ex. CONS-GEN, PARA-500). */
+    code: text("code").notNull(),
+    name: text("name").notNull(),
+    /** Médicaments : forme (comprimé, sirop…), dosage, unité de vente (boîte, flacon…). */
+    form: text("form"),
+    dosage: text("dosage"),
+    unit: text("unit"),
+    taxCategory: taxCategoryEnum("tax_category").notNull(),
+    /** Médicaments : alerte de rupture quand le stock disponible passe sous ce seuil. */
+    alertThreshold: integer("alert_threshold").notNull().default(0),
+    active: boolean("active").notNull().default(true),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    unique("catalog_items_tenant_code_key").on(t.tenantId, t.code),
+    unique("catalog_items_tenant_id_id_key").on(t.tenantId, t.id),
+    check("catalog_items_code_chk", sql`${t.code} ~ '^[A-Z0-9][A-Z0-9_-]{0,29}$'`),
+    check("catalog_items_name_chk", sql`char_length(${t.name}) between 1 and 120`),
+    check("catalog_items_threshold_chk", sql`${t.alertThreshold} >= 0`),
+  ],
+);
+
+/** Historique des prix de vente TTC (FCFA entiers) fixés librement par l'établissement. */
+export const catalogPrices = pgTable(
+  "catalog_prices",
+  {
+    id: id(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id),
+    itemId: uuid("item_id")
+      .notNull()
+      .references(() => catalogItems.id),
+    /** Prix payé par le patient, taxes comprises. */
+    priceTtc: integer("price_ttc").notNull(),
+    validFrom: timestamp("valid_from", { withTimezone: true }).notNull().defaultNow(),
+    setBy: text("set_by").notNull(),
+  },
+  (t) => [
+    index("catalog_prices_item_idx").on(t.tenantId, t.itemId, t.validFrom),
+    check("catalog_prices_amount_chk", sql`${t.priceTtc} between 0 and 100000000`),
+  ],
+);
+

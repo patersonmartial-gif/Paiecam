@@ -76,7 +76,9 @@
       "owner": "Owner",
       "payroll_manager": "Payroll manager",
       "accountant": "Accountant",
-      "employee": "Employee"
+      "employee": "Employee",
+      "cashier": "Cashier",
+      "stock_manager": "Stock manager"
     },
     "addCompany": "Add a company"
   },
@@ -95,7 +97,8 @@
     "payroll": "Payroll",
     "declarations": "Deadlines",
     "backups": "Backups",
-    "backupLate": "No backup for more than 3 days."
+    "backupLate": "No backup for more than 3 days.",
+    "catalog": "Catalogue"
   },
   "settings": {
     "companyTitle": "Company information",
@@ -472,5 +475,43 @@
     "now": "Back up now",
     "requested": "Backup requested: it will appear in the list within a minute.",
     "empty": "No backup yet."
+  },
+  "catalog": {
+    "title": "Catalogue and prices",
+    "helpOwner": "Your services and medicines, at the prices you set freely (including tax: what the patient pays). A new price applies to the next invoices; invoices already issued keep theirs.",
+    "helpReadOnly": "Services and medicines of the facility, at current prices (including tax).",
+    "empty": "The catalogue is empty.",
+    "new": "New item",
+    "created": "Item added.",
+    "kind": "Type",
+    "kinds": {
+      "service": "Service",
+      "medicine": "Medicine"
+    },
+    "code": "Code",
+    "codeHint": "Short and unique, e.g. CONS-GEN or PARA-500.",
+    "name": "Description",
+    "priceTtc": "Price incl. tax (FCFA)",
+    "form": "Form",
+    "medicineOnly": "Medicines: tablet, syrup, injectable…",
+    "dosage": "Strength",
+    "unit": "Sales unit",
+    "alertThreshold": "Stock alert threshold",
+    "taxCategory": "VAT",
+    "tax": {
+      "standard": "Taxable",
+      "exempt": "Exempt"
+    },
+    "status": "Status",
+    "activate": "Reactivate",
+    "deactivate": "Deactivate",
+    "create": "Add to catalogue",
+    "priceFor": "Price incl. tax of {name}",
+    "savePrice": "Change",
+    "priceSaved": "Price updated.",
+    "errors": {
+      "not_found": "Item not found.",
+      "catalog_items_tenant_code_key": "This code is already used."
+    }
   }
 }

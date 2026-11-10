@@ -76,7 +76,9 @@
       "owner": "Propriétaire",
       "payroll_manager": "Gestionnaire paie",
       "accountant": "Comptable",
-      "employee": "Salarié"
+      "employee": "Salarié",
+      "cashier": "Caissier",
+      "stock_manager": "Gestionnaire de stock"
     },
     "addCompany": "Ajouter une entreprise"
   },
@@ -95,7 +97,8 @@
     "payroll": "Paie",
     "declarations": "Échéances",
     "backups": "Sauvegardes",
-    "backupLate": "Aucune sauvegarde depuis plus de 3 jours."
+    "backupLate": "Aucune sauvegarde depuis plus de 3 jours.",
+    "catalog": "Catalogue"
   },
   "settings": {
     "companyTitle": "Informations de l'entreprise",
@@ -472,5 +475,43 @@
     "now": "Sauvegarder maintenant",
     "requested": "Sauvegarde demandée : elle apparaîtra dans la liste d'ici une minute.",
     "empty": "Aucune sauvegarde pour l'instant."
+  },
+  "catalog": {
+    "title": "Catalogue et prix",
+    "helpOwner": "Vos prestations et médicaments, aux prix que vous fixez librement (TTC : ce que paie le patient). Un nouveau prix s'applique aux factures suivantes ; les factures déjà émises gardent le leur.",
+    "helpReadOnly": "Prestations et médicaments de l'établissement, aux prix en vigueur (TTC).",
+    "empty": "Le catalogue est vide.",
+    "new": "Nouvel article",
+    "created": "Article ajouté.",
+    "kind": "Nature",
+    "kinds": {
+      "service": "Prestation",
+      "medicine": "Médicament"
+    },
+    "code": "Code",
+    "codeHint": "Court et unique, ex. CONS-GEN ou PARA-500.",
+    "name": "Désignation",
+    "priceTtc": "Prix TTC (FCFA)",
+    "form": "Forme",
+    "medicineOnly": "Médicaments : comprimé, sirop, injectable…",
+    "dosage": "Dosage",
+    "unit": "Unité de vente",
+    "alertThreshold": "Seuil d'alerte de stock",
+    "taxCategory": "TVA",
+    "tax": {
+      "standard": "Taxable",
+      "exempt": "Exonéré"
+    },
+    "status": "État",
+    "activate": "Réactiver",
+    "deactivate": "Désactiver",
+    "create": "Ajouter au catalogue",
+    "priceFor": "Prix TTC de {name}",
+    "savePrice": "Modifier",
+    "priceSaved": "Prix mis à jour.",
+    "errors": {
+      "not_found": "Article introuvable.",
+      "catalog_items_tenant_code_key": "Ce code est déjà utilisé."
+    }
   }
 }

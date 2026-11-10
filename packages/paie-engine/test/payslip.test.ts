@@ -300,6 +300,28 @@ describe("règles particulières", () => {
     expect(p.warnings).toContain("net_negative");
   });
 
+  it("une rubrique peut porter sa propre explication (ex. échéance de prêt automatique)", () => {
+    const p = computePayslip(
+      input({
+        items: [
+          {
+            code: "loan:x",
+            label: "Prêt — échéance 1/3",
+            kind: "deduction",
+            amount: 10_000,
+            subjectToCnps: false,
+            taxable: false,
+            explanation: "Échéance automatique du prêt",
+          },
+        ],
+      }),
+      rules,
+    );
+    expect(p.lines.find((l) => l.code === "item.loan:x")?.explanation).toBe(
+      "Échéance automatique du prêt",
+    );
+  });
+
   it("SMIG : avertit quand le salaire de base mensuel est inférieur, pas au montant exact", () => {
     const at = (baseSalary: number) =>
       computePayslip(

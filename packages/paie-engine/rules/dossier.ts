@@ -76,6 +76,10 @@ function describe(r: RuleFileEntry): string {
       )
         .map(([k, r]) => `${k} = ${pct(r)}`)
         .join(", ")}`;
+    case "tva": {
+      const r = v.rates as Record<string, number>;
+      return `Standard ${pct(r.standard ?? 0)}, exonéré ${pct(r.exempt ?? 0)} ; taxe extraite du prix TTC`;
+    }
     case "smig":
       return `${money(v.monthlyAmount as number)} par mois (temps plein)`;
     case "retenues.plafond":

@@ -331,6 +331,26 @@
         "Assiette : net avant retenues (choix actuel), ou salaire après seules cotisations obligatoires ? Les avantages en nature et indemnités non imposables en font-ils partie ?",
         "Les avances sur salaire (salaire déjà gagné) sont-elles soumises au même plafond que les remboursements de prêt ?"
       ]
+    },
+    {
+      "code": "tva",
+      "validFrom": "2026-01-01",
+      "validTo": null,
+      "value": {
+        "rates": {
+          "standard": 1925,
+          "exempt": 0
+        },
+        "rounding": "nearest"
+      },
+      "legalSource": "Code général des impôts : TVA 17,5 % + centimes additionnels communaux 10 % de la TVA, soit 19,25 % — à confirmer ; exonérations (médicaments, prestations médicales) à confirmer article par article",
+      "questions": [
+        "Taux applicable en 2026 : 19,25 % (17,5 % + 10 % de CAC) confirmé ?",
+        "Les médicaments vendus par la pharmacie de la clinique sont-ils exonérés de TVA (liste, conditions) ?",
+        "Les prestations médicales (consultations, soins, examens) sont-elles exonérées ?",
+        "La clinique est-elle assujettie à la TVA, ou au régime de l'impôt libératoire / simplifié (pas de TVA facturée) ?",
+        "Mentions obligatoires d'une facture et d'un reçu au comptoir (NIU, RCCM, numéro, date, régime fiscal…) ? La facture électronique normalisée de la DGI s'applique-t-elle ?"
+      ]
     }
   ]
 }

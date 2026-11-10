@@ -15,7 +15,7 @@ import type { Mailer } from "../mail";
 const INVITATION_DAYS = 7;
 /** Plafond d'invitations par entreprise et par heure (anti-abus : envoi d'e-mails depuis notre domaine). */
 export const INVITATIONS_PER_HOUR = 20;
-const assignableRole = z.enum(["payroll_manager", "accountant"]);
+const assignableRole = z.enum(["payroll_manager", "accountant", "cashier", "stock_manager"]);
 
 export function makeListMembers(db: Db) {
   return createTenantAction(

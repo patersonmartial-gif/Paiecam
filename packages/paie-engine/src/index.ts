@@ -5,3 +5,4 @@ export * from "./cnps";
 export * from "./brackets";
 export * from "./payslip";
 export * from "./declarations";
+export * from "./invoice";

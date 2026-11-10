@@ -92,6 +92,11 @@ export const ruleSchemas = {
     /** Salaire minimum interprofessionnel garanti, mensuel, pour un temps plein. */
     monthlyAmount: fcfa,
   }),
+  tva: z.object({
+    /** Taux par catégorie fiscale d'article (TVA et centimes additionnels compris). */
+    rates: z.object({ standard: bp, exempt: bp }),
+    rounding,
+  }),
   "retenues.plafond": z.object({
     /**
      * Part du salaire qui peut être retenue (prêts, avances), par tranches du net avant retenues :
@@ -136,4 +141,5 @@ export const RULE_CODES = {
   deadlines: "echeances",
   deductionLimit: "retenues.plafond",
   minimumWage: "smig",
+  vat: "tva",
 } as const satisfies Record<string, RuleCode>;

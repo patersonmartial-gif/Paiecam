@@ -18,7 +18,7 @@ export interface InvitationView {
   tenantId: string;
   tenantName: string;
   email: string;
-  role: "payroll_manager" | "accountant";
+  role: "payroll_manager" | "accountant" | "cashier" | "stock_manager";
   status: "pending" | "accepted" | "revoked" | "expired";
 }
 

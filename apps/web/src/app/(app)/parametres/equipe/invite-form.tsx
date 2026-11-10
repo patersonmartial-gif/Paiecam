@@ -33,6 +33,8 @@ export function InviteForm() {
       <Select label={t("team.role")} name="role" defaultValue="accountant">
         <option value="accountant">{t("tenants.roles.accountant")}</option>
         <option value="payroll_manager">{t("tenants.roles.payroll_manager")}</option>
+        <option value="cashier">{t("tenants.roles.cashier")}</option>
+        <option value="stock_manager">{t("tenants.roles.stock_manager")}</option>
       </Select>
       <Button disabled={pending}>{pending ? t("common.loading") : t("team.invite")}</Button>
     </form>

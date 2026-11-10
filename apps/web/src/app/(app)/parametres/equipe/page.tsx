@@ -52,6 +52,8 @@ export default async function TeamPage() {
                     >
                       <option value="accountant">{t("tenants.roles.accountant")}</option>
                       <option value="payroll_manager">{t("tenants.roles.payroll_manager")}</option>
+                      <option value="cashier">{t("tenants.roles.cashier")}</option>
+                      <option value="stock_manager">{t("tenants.roles.stock_manager")}</option>
                     </select>
                     <button className="text-sm text-brand underline">{t("team.changeRole")}</button>
                   </form>

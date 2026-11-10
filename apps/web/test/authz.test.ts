@@ -141,6 +141,8 @@ describe("matrice des rôles", () => {
     ],
     accountant: PERMISSIONS.filter((p) => p.endsWith(":read")),
     employee: [],
+    cashier: ["tenant:read", "catalog:read", "billing:read", "billing:issue", "stock:read"],
+    stock_manager: ["tenant:read", "catalog:read", "stock:read", "stock:manage"],
   };
 
   it.each(Object.keys(expected) as Role[])("%s a exactement ses droits", (role) => {
