@@ -190,6 +190,27 @@
       "when": 1794315375425,
       "tag": "0026_stock_rls",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1794316085160,
+      "tag": "0027_facturation",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1794316086173,
+      "tag": "0028_facturation_rls",
+      "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1794316196248,
+      "tag": "0029_facturation_emetteur",
+      "breakpoints": true
     }
   ]
 }

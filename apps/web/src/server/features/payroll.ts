@@ -123,7 +123,8 @@ async function employeesInPeriod(tx: Tx, start: string, end: string) {
     .orderBy(asc(schema.employees.lastName), asc(schema.employees.firstNames));
 }
 
-async function loadRules(tx: Tx): Promise<PayRule[]> {
+/** Référentiel (paie et TVA) tel qu'en base, pour les moteurs de calcul. */
+export async function loadRules(tx: Tx): Promise<PayRule[]> {
   const rows = await tx.select().from(schema.payRules);
   return rows.map((r) => ({
     id: r.id,

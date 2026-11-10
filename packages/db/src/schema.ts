@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import {
+  primaryKey,
   boolean,
   check,
   date,
@@ -740,3 +741,119 @@ export const stockMovements = pgTable(
     ),
   ],
 );
+
+export const invoiceKindEnum = pgEnum("invoice_kind", ["invoice", "credit_note"]);
+export const invoiceStatusEnum = pgEnum("invoice_status", ["issued", "cancelled"]);
+export const paymentMeanEnum = pgEnum("payment_mean", ["cash", "orange_money", "mtn_momo"]);
+
+/** Compteur de numérotation : continu et sans trou, par année et par série (F : facture, A : avoir). */
+export const invoiceCounters = pgTable(
+  "invoice_counters",
+  {
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id),
+    series: text("series").notNull(),
+    year: integer("year").notNull(),
+    lastNumber: integer("last_number").notNull().default(0),
+  },
+  (t) => [
+    primaryKey({ columns: [t.tenantId, t.series, t.year] }),
+    check("invoice_counters_series_chk", sql`${t.series} in ('F', 'A')`),
+  ],
+);
+
+/**
+ * Facture (ou avoir) émise au comptoir. Jamais modifiée : seule l'annulation d'une facture par un
+ * avoir change son statut (déclencheurs, migration 0028). Montants en FCFA, prix TTC.
+ */
+export const invoices = pgTable(
+  "invoices",
+  {
+    id: id(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id),
+    kind: invoiceKindEnum("kind").notNull(),
+    series: text("series").notNull(),
+    year: integer("year").notNull(),
+    number: integer("number").notNull(),
+    status: invoiceStatusEnum("status").notNull().default("issued"),
+    /** Avoir : facture annulée. */
+    creditedInvoiceId: uuid("credited_invoice_id"),
+    /** Facultatif, chiffré (donnée de santé indirecte : ce que le patient a acheté). */
+    patientNameEnc: text("patient_name_enc"),
+    paymentMean: paymentMeanEnum("payment_mean").notNull(),
+    paymentReference: text("payment_reference"),
+    /** Raison sociale au jour de l'émission (affichée par la vérification publique). */
+    issuerName: text("issuer_name").notNull(),
+    totalHt: integer("total_ht").notNull(),
+    totalTax: integer("total_tax").notNull(),
+    totalTtc: integer("total_ttc").notNull(),
+    taxes: jsonb("taxes").notNull(),
+    ruleUsed: jsonb("rule_used").notNull(),
+    verificationCode: text("verification_code").notNull().unique(),
+    signature: text("signature").notNull(),
+    issuedAt: timestamp("issued_at", { withTimezone: true }).notNull().defaultNow(),
+    issuedBy: text("issued_by").notNull(),
+    cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
+    cancelledBy: text("cancelled_by"),
+    cancelReason: text("cancel_reason"),
+  },
+  (t) => [
+    unique("invoices_tenant_number_key").on(t.tenantId, t.series, t.year, t.number),
+    unique("invoices_tenant_id_id_key").on(t.tenantId, t.id),
+    index("invoices_tenant_issued_idx").on(t.tenantId, t.issuedAt),
+    check(
+      "invoices_kind_series_chk",
+      sql`(${t.kind} = 'invoice' and ${t.series} = 'F' and ${t.creditedInvoiceId} is null)
+        or (${t.kind} = 'credit_note' and ${t.series} = 'A' and ${t.creditedInvoiceId} is not null)`,
+    ),
+    check(
+      "invoices_totals_chk",
+      sql`${t.totalHt} + ${t.totalTax} = ${t.totalTtc}
+        and ((${t.kind} = 'invoice' and ${t.totalTtc} >= 0) or (${t.kind} = 'credit_note' and ${t.totalTtc} <= 0))`,
+    ),
+    check(
+      "invoices_cancel_chk",
+      sql`(${t.status} = 'cancelled') = (${t.cancelledAt} is not null and ${t.cancelledBy} is not null and ${t.cancelReason} is not null)`,
+    ),
+    check(
+      "invoices_reference_chk",
+      sql`${t.paymentMean} = 'cash' or char_length(coalesce(${t.paymentReference}, '')) between 4 and 40`,
+    ),
+  ],
+);
+
+/** Ligne de facture : copie figée de l'article, du prix et des lots sortis. */
+export const invoiceLines = pgTable(
+  "invoice_lines",
+  {
+    id: id(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id),
+    invoiceId: uuid("invoice_id")
+      .notNull()
+      .references(() => invoices.id),
+    position: integer("position").notNull(),
+    itemId: uuid("item_id")
+      .notNull()
+      .references(() => catalogItems.id),
+    kind: catalogKindEnum("kind").notNull(),
+    code: text("code").notNull(),
+    label: text("label").notNull(),
+    quantity: integer("quantity").notNull(),
+    unitPriceTtc: integer("unit_price_ttc").notNull(),
+    taxCategory: taxCategoryEnum("tax_category").notNull(),
+    totalTtc: integer("total_ttc").notNull(),
+    /** Médicaments : lots sortis [{ lotId, lotNumber, expiryDate, quantity }]. */
+    lots: jsonb("lots").notNull().default(sql`'[]'::jsonb`),
+  },
+  (t) => [
+    unique("invoice_lines_invoice_position_key").on(t.invoiceId, t.position),
+    check("invoice_lines_total_chk", sql`${t.totalTtc} = ${t.quantity} * ${t.unitPriceTtc}`),
+    check("invoice_lines_quantity_chk", sql`${t.quantity} <> 0`),
+  ],
+);
+

@@ -99,7 +99,9 @@
     "backups": "Sauvegardes",
     "backupLate": "Aucune sauvegarde depuis plus de 3 jours.",
     "catalog": "Catalogue",
-    "stock": "Stock"
+    "stock": "Stock",
+    "cash": "Caisse",
+    "invoices": "Factures"
   },
   "settings": {
     "companyTitle": "Informations de l'entreprise",
@@ -569,5 +571,88 @@
       "lot_cost_mismatch": "Ce lot existe déjà avec un autre coût d'achat : vérifiez le numéro de lot.",
       "insufficient_stock": "Stock insuffisant."
     }
+  },
+  "billing": {
+    "cashTitle": "Caisse",
+    "cashHelp": "Ajoutez les prestations et médicaments, encaissez : la facture est numérotée et les médicaments sortent du stock (péremption la plus proche d'abord).",
+    "noItems": "Aucun article avec un prix au catalogue.",
+    "article": "Article {n}",
+    "choose": "— Choisir —",
+    "groups": {
+      "service": "Prestations",
+      "medicine": "Médicaments"
+    },
+    "inStock": "{n} en stock",
+    "quantity": "Quantité",
+    "quantityOf": "Quantité de l'article {n}",
+    "remove": "Retirer",
+    "addLine": "+ Ajouter un article",
+    "total": "Total à payer",
+    "paymentMean": "Mode de paiement",
+    "means": {
+      "cash": "Espèces",
+      "orange_money": "Orange Money",
+      "mtn_momo": "MTN Mobile Money"
+    },
+    "paymentReference": "Référence du paiement",
+    "patientName": "Nom du patient (facultatif)",
+    "patientHint": "Chiffré ; visible seulement à la caisse et par le propriétaire.",
+    "issue": "Encaisser et émettre la facture",
+    "issued": "Facture émise.",
+    "journalTitle": "Factures du jour",
+    "day": "Jour",
+    "show": "Afficher",
+    "dayTotal": "Total encaissé (net)",
+    "noInvoices": "Aucune facture ce jour-là.",
+    "number": "Numéro",
+    "time": "Heure",
+    "statusLabel": "État",
+    "amount": "Montant TTC",
+    "status": {
+      "issued": "Payée",
+      "cancelled": "Annulée"
+    },
+    "invoice": "Facture",
+    "creditNote": "Avoir",
+    "patient": "Patient",
+    "cancels": "Annule la facture",
+    "cancelledBy": "Annulée par l'avoir",
+    "draftTax": "TVA calculée avec un référentiel non encore validé par l'expert-comptable (pilote).",
+    "designation": "Désignation",
+    "unitPrice": "P.U. TTC",
+    "lots": "Lots",
+    "totalHt": "Total HT",
+    "vat": "TVA",
+    "totalTtc": "Total TTC",
+    "receipt": "Reçu PDF",
+    "cancelTitle": "Annuler cette facture",
+    "cancelHelp": "Un avoir de même montant est émis et les médicaments reviennent dans leurs lots. La facture reste visible, marquée annulée.",
+    "cancelReason": "Motif",
+    "password": "Votre mot de passe",
+    "cancelButton": "Annuler par un avoir",
+    "errors": {
+      "item_unavailable": "Un article n'est plus disponible.",
+      "no_price": "Un article n'a pas de prix.",
+      "insufficient_stock": "Stock insuffisant (lots périmés exclus).",
+      "draft_tax_rule": "La TVA n'est pas encore validée par l'expert-comptable : facturation impossible hors pilote.",
+      "bad_password": "Mot de passe incorrect.",
+      "not_found": "Facture introuvable.",
+      "not_cancellable": "Cette facture est déjà annulée, ou c'est un avoir."
+    },
+    "verify": {
+      "title": "Vérification d'un reçu",
+      "unknown": "Aucun reçu ne correspond à ce code.",
+      "authentic": "Reçu authentique : émis et signé par PaieCam.",
+      "invalid": "Signature invalide : ce reçu a peut-être été falsifié.",
+      "issuer": "Établissement",
+      "number": "Numéro",
+      "date": "Date",
+      "amount": "Montant",
+      "state": "État",
+      "valid": "Facture payée",
+      "cancelled": "Facture annulée par un avoir",
+      "creditNote": "Avoir"
+    },
+    "verificationCode": "Code de vérification"
   }
 }

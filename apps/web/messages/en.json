@@ -99,7 +99,9 @@
     "backups": "Backups",
     "backupLate": "No backup for more than 3 days.",
     "catalog": "Catalogue",
-    "stock": "Stock"
+    "stock": "Stock",
+    "cash": "Cash desk",
+    "invoices": "Invoices"
   },
   "settings": {
     "companyTitle": "Company information",
@@ -569,5 +571,88 @@
       "lot_cost_mismatch": "This batch already exists with another purchase cost: check the batch number.",
       "insufficient_stock": "Insufficient stock."
     }
+  },
+  "billing": {
+    "cashTitle": "Cash desk",
+    "cashHelp": "Add services and medicines, take payment: the invoice is numbered and medicines leave the stock (earliest expiry first).",
+    "noItems": "No priced item in the catalogue.",
+    "article": "Item {n}",
+    "choose": "— Choose —",
+    "groups": {
+      "service": "Services",
+      "medicine": "Medicines"
+    },
+    "inStock": "{n} in stock",
+    "quantity": "Quantity",
+    "quantityOf": "Quantity of item {n}",
+    "remove": "Remove",
+    "addLine": "+ Add an item",
+    "total": "Total due",
+    "paymentMean": "Payment method",
+    "means": {
+      "cash": "Cash",
+      "orange_money": "Orange Money",
+      "mtn_momo": "MTN Mobile Money"
+    },
+    "paymentReference": "Payment reference",
+    "patientName": "Patient name (optional)",
+    "patientHint": "Encrypted; visible only at the cash desk and to the owner.",
+    "issue": "Take payment and issue the invoice",
+    "issued": "Invoice issued.",
+    "journalTitle": "Invoices of the day",
+    "day": "Day",
+    "show": "Show",
+    "dayTotal": "Total collected (net)",
+    "noInvoices": "No invoice that day.",
+    "number": "Number",
+    "time": "Time",
+    "statusLabel": "Status",
+    "amount": "Amount incl. tax",
+    "status": {
+      "issued": "Paid",
+      "cancelled": "Cancelled"
+    },
+    "invoice": "Invoice",
+    "creditNote": "Credit note",
+    "patient": "Patient",
+    "cancels": "Cancels invoice",
+    "cancelledBy": "Cancelled by credit note",
+    "draftTax": "VAT computed with rules not yet validated by the accountant (pilot).",
+    "designation": "Description",
+    "unitPrice": "Unit price",
+    "lots": "Batches",
+    "totalHt": "Total excl. tax",
+    "vat": "VAT",
+    "totalTtc": "Total incl. tax",
+    "receipt": "PDF receipt",
+    "cancelTitle": "Cancel this invoice",
+    "cancelHelp": "A credit note of the same amount is issued and medicines go back to their batches. The invoice stays visible, marked cancelled.",
+    "cancelReason": "Reason",
+    "password": "Your password",
+    "cancelButton": "Cancel with a credit note",
+    "errors": {
+      "item_unavailable": "An item is no longer available.",
+      "no_price": "An item has no price.",
+      "insufficient_stock": "Insufficient stock (expired batches excluded).",
+      "draft_tax_rule": "VAT is not yet validated by the accountant: invoicing impossible outside the pilot.",
+      "bad_password": "Wrong password.",
+      "not_found": "Invoice not found.",
+      "not_cancellable": "This invoice is already cancelled, or it is a credit note."
+    },
+    "verify": {
+      "title": "Receipt verification",
+      "unknown": "No receipt matches this code.",
+      "authentic": "Authentic receipt: issued and signed by PaieCam.",
+      "invalid": "Invalid signature: this receipt may have been tampered with.",
+      "issuer": "Facility",
+      "number": "Number",
+      "date": "Date",
+      "amount": "Amount",
+      "state": "Status",
+      "valid": "Paid invoice",
+      "cancelled": "Invoice cancelled by a credit note",
+      "creditNote": "Credit note"
+    },
+    "verificationCode": "Verification code"
   }
 }
