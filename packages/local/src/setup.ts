@@ -92,7 +92,7 @@ export async function initCluster(opts: ClusterOptions & { superuserPassword: st
   }
   await appendFile(
     join(opts.dataDir, "postgresql.conf"),
-    `\n# PaieCam : installation locale\nlisten_addresses = '127.0.0.1'\nport = ${opts.port}\n`,
+    `\n# PaieCam : installation locale\nlisten_addresses = '127.0.0.1'\nport = ${opts.port}\n# Pas de prise locale Unix : TCP sur 127.0.0.1 uniquement (sans objet sous Windows).\nunix_socket_directories = ''\n`,
   );
   await writeFile(
     join(opts.dataDir, "pg_hba.conf"),

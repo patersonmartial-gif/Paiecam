@@ -79,6 +79,11 @@ jobs:
         run: psql -h localhost -U postgres -f docker/postgres/init.sql
         env:
           PGPASSWORD: postgres_ci
+      # Base neuve : migrations avant le démarrage du worker (schéma pgboss compris).
+      - name: Migrations de la base de test
+        run: pnpm db:migrate
+        env:
+          MIGRATION_DATABASE_URL: postgres://paiecam_owner:owner_dev@localhost:5432/paiecam_test
       - run: pnpm --filter @paiecam/web exec playwright install --with-deps chromium
       - run: pnpm --filter @paiecam/web test:e2e
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

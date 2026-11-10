@@ -30,6 +30,7 @@ export default function SignInPage() {
     }
     // Avec la 2FA active, le plugin redirige lui-même vers /connexion/2fa.
     if (data && "twoFactorRedirect" in data && data.twoFactorRedirect) return;
+    // nosemgrep: javascript.browser.security.open-redirect.js-open-redirect -- safeNext n'accepte que la même origine (lib/safe-next.ts, testé)
     window.location.href = safeNext(new URLSearchParams(window.location.search).get("next"));
   }
 

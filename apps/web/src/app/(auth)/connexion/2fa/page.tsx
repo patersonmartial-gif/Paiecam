@@ -28,6 +28,7 @@ export default function VerifyTwoFactorPage() {
       setPending(false);
       return;
     }
+    // nosemgrep: javascript.browser.security.open-redirect.js-open-redirect -- safeNext n'accepte que la même origine (lib/safe-next.ts, testé)
     window.location.href = safeNext(new URLSearchParams(window.location.search).get("next"));
   }
 

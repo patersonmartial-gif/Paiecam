@@ -31,6 +31,7 @@ export default function SignUpPage() {
     }
     // Après une invitation, on y revient ; sinon on crée son entreprise.
     const next = new URLSearchParams(window.location.search).get("next");
+    // nosemgrep: javascript.browser.security.open-redirect.js-open-redirect -- safeNext n'accepte que la même origine (lib/safe-next.ts, testé)
     window.location.href = safeNext(next, "/entreprise/nouvelle");
   }
 

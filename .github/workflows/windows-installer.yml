@@ -45,14 +45,17 @@ jobs:
           $d = "dist\paiecam"
           node scripts/windows/bundle.mjs "$d\outils"
           if ($LASTEXITCODE) { throw "regroupement" }
-          Copy-Item -Recurse apps\web\.next\standalone "$d\web"
-          Copy-Item -Recurse apps\web\.next\static "$d\web\apps\web\.next\static"
+          # Liens symboliques de pnpm remplacés par les fichiers réels (installateur autonome).
+          node scripts/windows/copy-tree.mjs apps\web\.next\standalone "$d\web"
+          if ($LASTEXITCODE) { throw "copie de l'application" }
+          node scripts/windows/copy-tree.mjs apps\web\.next\static "$d\web\apps\web\.next\static"
+          if ($LASTEXITCODE) { throw "copie des fichiers statiques" }
           # Module natif Argon2 (outil d'administration : réinitialisation des mots de passe).
           $argon = Resolve-Path apps\web\node_modules\@node-rs\argon2
           New-Item -ItemType Directory -Force "$d\outils\node_modules\@node-rs" | Out-Null
-          Copy-Item -Recurse (Get-Item $argon).Target "$d\outils\node_modules\@node-rs\argon2"
+          node scripts/windows/copy-tree.mjs $argon "$d\outils\node_modules\@node-rs\argon2"
           $native = Get-ChildItem -Directory node_modules\.pnpm -Filter "@node-rs+argon2-win32-x64-msvc*" | Select-Object -First 1
-          Copy-Item -Recurse "$($native.FullName)\node_modules\@node-rs\argon2-win32-x64-msvc" "$d\outils\node_modules\@node-rs\"
+          node scripts/windows/copy-tree.mjs "$($native.FullName)\node_modules\@node-rs\argon2-win32-x64-msvc" "$d\outils\node_modules\@node-rs\argon2-win32-x64-msvc"
           Copy-Item -Recurse windows\scripts "$d\scripts"
           New-Item -ItemType Directory -Force "$d\services" | Out-Null
           Copy-Item windows\services\*.xml "$d\services\"
