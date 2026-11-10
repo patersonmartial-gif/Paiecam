@@ -7,7 +7,7 @@
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "forwardPorts": [3000],
   "portsAttributes": {
-    "3000": { "label": "PaieCam", "onAutoForward": "openPreview" }
+    "3000": { "label": "PaieCam", "onAutoForward": "openBrowser" }
   },
   "postCreateCommand": "bash .devcontainer/setup.sh",
   "postStartCommand": "bash .devcontainer/start.sh",
