@@ -20,7 +20,15 @@ if (Test-Path $Config) {
   Invoke-PaieCamAdmin update --dossier $DataDir --migrations $Migrations --referentiel $Rules
 } else {
   Write-Etape "première installation : base de données, rôles, migrations, référentiel"
-  Invoke-PaieCamAdmin install --dossier $DataDir --pg-bin $PgBin --migrations $Migrations --referentiel $Rules
+  # initdb se relance avec des droits réduits (sans le groupe Administrateurs) : le compte qui
+  # installe reçoit un accès explicite le temps de créer la base, retiré juste après.
+  $Me = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+  icacls $DataDir /grant "*${Me}:(OI)(CI)F" | Out-Null
+  try {
+    Invoke-PaieCamAdmin install --dossier $DataDir --pg-bin $PgBin --migrations $Migrations --referentiel $Rules
+  } finally {
+    icacls $DataDir /remove:g "*$Me" /T /C | Out-Null
+  }
   Write-Etape "base créée ; enregistrement du service PaieCam-Base"
   $Base = Join-Path $DataDir "donnees\base"
   icacls $Base /grant "*S-1-5-20:(OI)(CI)F" | Out-Null

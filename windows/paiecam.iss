@@ -68,6 +68,9 @@ begin
   Result := '';
 end;
 
+var
+  PreparationFailed: Boolean;
+
 // Base de données, services et première sauvegarde ; un échec est signalé, jamais ignoré.
 procedure CurStepChanged(CurStep: TSetupStep);
 var
@@ -79,14 +82,27 @@ begin
     if not Exec('powershell.exe',
       '-NoProfile -ExecutionPolicy Bypass -File "' + ExpandConstant('{app}\scripts\installer.ps1') + '"',
       '', SW_HIDE, ewWaitUntilTerminated, Code) or (Code <> 0) then
-      MsgBox('La préparation de PaieCam a échoué (code ' + IntToStr(Code) + '). Le détail est dans ' +
-        ExpandConstant('{commonappdata}\PaieCam\journaux\installation.log') + '.', mbError, MB_OK);
+    begin
+      PreparationFailed := True;
+      // Masquable en mode silencieux (/SUPPRESSMSGBOXES) : jamais de fenêtre qui attend un clic.
+      SuppressibleMsgBox('La préparation de PaieCam a échoué (code ' + IntToStr(Code) + '). Le détail est dans ' +
+        ExpandConstant('{commonappdata}\PaieCam\journaux\installation.log') + '.', mbError, MB_OK, IDOK);
+    end;
   end;
+end;
+
+// Code de sortie de l'installateur : 1 si la préparation a échoué (installations silencieuses).
+function GetCustomSetupExitCode: Integer;
+begin
+  if PreparationFailed then
+    Result := 1
+  else
+    Result := 0;
 end;
 
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 begin
   if CurUninstallStep = usPostUninstall then
-    MsgBox('PaieCam est désinstallé. Vos données de paie et vos sauvegardes sont CONSERVÉES dans ' +
-      ExpandConstant('{commonappdata}\PaieCam') + '. Gardez-les le temps exigé par la loi.', mbInformation, MB_OK);
+    SuppressibleMsgBox('PaieCam est désinstallé. Vos données de paie et vos sauvegardes sont CONSERVÉES dans ' +
+      ExpandConstant('{commonappdata}\PaieCam') + '. Gardez-les le temps exigé par la loi.', mbInformation, MB_OK, IDOK);
 end;
