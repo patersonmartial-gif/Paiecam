@@ -97,6 +97,9 @@
     "employees": "Salariés actifs"
   },
   "nav": {
+    "groupStaff": "Personnel",
+    "groupClinic": "Clinique",
+    "groupSettings": "Réglages",
     "dashboard": "Tableau de bord",
     "employees": "Salariés",
     "company": "Entreprise",

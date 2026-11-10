@@ -60,7 +60,9 @@ export default async function StockPage() {
                     <span className="block font-mono text-xs text-stone-500">{m.code}</span>
                   </td>
                   <td className="px-3 py-2 text-right">
-                    {format.number(m.available)} {m.unit ?? ""}
+                    {format.number(m.available)}
+                    {/* Unité saisie librement (« Boîte de 12 ») : affichée à part, sans accord. */}
+                    {m.unit && <span className="block text-xs text-stone-500">{m.unit}</span>}
                   </td>
                   <td className="px-3 py-2">{m.nextExpiry ? fmtDate(m.nextExpiry) : "—"}</td>
                   <td className="px-3 py-2 text-right">{format.number(m.value)}</td>

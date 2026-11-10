@@ -34,7 +34,7 @@ test("stock : réception d'un lot, casse avec motif, alerte de stock bas", async
 
   await page.getByRole("link", { name: /Stock de la pharmacie/ }).click();
   const row = page.getByRole("row", { name: /Amoxicilline/ });
-  await expect(row).toContainText("9 boîtes");
+  await expect(row.getByRole("cell").nth(1)).toHaveText(/^9\s*boîtes$/);
   await expect(row).toContainText("Stock bas");
   await expect(row).toContainText("10 800");
 });
