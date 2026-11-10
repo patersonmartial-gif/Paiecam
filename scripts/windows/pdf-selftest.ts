@@ -50,4 +50,4 @@ const pdf = await renderPayslipPdf(
   },
 );
 if (pdf.subarray(0, 5).toString() !== "%PDF-") throw new Error("PDF invalide");
-console.log(`auto-contrôle PDF : ${pdf.length} octets`);
+console.warn(`auto-contrôle PDF : ${pdf.length} octets`);

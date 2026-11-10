@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+import { fileURLToPath } from "node:url";
 
 // Un seul .env, à la racine du monorepo (en CI et en prod, les variables viennent de l'environnement).
 try {
@@ -23,7 +24,7 @@ const config: NextConfig = {
   poweredByHeader: false,
   // Image Docker minimale : serveur autonome avec les seules dépendances tracées du monorepo.
   output: "standalone",
-  outputFileTracingRoot: new URL("../../", import.meta.url).pathname,
+  outputFileTracingRoot: fileURLToPath(new URL("../../", import.meta.url)),
   // Import Excel : fichier de 2 Mo maximum (contrôlé aussi côté serveur), plus l'enveloppe multipart.
   experimental: {
     serverActions: {

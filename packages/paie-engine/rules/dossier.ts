@@ -7,9 +7,10 @@ import writeXlsxFile from "write-excel-file/node";
 import { spreadsheetSafe } from "@paiecam/security";
 import { computePayslip, type PayslipInput } from "../src";
 import { loadRuleFile, type RuleFileEntry } from "./load";
+import { fileURLToPath } from "node:url";
 
 const out = process.argv[2] ?? "dossier-expert-comptable.xlsx";
-const rulesPath = new URL("./cm-2026.draft.json", import.meta.url).pathname;
+const rulesPath = fileURLToPath(new URL("./cm-2026.draft.json", import.meta.url));
 const rules = loadRuleFile(rulesPath);
 
 const fr = new Intl.NumberFormat("fr-FR");

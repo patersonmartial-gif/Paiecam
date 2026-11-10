@@ -22,17 +22,20 @@ Ce document ne remplace pas le **test d'intrusion externe** exigé avant le lanc
 
 ## Constats de la revue
 
-| N°  | Sévérité | Constat                                                                               | Correction                                                                          | État          |
-| --- | -------- | ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------------- |
-| R1  | Moyenne  | L'IP du client était lue dans `x-forwarded-for` (falsifiable) : limites contournables | IP calculée par `proxy.ts` selon `TRUSTED_PROXY_HEADER` (obligatoire en production) | Corrigé (6.1) |
-| R2  | Moyenne  | Ressaisie du mot de passe (IBAN, validation) sans limite d'essais                     | Verrouillage progressif par utilisateur                                             | Corrigé (6.1) |
-| R3  | Moyenne  | Pas de verrouillage par compte : attaque répartie sur plusieurs IP possible           | Verrouillage progressif par adresse (empreinte)                                     | Corrigé (6.1) |
-| R4  | Moyenne  | Injection d'en-têtes possible dans les e-mails (raison sociale dans le sujet)         | `sanitizeMail` : retours à la ligne neutralisés, destinataire unique validé         | Corrigé (6.2) |
-| R5  | Moyenne  | Invitations illimitées : envoi massif d'e-mails depuis un compte compromis            | 20 invitations par entreprise et par heure                                          | Corrigé (6.2) |
-| R6  | Faible   | Dépendance esbuild vulnérable (GHSA-67mh-4wv8-2f99) via drizzle-kit                   | Version forcée ≥ 0.25 (`pnpm-workspace.yaml`)                                       | Corrigé (6.2) |
-| R7  | Faible   | Mise en file des PDF hors transaction et worker silencieux en cas d'échec             | Mise en file après validation ; échecs journalisés                                  | Corrigé (4.5) |
-| R8  | Faible   | Sauvegarde impossible avec FORCE RLS sans rôle dédié (pg_dump du propriétaire filtré) | Rôle `paiecam_backup` lecture seule, BYPASSRLS ; restauration testée                | Corrigé (6.4) |
-| R9  | Info     | Cookie de langue sans HttpOnly ni Secure (contenu non sensible)                       | HttpOnly, Secure en production ; test e2e                                           | Corrigé (6.6) |
+| N°  | Sévérité | Constat                                                                                              | Correction                                                                                                       | État          |
+| --- | -------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------- |
+| R1  | Moyenne  | L'IP du client était lue dans `x-forwarded-for` (falsifiable) : limites contournables                | IP calculée par `proxy.ts` selon `TRUSTED_PROXY_HEADER` (obligatoire en production)                              | Corrigé (6.1) |
+| R2  | Moyenne  | Ressaisie du mot de passe (IBAN, validation) sans limite d'essais                                    | Verrouillage progressif par utilisateur                                                                          | Corrigé (6.1) |
+| R3  | Moyenne  | Pas de verrouillage par compte : attaque répartie sur plusieurs IP possible                          | Verrouillage progressif par adresse (empreinte)                                                                  | Corrigé (6.1) |
+| R4  | Moyenne  | Injection d'en-têtes possible dans les e-mails (raison sociale dans le sujet)                        | `sanitizeMail` : retours à la ligne neutralisés, destinataire unique validé                                      | Corrigé (6.2) |
+| R5  | Moyenne  | Invitations illimitées : envoi massif d'e-mails depuis un compte compromis                           | 20 invitations par entreprise et par heure                                                                       | Corrigé (6.2) |
+| R6  | Faible   | Dépendance esbuild vulnérable (GHSA-67mh-4wv8-2f99) via drizzle-kit                                  | Version forcée ≥ 0.25 (`pnpm-workspace.yaml`)                                                                    | Corrigé (6.2) |
+| R7  | Faible   | Mise en file des PDF hors transaction et worker silencieux en cas d'échec                            | Mise en file après validation ; échecs journalisés                                                               | Corrigé (4.5) |
+| R8  | Faible   | Sauvegarde impossible avec FORCE RLS sans rôle dédié (pg_dump du propriétaire filtré)                | Rôle `paiecam_backup` lecture seule, BYPASSRLS ; restauration testée                                             | Corrigé (6.4) |
+| R9  | Info     | Cookie de langue sans HttpOnly ni Secure (contenu non sensible)                                      | HttpOnly, Secure en production ; test e2e                                                                        | Corrigé (6.6) |
+| R10 | Moyenne  | Redirection après connexion contournable : « /\t/site » devient « //site » dans le navigateur        | `safeNext` résout l'adresse comme le navigateur et exige la même origine ; tests                                 | Corrigé (CI)  |
+| R11 | Faible   | Longueur de l'étiquette AES-GCM non imposée au déchiffrement (Semgrep)                               | `authTagLength: 16` au chiffrement et au déchiffrement                                                           | Corrigé (CI)  |
+| R12 | Faible   | Chaîne d'approvisionnement : actions GitHub par étiquette, paquets installables dès leur publication | Actions épinglées par empreinte ; pnpm : 7 jours minimum, pas de dépendance hors registre ; Dependabot : 7 jours | Corrigé (CI)  |
 
 ## Risques résiduels (à couvrir par le test d'intrusion ou l'exploitation)
 

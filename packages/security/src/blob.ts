@@ -7,6 +7,9 @@ import {
 } from "node:crypto";
 import type { Keyring } from "./keyring";
 
+/** Étiquette GCM imposée à 16 octets : une étiquette tronquée n'est jamais acceptée. */
+const TAG_LENGTH = 16;
+
 /**
  * Chiffrement d'un fichier (PDF…) : AES-256-GCM, lié à son emplacement de stockage (données associées).
  * Format : [longueur du kid (1 octet)][kid][IV 12 octets][chiffré][tag 16 octets].
@@ -14,7 +17,9 @@ import type { Keyring } from "./keyring";
 export function encryptBlob(keyring: Keyring, storageKey: string, data: Uint8Array): Buffer {
   const kid = Buffer.from(keyring.currentId, "utf8");
   const iv = randomBytes(12);
-  const cipher = createCipheriv("aes-256-gcm", keyring.encryptionKey(keyring.currentId), iv);
+  const cipher = createCipheriv("aes-256-gcm", keyring.encryptionKey(keyring.currentId), iv, {
+    authTagLength: TAG_LENGTH,
+  });
   cipher.setAAD(Buffer.from(`blob|${storageKey}`));
   const body = Buffer.concat([cipher.update(data), cipher.final(), cipher.getAuthTag()]);
   return Buffer.concat([Buffer.from([kid.length]), kid, iv, body]);
@@ -36,7 +41,9 @@ export function decryptBlob(keyring: Keyring, storageKey: string, stored: Uint8A
   const kid = buf.subarray(1, 1 + kidLength).toString("utf8");
   const iv = buf.subarray(1 + kidLength, 13 + kidLength);
   const body = buf.subarray(13 + kidLength);
-  const decipher = createDecipheriv("aes-256-gcm", keyring.encryptionKey(kid), iv);
+  const decipher = createDecipheriv("aes-256-gcm", keyring.encryptionKey(kid), iv, {
+    authTagLength: TAG_LENGTH,
+  });
   decipher.setAAD(Buffer.from(`blob|${storageKey}`));
   decipher.setAuthTag(body.subarray(body.length - 16));
   try {

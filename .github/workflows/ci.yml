@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   quality:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     services:
       postgres:
         image: postgres:16-alpine
@@ -28,9 +28,9 @@ jobs:
       PG_BIN: /usr/lib/postgresql/16/bin
       TEST_RESTORE_ADMIN_DATABASE_URL: postgres://postgres:postgres_ci@localhost:5432/paiecam_restore_test
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           cache: pnpm
@@ -50,7 +50,7 @@ jobs:
         run: APP_URL=https://app.exemple.test sh scripts/build-web.sh
 
   e2e:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     services:
       postgres:
         image: postgres:16-alpine
@@ -68,9 +68,9 @@ jobs:
       TEST_RESTORE_ADMIN_DATABASE_URL: postgres://postgres:postgres_ci@localhost:5432/paiecam_restore_test
       BETTER_AUTH_SECRET: ci-only-secret-ci-only-secret-ci-only
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           cache: pnpm
@@ -81,7 +81,7 @@ jobs:
           PGPASSWORD: postgres_ci
       - run: pnpm --filter @paiecam/web exec playwright install --with-deps chromium
       - run: pnpm --filter @paiecam/web test:e2e
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: failure()
         with:
           name: playwright-traces
@@ -89,19 +89,19 @@ jobs:
           retention-days: 7
 
   gitleaks:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
+      - uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   semgrep:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     container:
       image: semgrep/semgrep
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: semgrep scan --config p/typescript --config p/owasp-top-ten --config p/secrets --config .semgrep.yml --error

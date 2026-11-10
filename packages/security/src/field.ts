@@ -1,6 +1,9 @@
 import { createCipheriv, createDecipheriv, createHmac, randomBytes } from "node:crypto";
 import type { Keyring } from "./keyring";
 
+/** Étiquette GCM imposée à 16 octets : une étiquette tronquée n'est jamais acceptée. */
+const TAG_LENGTH = 16;
+
 /**
  * Contexte lié à chaque valeur chiffrée (données associées AES-GCM) : une valeur copiée
  * vers une autre entreprise, table, colonne ou ligne ne se déchiffre plus.
@@ -23,7 +26,9 @@ function aad(ctx: FieldContext): Buffer {
 export function encryptField(keyring: Keyring, ctx: FieldContext, plaintext: string): string {
   const kid = keyring.currentId;
   const iv = randomBytes(12);
-  const cipher = createCipheriv("aes-256-gcm", keyring.encryptionKey(kid), iv);
+  const cipher = createCipheriv("aes-256-gcm", keyring.encryptionKey(kid), iv, {
+    authTagLength: TAG_LENGTH,
+  });
   cipher.setAAD(aad(ctx));
   const body = Buffer.concat([
     cipher.update(plaintext, "utf8"),
@@ -39,7 +44,9 @@ export function decryptField(keyring: Keyring, ctx: FieldContext, stored: string
   const iv = Buffer.from(ivB64, "base64url");
   const body = Buffer.from(bodyB64, "base64url");
   if (iv.length !== 12 || body.length < 16) throw new Error("valeur chiffrée mal formée");
-  const decipher = createDecipheriv("aes-256-gcm", keyring.encryptionKey(kid), iv);
+  const decipher = createDecipheriv("aes-256-gcm", keyring.encryptionKey(kid), iv, {
+    authTagLength: TAG_LENGTH,
+  });
   decipher.setAAD(aad(ctx));
   decipher.setAuthTag(body.subarray(body.length - 16));
   try {

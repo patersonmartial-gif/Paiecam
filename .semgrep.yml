@@ -5,13 +5,14 @@ rules:
     message: drizzle-orm ne s'importe que dans packages/db (opérateurs réexportés par @paiecam/db).
     languages: [typescript]
     severity: ERROR
-    paths: { exclude: ["packages/db/**"] }
+    # Le test d'architecture contient le motif qu'il recherche.
+    paths: { exclude: ["/packages/db/**", "/tools/architecture/**"] }
     pattern-regex: from "drizzle-orm
   - id: paiecam-sql-brut
     message: SQL brut interdit (sql.raw / unsafe) ; utiliser les requêtes paramétrées de Drizzle.
     languages: [typescript]
     severity: ERROR
-    paths: { exclude: ["packages/db/src/testing.ts"] }
+    paths: { exclude: ["/packages/db/src/testing.ts", "/tools/architecture/**"] }
     pattern-either:
       - pattern: sql.raw(...)
       - pattern: $X.unsafe(...)
@@ -19,6 +20,7 @@ rules:
     message: dangerouslySetInnerHTML interdit (XSS).
     languages: [typescript]
     severity: ERROR
+    paths: { exclude: ["/tools/architecture/**"] }
     pattern-regex: dangerouslySetInnerHTML
   - id: paiecam-console-log
     message: console.log interdit ; utiliser log() de server/log.ts (masquage des données personnelles).

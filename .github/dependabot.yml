@@ -4,6 +4,9 @@ updates:
     directory: /
     schedule: { interval: weekly }
     open-pull-requests-limit: 10
+    # Une version publiée depuis moins de 7 jours n'est pas proposée (paquet piégé puis retiré).
+    cooldown: { default-days: 7 }
   - package-ecosystem: github-actions
     directory: /
     schedule: { interval: weekly }
+    cooldown: { default-days: 7 }

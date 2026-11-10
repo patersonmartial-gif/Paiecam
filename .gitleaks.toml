@@ -1,0 +1,7 @@
+# Configuration gitleaks : règles par défaut, plus une exception justifiée.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Liste publique de mots de passe courants (NCSC/SecLists) : des mots de passe à REFUSER, pas des secrets"
+paths = ['''apps/web/src/server/auth/common-passwords\.ts''']

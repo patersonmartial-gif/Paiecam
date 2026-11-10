@@ -7,3 +7,8 @@ onlyBuiltDependencies:
 overrides:
   # GHSA-67mh-4wv8-2f99 (serveur de développement d'esbuild), via drizzle-kit → @esbuild-kit.
   "@esbuild-kit/core-utils>esbuild": "^0.25.0"
+# Chaîne d'approvisionnement : aucune version publiée depuis moins de 7 jours, aucune
+# sous-dépendance hors du registre (git, URL), aucune baisse du niveau de confiance d'un paquet.
+minimumReleaseAge: 10080
+blockExoticSubdeps: true
+trustPolicy: no-downgrade

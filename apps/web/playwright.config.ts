@@ -1,5 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 import { OUTBOX } from "./e2e/outbox";
+import { fileURLToPath } from "node:url";
 
 try {
   process.loadEnvFile("../../.env");
@@ -18,7 +19,7 @@ const env = {
   PWNED_PASSWORDS_CHECK: "off",
   MAIL_OUTBOX_DIR: OUTBOX,
   SECURITY_CONTACT: "mailto:securite@exemple.test",
-  DOCUMENTS_DIR: new URL("./.e2e-documents", import.meta.url).pathname,
+  DOCUMENTS_DIR: fileURLToPath(new URL("./.e2e-documents", import.meta.url)),
   FIELD_ENCRYPTION_KEYS:
     process.env.FIELD_ENCRYPTION_KEYS ?? `v1:${Buffer.alloc(32, 7).toString("base64")}`,
 };

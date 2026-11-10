@@ -1,12 +1,13 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";
+import { fileURLToPath } from "node:url";
 
 /** Utilitaires réservés aux tests d'intégration : jamais importés par le code applicatif. */
 
 function loadEnv(): void {
   try {
-    process.loadEnvFile(new URL("../../../.env", import.meta.url).pathname);
+    process.loadEnvFile(fileURLToPath(new URL("../../../.env", import.meta.url)));
   } catch {
     // en CI, les variables viennent de l'environnement
   }
@@ -60,7 +61,7 @@ export async function resetTestDatabase(): Promise<void> {
       create schema public;
     `);
     await migrate(drizzle(client), {
-      migrationsFolder: new URL("../drizzle", import.meta.url).pathname,
+      migrationsFolder: fileURLToPath(new URL("../drizzle", import.meta.url)),
     });
   } finally {
     await client.end();
